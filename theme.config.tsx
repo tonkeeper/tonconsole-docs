@@ -15,6 +15,7 @@ const config: DocsThemeConfig = {
         return <>
             <meta charSet="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <meta data-cd-check="1cb6adb6d4b631b9"/>
             <title
             >
                 {title && route !== '/'
