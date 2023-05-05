@@ -7,7 +7,7 @@ To prevent confusion, some data is hidden. However, if you require raw blockchai
 
 All methods are available without authentication, but with a rate limit of 1 request per 4 seconds (0.24 rps).
 
-To authorize your request, you will need a token, which you can obtain from tonconsole. Here is an example of a token: `AGZVOXZ3SLHOAA4TRVL4DWQ5DUZK25MSEIGXAFHZ43TMPGXQ6NZZXEWROYSJHCONGSFITLI`.
+To authorize your request, you will need a token, which you can obtain from https://tonconsole.com/. Here is an example of a token: `AGZVOXZ3SLHOAA4TRVL4DWQ5DUZK25MSEIGXAFHZ43TMPGXQ6NZZXEWROYSJHCONGSFITLI`.
 
 To pass the token in your request, please add the Authorization HTTP header with the "Bearer scheme." Here is an example:
 
@@ -20,7 +20,7 @@ curl \
 ## Limits
 The rate limits for all of your issued tokens are the same and match the plan you have. The rate limits are the same for both the testnet and mainnet (if you're paying for a 10 rps plan, you'll get 10 rps in the testnet and 10 rps in the mainnet).
 
-### What is limits are not big enough for you
+Learn more about tiers and limit on [TonConsole](https://tonconsole.com/tonapi/pricing)
 
 ## launch you own TonAPI node
 There is a separate limited open-source version of TonAPI available at https://github.com/tonkeeper/opentonapi. This version does not require a full blockchain index.
