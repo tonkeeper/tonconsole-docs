@@ -1,10 +1,11 @@
 @tailwind base;
 @tailwind utilities;
-@tailwind typography
+@tailwind typography;
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, Tahoma, Verdana, sans-serif;
 }
+
 
 html.dark .swagger-ui {
     filter: invert(88%) hue-rotate(180deg);
@@ -22,4 +23,8 @@ html.dark .swagger-ui .highlight-code {
     background: transparent !important;
     box-shadow: unset !important;
     padding: 10px 0 !important;
+}
+
+.swagger-ui pre.example code {
+    display: inline;
 }
