@@ -25,6 +25,6 @@ html.dark .swagger-ui .highlight-code {
     padding: 10px 0 !important;
 }
 
-.swagger-ui pre.example code {
+.swagger-ui pre > code {
     display: inline;
 }
