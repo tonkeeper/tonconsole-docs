@@ -3,7 +3,6 @@ import {useTheme} from "next-themes";
 
 export const ConsoleDocsIcon: FunctionComponent = () => {
     const theme = useTheme();
-    console.log(theme);
     const color = theme.resolvedTheme === 'light' ? 'black' : 'white';
 
     return <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">

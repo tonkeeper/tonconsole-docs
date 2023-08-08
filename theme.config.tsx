@@ -6,7 +6,7 @@ import {useRouter} from "next/router";
 const config: DocsThemeConfig = {
     logo: <div className="nx-flex nx-items-center max-[500px]:gap-2 min-[500px]:gap-3">
         <ConsoleDocsIcon />
-        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Console Docs</span>
+        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Ton Console Docs</span>
     </div>,
     head: () => {
         const { title } = useConfig();
