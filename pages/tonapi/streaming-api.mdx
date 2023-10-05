@@ -47,6 +47,26 @@ id: 1682407879253338019
 data: {"account_id":"-1:5555555555555555555555555555555555555555555555555555555555555555","lt":37121532000003,"tx_hash":"076a457ace46c6bcea6ef0644d65a4b866d25a5fd52349f08a6ccfbf7cb99ddb"}
 ```
 
+### Real-time notifications about traces
+
+A trace in the TON blockchain is a series of transactions caused by one inbound message.
+It usually consists of multiple transactions on different accounts.
+Once a trace completes, TonAPI sends the trace's hash and a list of involved accounts to all subscribers who are interested in any of these accounts.
+
+API method GET `https://tonapi.io/v2/sse/accounts/traces?accounts=<comma-separated-list-of-accounts>` takes in
+a comma-separated list of account IDs as "accounts" query parameter.
+A special value of "accounts" is **ALL**. TonAPI will stream all traces in this case.
+
+A response example:
+```text
+event: heartbeat
+
+event: message
+id: 1682407879253338019
+data: {"accounts":["0:67a8fc0aea189d79e26f50fa9184842a1ab4f19951286d498ea5a106af375044","0:dd61300e0060f80233363b3b4a0f3b27ad03b19cc4bec6ec798aab0b3e479eba","0:d7907ea9bb1fa580aa82489680004e75fbf2842246219e7dac1cf9ea90fb5cf9","0:8c61ced898b13b6aca6f4cada44080e22aacc49680082cb51c66901cdae57451"],"hash":"6176c9b1690a7b6beebd09ff118761ee47f1a8be716506874ed0a1c06bb0fc83"}
+
+```
+
 ### Real-time notifications about pending messages (Mempool).
 API method GET 'https://tonapi.io/v2/sse/mempool' immediately starts streaming BOCs of pending inbound messages:
 
@@ -65,6 +85,7 @@ data: {"boc":"te6ccgEBBAEAtwABRYgBvVXMoxQj+kmDtTinWnFdumvpTNo33p48YQKOWyTtUkAMAQ
 TonAPI supports a JSON-RPC protocol over a websocket connection. It is available at `wss://tonapi.io/v2/websocket`.
 Supported methods are:
 * **subscribe_account**
+* **subscribe_trace**
 * **subscribe_mempool**
 
 [A golang example](https://github.com/tonkeeper/opentonapi/tree/master/examples/golang/websocket) of working with websocket.
@@ -103,6 +124,50 @@ When a transaction is committed to the blockchain, TonAPI will send a short summ
     "account_id":"-1:5555555555555555555555555555555555555555555555555555555555555555",
     "lt":37121758000003,
     "tx_hash":"586e176bdead2a37d9e372c3725e27c4eab90f5b213c6099c6aadeafc8e4fbc9"
+  }
+}
+```
+
+It is possible to subscribe up to 1000 accounts per a websocket connection.
+
+### "subscribe_trace" method
+`subscribe_trace` takes in a list of account IDs as "params" argument
+and starts streaming traces that involve any of the given list of accounts.
+A request example:
+```json
+{
+  "id":1,
+  "jsonrpc":"2.0",
+  "method":"subscribe_trace",
+  "params":[
+    "-1:5555555555555555555555555555555555555555555555555555555555555555",
+    "-1:3333333333333333333333333333333333333333333333333333333333333333"
+  ]
+}
+```
+A response:
+```json
+{
+  "id":1,
+  "jsonrpc":"2.0",
+  "method":"subscribe_trace",
+  "result":"success! 2 new subscriptions created"
+}
+```
+
+When a trace completes, TonAPI will send a short summary about it:
+```json
+ {
+  "jsonrpc":"2.0",
+  "method":"trace",
+  "params":{
+      "accounts":[
+          "0:67a8fc0aea189d79e26f50fa9184842a1ab4f19951286d498ea5a106af375044",
+          "0:dd61300e0060f80233363b3b4a0f3b27ad03b19cc4bec6ec798aab0b3e479eba",
+          "0:d7907ea9bb1fa580aa82489680004e75fbf2842246219e7dac1cf9ea90fb5cf9",
+          "0:8c61ced898b13b6aca6f4cada44080e22aacc49680082cb51c66901cdae57451"
+      ],
+      "hash":"6176c9b1690a7b6beebd09ff118761ee47f1a8be716506874ed0a1c06bb0fc83"
   }
 }
 ```
