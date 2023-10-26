@@ -1,33 +1,49 @@
 # Push Notifications for Decentralized Apps
 
-> Enable push notifications for your decentralized apps to increase user engagement.
->
+## About
 
-You can enable push notifications only for registered apps: sign in TonConsole via Telegram and create a new project. You will be able to edit the project later.
+Tonkeeper Messages is a powerful tool for communicating with the users who already connected their wallets to your app using TonConnect. It’s easy-to-use and flexible: you can significantly increase the user retention and conversion rate for your decentralized applications. Tonkeeper Messages is designed like a convenient and trusted way to message the highly motivated audience of Tonkeeper.
+
+It’s best for:
+
+- Marketing campaigns.
+- Announcements.
+- Event reminders.
+- App and account updates.
+
+## Connect Your Dapp
+
+To connect a decentralized app to your project, you need to register and verify it. One project can have only one connected app to prevent scam. You will need to create a new project to connect another app.
 
 ### Steps
 
-1. Go to `Tonkeeper Messages` to register an app.
-2. Click `TonConnect Manifest URL` to select a way for registering an app.
-    1. The system will generate a unique payload. Put the payload into a `tc-verify.json` file and make it available at `https://test.io/tc-verify.json`.
-3. Verify your app.
+1. Go to [Tonkeeper Messages](https://tonconsole.com/tonkeeper-messages).
+2. Enter a TonConnect manifest URL or an app URL to register your app. [About TonConnect](https://docs.ton.org/develop/dapps/ton-connect/overview). [About TonConnect Manifest](https://docs.ton.org/develop/dapps/ton-connect/protocol/requests-responses#app-manifest).
+3. Click Register.
+4. Create a `tc-verify.json` file.
+5. Copy the payload key and paste it into the `tc-verify.json` file.
+6. Make the `tc-verify.json` file available at the link specified under the payload key in Tonkeeper Messages.
+7. Click Verify.
 
-<video style={{ paddingTop: '20px' }} controls>
-    <source src="/assets/tonkeeper-messages-tutorial.webm" type="video/webm" />
-</video>
+## Push Notifications
 
-You will see the statistics and token of your app after the verification.
+To start messaging users, you need to refill the number of messages available to you. The Tonkeeper Messages tab displays the number of available messages on the right side of the screen. Click Refill if you need more of them. If your TonConsole balance is low, you will be asked to refill it.
 
-**The token is secret, don’t give it to any third party.** You will have to pass the token into the header every time you request push notifications.
+Pass the token into the header every time you send a request to message users. **The token is secret, don’t reveal it to any third party. If your token was compromised, generate a new one.**
 
-To send a message to one wallet, pass the `"address": "EQ...ER"` into the request body. `"..."` is a wallet address.
+### Example
 
-To send a message to all the users, skip the `"address"` field.
+`-H ' Authorization: Bearer **YOUR TOKEN**'`
+
+You can message all the users, who connected to your app, or one certain wallet if you know the address:
+
+- To send a message to one wallet, pass the `"address": "UQ...ER”` into the request body. `“...”` is a wallet address.
+- To send a message to all the users, skip the `“address”` field.
 
 ```json
 {
   "message": "hello",
-  "address": "EQ...ER",
+  "address": "UQ...ER",
   "link": "http://my_dapp.com/event"
 }
 ```
