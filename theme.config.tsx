@@ -97,12 +97,12 @@ const config: DocsThemeConfig = {
                 <div
                     className="nx-mx-auto nx-flex gap-8 flex-wrap justify-between nx-max-w-[90rem] py-5 nx-text-gray-600 dark:nx-text-gray-400 md:nx-justify-start nx-pl-[max(env(safe-area-inset-left),1.5rem)] nx-pr-[max(env(safe-area-inset-right),1.5rem)]"
                 >
-                    <ExternalLink href={LINKS.TERMS}>Terms</ExternalLink>
-                    <ExternalLink href={LINKS.PRIVACY}>Privacy</ExternalLink>
-                    <ExternalLink href={LINKS.SUPPORT}>Support</ExternalLink>
-                    <ExternalLink href={LINKS.CONTACT}>Contact us</ExternalLink>
+                    <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink>
+                    <ExternalLink variant="secondary" href={LINKS.PRIVACY}>Privacy</ExternalLink>
+                    <ExternalLink variant="secondary" href={LINKS.SUPPORT}>Support</ExternalLink>
+                    <ExternalLink variant="secondary" href={LINKS.CONTACT}>Contact us</ExternalLink>
                     <div  className="flex flex-1 justify-end">
-                        <ExternalLink href={LINKS.CONSOLE}>tonconsole.com</ExternalLink>
+                        <ExternalLink variant="secondary" href={LINKS.CONSOLE}>tonconsole.com</ExternalLink>
                     </div>
                 </div>
         </footer>
