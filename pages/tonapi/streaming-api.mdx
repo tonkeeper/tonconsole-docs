@@ -33,7 +33,7 @@ The "message" event carries important information and its "data" always contains
 
 [A golang example](https://github.com/tonkeeper/opentonapi/tree/master/examples/golang/sse) of working with SSE method.
 
-### Real-time notifications about transactions
+### Real-time notifications about finalized transactions
 
 API method GET `https://tonapi.io/v2/sse/accounts/transactions?accounts=<list-of-accounts>&operations=<list-of-operations>` takes in
 a list of account IDs  and an optional list of operations.
@@ -43,7 +43,7 @@ a list of account IDs  and an optional list of operations.
 | accounts        | A comma-separated list of account IDs. A special value of "accounts" is **ALL**. TonAPI will stream transactions for all accounts in this case.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | operations      | A comma-separated list of operations, which makes it possible to get transactions based on the [first 4 bytes of a message body of an inbound message](https://docs.ton.org/develop/smart-contracts/guidelines/internal-messages#internal-message-body). <br/><br/>Each operation is a string containing either <ExternalLink href="https://github.com/tonkeeper/tongo/blob/master/abi/messages.md">one of the supported names</ExternalLink> or a hex string representing a message operation opcode which is an unsigned 32-bit integer. <br/><br/>A hex string must start with "0x" prefix and have exactly 8 hex digits. <br/> An example of "operations" is `&operations=JettonTransfer,0x0524c7ae,StonfiSwap`. <br/><br/>The advantage of using hex strings is that it's possible to get transactions for operations that are not yet present on <ExternalLink href="https://github.com/tonkeeper/tongo/blob/master/abi/messages.md">the list</ExternalLink>. |
 
-Then it starts streaming transactions that belong to the given list of accounts.
+Then it starts streaming finalized transactions that belong to the given list of accounts.
 
 A response example:
 ```text
@@ -98,7 +98,8 @@ Supported methods are:
 [A golang example](https://github.com/tonkeeper/opentonapi/tree/master/examples/golang/websocket) of working with websocket.
 
 ### "subscribe_account" method
-`subscribe_account` takes in a list of string items as "params" argument and starts streaming transactions.
+`subscribe_account` takes in a list of string items as "params" argument and starts streaming finalized transactions.
+
 Each string item has one of the following formats:
 1. `accountID` - a string representing an account ID. In this case, TonAPI will stream all transactions that belong to the given account.
 2. `accountID;operations=operation1,operation2,...,operationN` - a string representing an account ID and a list of operations.
@@ -110,9 +111,6 @@ An example of "operations" is `operations=JettonTransfer,0x0524c7ae,StonfiSwap`.
 It is a comma-separated list. Each item is <ExternalLink href="https://github.com/tonkeeper/tongo/blob/master/abi/messages.md">an operation name</ExternalLink> or a hex string representing a message operation opcode which is an unsigned 32-bit integer.
 A hex string must start with "0x" prefix and have exactly 8 hex digits.
 The advantage of using hex strings is that it's possible to get transactions for operations that are not yet present on <ExternalLink href="https://github.com/tonkeeper/tongo/blob/master/abi/messages.md">the list</ExternalLink>.
-
-
-
 
 A request example:
 ```json
