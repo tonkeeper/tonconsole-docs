@@ -1,0 +1,42 @@
+# Guide for Using SDK with TonAPI
+
+TonAPI is designed using Swagger, thus enabling the generation of SDKs in any language. The associated Swagger file can be obtained using the following link: 
+https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml
+
+The command to generate the SDK is provided below. The sample command is for Python, but it can easily be adapted for usage with other languages:
+
+```bash
+wget https://raw.githubusercontent.com/swagger-api/swagger-codegen/master/bin/swagger-codegen-cli.jar
+
+java -jar swagger-codegen-cli.jar generate -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -l python -o /path/to/output
+```
+Note: Remember to replace '/path/to/output' with the actual path where you wish to generate the SDK.
+
+You also would need an Java virtual machine installed on your system to run the above command.
+
+We also provide already build and prepared Packages for your convinience, plus our SDKs are also provide functions for streaming SDKs, which you would not get from swaagger file.
+
+## Golang SDK
+https://github.com/tonkeeper/tonapi-go
+
+```bash
+go get github.com/tonkeeper/tonapi-go
+```
+
+## Typescript/Javascript SDK
+https://www.npmjs.com/package/tonapi-sdk-js
+
+```bash
+npm install tonapi-sdk-js
+# or
+yarn add tonapi-sdk-js
+```
+
+# Third party SDKs
+
+## Python
+https://github.com/tonkeeper/pytonapi
+
+```bash
+pip install pytonapi
+```
