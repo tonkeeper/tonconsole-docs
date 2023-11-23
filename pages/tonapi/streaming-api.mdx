@@ -76,16 +76,32 @@ data: {"accounts":["0:67a8fc0aea189d79e26f50fa9184842a1ab4f19951286d498ea5a106af
 
 ### Real-time notifications about pending messages (Mempool).
 API method GET 'https://tonapi.io/v2/sse/mempool' immediately starts streaming BOCs of pending inbound messages:
-
 ```text
 event: heartbeat
 
 event: message
 id: 1682342934235516717
-data: {"boc":"te6ccgEBBAEAtwABRYgBvVXMoxQj+kmDtTinWnFdumvpTNo33p48YQKOWyTtUkAMAQGcMZ6id5dkoDZImQ4UC5SqZSN04h/xNpKaEsESJQivKW01aMcWW4qeUUjKm/iZ2nszwBj3uFVcsIr9xFomQvY3DCmpoxdkQjldAAAAcAADAgFkQgAoPvU+sDeRbPQrPGn3bxzd8JnUNGlQcfA/qoFluFxSiRE4gAAAAAAAAAAAAAAAAAEDABIAAAAAaGVsbG8="}
+data: {"boc":"te6cc..."}
 ```
 
 "boc" parameter is a serialized instance of a [tlb.Message](https://github.com/ton-blockchain/ton/blob/v2023.06/crypto/block/block.tlb#L155-L157).
+
+#### Subscribe to a list of accounts
+
+Because a flow of pending messages could be quite high, TonAPI has a way to provide a list of accounts that you are interested in by using "accounts" query parameter:
+
+GET 'https://tonapi.io/v2/sse/mempool?accounts=comma-separated-list-of-accounts'.
+
+In this case,
+TonAPI emulates a message to get a list of involved accounts.
+If any of them is on the list you provided, TonAPI will send a message to you along with a full list of accounts involved in this trace.
+
+```text
+event: message
+id: 1682407879253338019
+data: {"boc":"...","involved_accounts":["0:67a8fc0aea189d79e26f50fa9184842a1ab4f19951286d498ea5a106af375044","0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"]}
+
+```
 
 ## Websocket
 
@@ -226,3 +242,30 @@ An example of a new-pending-message event:
 ```
 
 "boc" parameter is a serialized instance of a [tlb.Message](https://github.com/ton-blockchain/ton/blob/v2023.06/crypto/block/block.tlb#L155-L157).
+
+#### Subscribe to a list of accounts
+
+Because a flow of pending messages could be quite high, TonAPI has a way to provide a list of accounts that you are interested in by using "accounts" as a parameter:
+```json
+{
+  "id":1,
+  "jsonrpc":"2.0",
+  "method":"subscribe_mempool",
+  "params": "accounts=comma-separated-list-of-accounts"
+}
+```
+
+In this case,
+TonAPI emulates a message to get a list of involved accounts.
+If any of them is on the list you provided, TonAPI will send a message to you along with a full list of accounts involved in this trace.
+
+```json
+{
+  "jsonrpc":"2.0",
+  "method":"mempool_message",
+  "params":{
+    "boc":"...",
+    "involved_accounts":["0:67a8fc0aea189d79e26f50fa9184842a1ab4f19951286d498ea5a106af375044","0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"]
+  }
+}
+```
