@@ -2,5 +2,6 @@
   "index": "About Ton Console",
   "tonapi": "TON Api",
   "tonkeeper-messages": "Tonkeeper Messages",
-  "invoices": "Payments Processing"
+  "invoices": "Payments Processing",
+  "analytics": "Analytics"
 }
