@@ -1,0 +1,34 @@
+# Examples
+
+#### Select all wallets which own AMBRA jettons and Whales Club NFTs.
+
+```sql
+select human_readable from blockchain.accounts a join
+(select distinct nft.owner_account_id from getmethods.get_nft_data nft
+          join getmethods.get_wallet_data jetton on jetton.owner_account_id = nft.owner_account_id
+          where nft.collection_account_id = (select id from blockchain.accounts where human_readable = 'EQDvRFMYLdxmvY3Tk-cfWMLqDnXF_EclO2Fp4wwj33WhlNFT' )
+          and jetton.jetton_account_id =  (select id from blockchain.accounts where human_readable = 'EQCcLAW537KnRg_aSPrnQJoyYjOZkzqYp6FVmRUvN1crSazV' )
+          ) t
+on a.id = t.owner_account_id
+```
+
+#### TPS per hour
+
+```sql
+select utime/3600*3600+3600, count(1)/3600.0 from blockchain.transactions
+                where  utime > extract(EPOCH FROM now() - interval '7 days')::bigint
+                group by utime/3600 order by utime/3600
+```
+
+#### Operations by type for last day
+
+```sql
+select case
+    when m.decoded_operation != '' then m.decoded_operation
+    when m.op_code is not null then 'unknown'
+    else 'SimpleTransfer'
+        end op, count(1) from blockchain.messages m
+join blockchain.transactions txs on txs.in_msg = m.id
+where   utime > extract(EPOCH FROM now() - interval '1 day')::bigint
+group by op
+```
