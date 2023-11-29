@@ -255,30 +255,6 @@ create table getmethods.get_lockup_data (
 );
 ```
 
-### jetton.masters_metadata  
-
-```sql
-create table jetton.masters_metadata (
-	jetton_account_id bigint DEFAULT nextval('jetton.masters_metadata_jetton_account_id_seq'::regclass) NOT NULL,
-	metadata jsonb NOT NULL,
-	last_offchain_meta_refresh timestamp with time zone DEFAULT now(),
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### nft.items_metadata  
-
-```sql
-create table nft.items_metadata (
-	item_id bigint DEFAULT nextval('nft.items_metadata_item_id_seq'::regclass) NOT NULL,
-	metadata jsonb NOT NULL,
-	url text NOT NULL,
-	last_offchain_meta_refresh_try timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
-	last_offchain_meta_refresh_success timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
 ### get_full_domain  
 
 ```sql
@@ -434,17 +410,6 @@ create table getmethods.get_assets__dedust (
 	asset_0_account_id bigint,
 	asset1_native boolean NOT NULL,
 	asset_1_account_id bigint,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### nft.collections_metadata  
-
-```sql
-create table nft.collections_metadata (
-	collection_id bigint DEFAULT nextval('nft.collections_metadata_collection_id_seq'::regclass) NOT NULL,
-	metadata jsonb NOT NULL,
-	last_offchain_meta_refresh timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
@@ -887,6 +852,44 @@ create table getmethods.get_telemint_auction_config (
 	min_bid_step bigint NOT NULL,
 	min_extend_time bigint NOT NULL,
 	duration bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+## Metadata
+
+
+### jetton.masters_metadata
+
+```sql
+create table jetton.masters_metadata (
+	jetton_account_id bigint DEFAULT nextval('jetton.masters_metadata_jetton_account_id_seq'::regclass) NOT NULL,
+	metadata jsonb NOT NULL,
+	last_offchain_meta_refresh timestamp with time zone DEFAULT now(),
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### nft.items_metadata
+
+```sql
+create table nft.items_metadata (
+	item_id bigint DEFAULT nextval('nft.items_metadata_item_id_seq'::regclass) NOT NULL,
+	metadata jsonb NOT NULL,
+	url text NOT NULL,
+	last_offchain_meta_refresh_try timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
+	last_offchain_meta_refresh_success timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### nft.collections_metadata
+
+```sql
+create table nft.collections_metadata (
+	collection_id bigint DEFAULT nextval('nft.collections_metadata_collection_id_seq'::regclass) NOT NULL,
+	metadata jsonb NOT NULL,
+	last_offchain_meta_refresh timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
