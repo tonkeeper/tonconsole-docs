@@ -33,6 +33,18 @@ The "message" event carries important information and its "data" always contains
 
 [A golang example](https://github.com/tonkeeper/opentonapi/tree/master/examples/golang/sse) of working with SSE method.
 
+### Real-time notifications about new blocks
+
+API method GET `https://tonapi.io/v2/sse/blocks?workchain=<...>` sends notifications about new blocks in the given workchain.
+The `workchain` parameter is optional and TonAPI will stream blocks from all workchains if it's not provided.
+
+A response example:
+```text
+event: message
+id: 1702660194645470966
+data: {"workchain":0,"shard":"8000000000000000","seqno":40695756,"root_hash":"4506cf117b96acf84717ec4b57d5d46011e94d5722681c3e4ecc8eb54932e7f8","file_hash":"97d993d43df9da463b349a6008baf3b7df229686489150a770a9fd1ffcb2d3f5"}
+```
+
 ### Real-time notifications about finalized transactions
 
 API method GET `https://tonapi.io/v2/sse/accounts/transactions?accounts=<list-of-accounts>&operations=<list-of-operations>` takes in
@@ -107,11 +119,53 @@ data: {"boc":"...","involved_accounts":["0:67a8fc0aea189d79e26f50fa9184842a1ab4f
 
 TonAPI supports a JSON-RPC protocol over a websocket connection. It is available at `wss://tonapi.io/v2/websocket`.
 Supported methods are:
+* **subscribe_block**
 * **subscribe_account**
 * **subscribe_trace**
 * **subscribe_mempool**
 
 [A golang example](https://github.com/tonkeeper/opentonapi/tree/master/examples/golang/websocket) of working with websocket.
+
+### "subscribe_block" method
+
+`subscribe_block` starts streaming new blocks.
+It is possible to specify a workchain by using "params" argument to limit the stream to a specific workchain.
+
+A request example:
+```json
+ {
+   "id": 1,
+   "jsonrpc": "2.0",
+   "method": "subscribe_block",
+   "params": [
+     "workchain=-1"
+   ]
+ }
+
+```
+A response:
+```json
+{
+   "id": 1,
+   "jsonrpc": "2.0",
+   "method": "subscribe_block",
+   "result": "success! you have subscribed to blocks"
+ }
+```
+A notification about a new block looks as follows:
+```json
+{
+   "jsonrpc": "2.0",
+   "method": "block",
+   "params": {
+     "workchain": -1,
+     "shard": "8000000000000000",
+     "seqno": 34832412,
+     "root_hash": "2a6595467ba53f63b1b3528762e0ccf396a135348519a1d08d4d5d9efa9f0521",
+     "file_hash": "e6a4f3283fd27531fbda844ec480aa23b12e3ee38e21bc5856dee2a1d4f5328a"
+   }
+ }
+```
 
 ### "subscribe_account" method
 `subscribe_account` takes in a list of string items as "params" argument and starts streaming finalized transactions.
