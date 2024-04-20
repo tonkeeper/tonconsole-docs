@@ -305,9 +305,11 @@ Because a flow of pending messages could be quite high, TonAPI has a way to prov
   "id":1,
   "jsonrpc":"2.0",
   "method":"subscribe_mempool",
-  "params": "accounts=comma-separated-list-of-accounts"
+  "params": ["accounts=comma-separated-list-of-accounts"]
 }
 ```
+
+Please notice that the "params" argument is an array of strings.
 
 In this case,
 TonAPI emulates a message to get a list of involved accounts.
