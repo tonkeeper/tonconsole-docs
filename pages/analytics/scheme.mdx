@@ -6,6 +6,7 @@
 
 ```sql
 create table blockchain.accounts (
+	id text NOT NULL,
 	address bytea NOT NULL,
 	workchain smallint NOT NULL,
 	storage_used_cells numeric DEFAULT 0 NOT NULL,
@@ -13,8 +14,7 @@ create table blockchain.accounts (
 	storage_used_public_cells numeric DEFAULT 0 NOT NULL,
 	last_paid bigint DEFAULT 0 NOT NULL,
 	due_payment bigint,
-	last_updated_lt bigint DEFAULT 0 NOT NULL,
-	last_known_lt bigint DEFAULT 0 NOT NULL,
+	storage_last_transaction_lt bigint DEFAULT 0 NOT NULL,
 	ton_balance bigint DEFAULT 0 NOT NULL,
 	extra_balances jsonb,
 	frozen_hash bytea,
@@ -22,8 +22,12 @@ create table blockchain.accounts (
 	account_code_id uuid,
 	data bytea,
 	library jsonb,
-	id bigint NOT NULL,
-	human_readable text,
+	last_transaction_hash bytea DEFAULT '\x'::bytea NOT NULL,
+	last_transaction_lt bigint DEFAULT 0 NOT NULL,
+	first_transaction_lt bigint DEFAULT 0 NOT NULL,
+	last_mentioned_lt bigint DEFAULT 0 NOT NULL,
+	last_state_update_lt bigint DEFAULT 0 NOT NULL,
+	human_readable text NOT NULL,
 	interfaces ARRAY,
 	get_method_tables ARRAY
 );
@@ -44,52 +48,74 @@ create table blockchain.account_code (
 
 ```sql
 create table blockchain.transactions (
-	tx_fake_uuid uuid NOT NULL,
-	trace_id uuid,
+	id bytea NOT NULL,
+	trace_id bytea,
 	block_fake_uuid uuid NOT NULL,
-	order_in_block integer NOT NULL,
 	success boolean NOT NULL,
 	hash bytea NOT NULL,
 	balance_change bigint NOT NULL,
-	account_id bigint NOT NULL,
+	end_balance bigint NOT NULL,
+	account_id text NOT NULL,
 	lt bigint NOT NULL,
 	prev_trans_hash bytea NOT NULL,
-	prev_trans uuid NOT NULL,
 	prev_trans_lt bigint NOT NULL,
 	utime integer NOT NULL,
 	orig_status USER-DEFINED NOT NULL,
 	end_status USER-DEFINED NOT NULL,
 	in_msg uuid,
 	total_fees bigint NOT NULL,
+	total_fees_extra jsonb,
 	state_update_old bytea NOT NULL,
 	state_update_new bytea NOT NULL,
 	transaction_type USER-DEFINED NOT NULL,
 	storage_ph boolean DEFAULT false,
 	storage_ph_fees_collected bigint NOT NULL,
 	storage_ph_fees_due bigint,
-	storage_ph_status_change USER-DEFINED NOT NULL,
 	credit_ph boolean DEFAULT false,
 	credit_ph_fees_collected bigint,
 	credit_ph_credit bigint,
+	credit_ph_credit_extra jsonb,
+	storage_ph_status_change USER-DEFINED NOT NULL,
+	compute_ph_skip_reason USER-DEFINED,
+	compute_ph_mode smallint,
 	compute_ph boolean DEFAULT false,
 	compute_ph_skipped boolean,
-	compute_ph_skip_reason USER-DEFINED,
 	compute_ph_success boolean,
+	compute_ph_msg_state_used boolean,
+	compute_ph_account_activated boolean,
 	compute_ph_gas_fees bigint DEFAULT 0 NOT NULL,
-	compute_ph_gas_used numeric DEFAULT 0 NOT NULL,
+	compute_ph_gas_limit bigint DEFAULT 0 NOT NULL,
+	compute_ph_gas_credit bigint DEFAULT 0 NOT NULL,
+	compute_ph_gas_used bigint DEFAULT 0 NOT NULL,
 	compute_ph_vm_steps integer DEFAULT 0 NOT NULL,
 	compute_ph_exit_code integer,
+	compute_ph_exit_arg integer,
+	action_ph_status_change USER-DEFINED,
 	action_ph boolean DEFAULT false,
 	action_ph_success boolean,
+	action_ph_valid boolean,
+	action_ph_no_funds boolean,
+	action_ph_result_code integer,
+	action_ph_result_arg integer,
 	action_ph_total_actions integer,
+	action_ph_spec_actions integer,
 	action_ph_skipped_actions integer,
+	action_ph_msgs_created integer,
 	action_ph_fwd_fees bigint NOT NULL,
 	action_ph_total_fees bigint NOT NULL,
-	bounce_ph boolean DEFAULT false,
+	action_ph_tot_msg_size_cells bigint,
+	action_ph_tot_msg_size_bits bigint,
 	bounce USER-DEFINED,
+	out_msgs_count integer NOT NULL,
 	aborted boolean NOT NULL,
 	destroyed boolean NOT NULL,
-	action_ph_result_code integer
+	bounce_ph boolean DEFAULT false,
+	bounce_msg_size_cells bigint,
+	bounce_msg_size_bits bigint,
+	bounce_req_fwd_fees bigint,
+	bounce_fwd_fees bigint,
+	bounce_msg_fees bigint,
+	raw_boc bytea NOT NULL
 );
 ```
 
@@ -99,29 +125,30 @@ create table blockchain.transactions (
 create table blockchain.messages (
 	id uuid NOT NULL,
 	msg_type USER-DEFINED NOT NULL,
-	trace_id uuid,
-	parent_tx_uuid uuid,
 	decoder_ver integer DEFAULT 0 NOT NULL,
+	trace_id bytea,
+	parent_tx_id bytea,
 	op_code bigint,
 	decoded_operation text,
 	decoded_body jsonb,
 	init_interfaces ARRAY,
 	raw_body bytea NOT NULL,
 	init jsonb,
-	ihr_disabled boolean NOT NULL,
-	bounce boolean NOT NULL,
-	bounced boolean NOT NULL,
-	source bigint NOT NULL,
+	hash bytea NOT NULL,
+	source text,
 	source_extern bytea,
-	destination bigint NOT NULL,
+	destination text,
 	destination_extern bytea,
 	value bigint NOT NULL,
+	value_extra jsonb,
 	ihr_fee bigint NOT NULL,
 	fwd_fee bigint NOT NULL,
 	import_fee bigint NOT NULL,
 	created_lt bigint NOT NULL,
 	created_at integer NOT NULL,
-	hash uuid
+	ihr_disabled boolean NOT NULL,
+	bounce boolean NOT NULL,
+	bounced boolean NOT NULL
 );
 ```
 
@@ -131,42 +158,42 @@ create table blockchain.messages (
 create table blockchain.blocks (
 	fake_uuid uuid NOT NULL,
 	workchain integer NOT NULL,
-	shard bigint NOT NULL,
 	seqno integer NOT NULL,
+	shard bigint NOT NULL,
 	root_hash bytea NOT NULL,
 	file_hash bytea NOT NULL,
 	global_id integer NOT NULL,
 	value_flow_from_prev_blk bigint NOT NULL,
-	value_flow_from_prev_blk_extra jsonb,
 	value_flow_to_next_blk bigint NOT NULL,
-	value_flow_to_next_blk_extra jsonb,
 	value_flow_imported bigint NOT NULL,
-	value_flow_imported_extra jsonb,
 	value_flow_exported bigint NOT NULL,
-	value_flow_exported_extra jsonb,
 	value_flow_fees_collected bigint NOT NULL,
-	value_flow_fees_collected_extra jsonb,
 	value_flow_fees_imported bigint NOT NULL,
-	value_flow_fees_imported_extra jsonb,
 	value_flow_recovered bigint NOT NULL,
-	value_flow_recovered_extra jsonb,
 	value_flow_created bigint NOT NULL,
-	value_flow_created_extra jsonb,
 	value_flow_minted bigint NOT NULL,
-	value_flow_minted_extra jsonb,
 	value_flow_burned bigint NOT NULL,
+	value_flow_from_prev_blk_extra jsonb,
+	value_flow_to_next_blk_extra jsonb,
+	value_flow_imported_extra jsonb,
+	value_flow_exported_extra jsonb,
+	value_flow_fees_collected_extra jsonb,
+	value_flow_fees_imported_extra jsonb,
+	value_flow_recovered_extra jsonb,
+	value_flow_created_extra jsonb,
+	value_flow_minted_extra jsonb,
 	value_flow_burned_extra jsonb,
+	start_lt bigint NOT NULL,
+	end_lt bigint NOT NULL,
 	version integer NOT NULL,
+	gen_utime integer NOT NULL,
+	vert_seqno integer NOT NULL,
 	after_merge boolean NOT NULL,
 	before_split boolean NOT NULL,
 	after_split boolean NOT NULL,
 	want_split boolean NOT NULL,
 	want_merge boolean NOT NULL,
 	key_block boolean NOT NULL,
-	gen_utime integer NOT NULL,
-	start_lt bigint NOT NULL,
-	end_lt bigint NOT NULL,
-	vert_seqno integer NOT NULL,
 	gen_catchain_seqno integer NOT NULL,
 	min_ref_mc_seqno integer NOT NULL,
 	prev_key_block_seqno integer NOT NULL,
@@ -177,27 +204,12 @@ create table blockchain.blocks (
 	in_msg_descr_length integer NOT NULL,
 	out_msg_descr_length integer NOT NULL,
 	rand_seed bytea NOT NULL,
-	created_by bytea NOT NULL
+	created_by bytea NOT NULL,
+	shards_blocks ARRAY NOT NULL,
+	tx_quantity smallint NOT NULL
 );
 ```
 
-### masterchain_shards  
-
-```sql
-create table blockchain.masterchain_shards (
-	block_fake_uuid uuid NOT NULL,
-	masterchain_block_fake_uuid uuid NOT NULL
-);
-```
-
-### block_relations  
-
-```sql
-create table blockchain.block_relations (
-	parent_fake_uuid uuid NOT NULL,
-	child_fake_uuid uuid NOT NULL
-);
-```
 
 ### configs  
 
@@ -205,46 +217,71 @@ create table blockchain.block_relations (
 create table blockchain.configs (
 	block_fake_uuid uuid NOT NULL,
 	raw bytea NOT NULL,
-	config jsonb NOT NULL
+	config jsonb NOT NULL,
+	broken_params ARRAY
 );
 ```
 
 ## Getmethods execution results
 
-### get_storage_contract_data  
+
+### get_sale_data__getgems
 
 ```sql
-create table getmethods.get_storage_contract_data (
-	account_id bigint DEFAULT nextval('getmethods.get_storage_contract_data_account_id_seq'::regclass) NOT NULL,
-	active boolean NOT NULL,
-	balance bigint NOT NULL,
-	provider_account_id bigint,
-	merkle_hash numeric NOT NULL,
-	file_size bigint NOT NULL,
-	next_proof bigint NOT NULL,
-	rate_per_mb_day bigint NOT NULL,
-	max_span bigint NOT NULL,
-	last_proof_time bigint NOT NULL,
-	client_account_id bigint,
-	torrent_hash numeric NOT NULL,
+create table getmethods.get_sale_data__getgems (
+	account_id text NOT NULL,
+	marketplace_account_id text NOT NULL,
+	nft_account_id text NOT NULL,
+	nft_owner_account_id text,
+	marketplace_fee_account_id text,
+	royalty_account_id text,
+	full_price numeric NOT NULL,
+	marketplace_fee bigint NOT NULL,
+	royalty_amount bigint NOT NULL,
+	is_complete boolean NOT NULL,
+	created_at bigint NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_bill_amount  
+### get_validator_controller_data
 
 ```sql
-create table getmethods.get_bill_amount (
-	account_id bigint DEFAULT nextval('getmethods.get_bill_amount_account_id_seq'::regclass) NOT NULL,
-	amount bigint NOT NULL
+create table getmethods.get_validator_controller_data (
+	account_id text NOT NULL,
+	state integer NOT NULL,
+	halted boolean NOT NULL,
+	approved boolean NOT NULL,
+	stake_amount_sent bigint NOT NULL,
+	stake_at bigint NOT NULL,
+	saved_validator_set_hash bytea NOT NULL,
+	validator_set_changes_count integer NOT NULL,
+	validator_set_change_time bigint NOT NULL,
+	stake_held_for bigint NOT NULL,
+	borrowed_amount bigint NOT NULL,
+	borrowing_time bigint NOT NULL,
+	validator text NOT NULL,
+	pool text NOT NULL,
+	sudoer text,
+	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_lockup_data  
+### get_bill_amount
+
+```sql
+create table getmethods.get_bill_amount (
+	account_id text NOT NULL,
+	amount bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_lockup_data
 
 ```sql
 create table getmethods.get_lockup_data (
-	account_id bigint DEFAULT nextval('getmethods.get_lockup_data_account_id_seq'::regclass) NOT NULL,
+	account_id text NOT NULL,
 	start_time bigint NOT NULL,
 	total_duration bigint NOT NULL,
 	unlock_period bigint NOT NULL,
@@ -255,26 +292,196 @@ create table getmethods.get_lockup_data (
 );
 ```
 
-### get_full_domain  
+### get_locker_bill_data
+
+```sql
+create table getmethods.get_locker_bill_data (
+	account_id text NOT NULL,
+	locker_account_id text,
+	total_coins_deposit bigint,
+	user_account_id text,
+	last_withdraw_time bigint,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+
+### get_public_key
+
+```sql
+create table getmethods.get_public_key (
+	account_id text NOT NULL,
+	public_key bytea NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_telemint_token_name
+
+```sql
+create table getmethods.get_telemint_token_name (
+	account_id text NOT NULL,
+	username text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### list_votes
+
+```sql
+create table getmethods.list_votes (
+	account_id text NOT NULL,
+	proposal_hash text NOT NULL,
+	vote_create_time bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_params__whalesnominator
+
+```sql
+create table getmethods.get_params__whalesnominator (
+	account_id text NOT NULL,
+	enabled boolean NOT NULL,
+	updates_enables boolean NOT NULL,
+	min_stake bigint NOT NULL,
+	deposit_fee bigint NOT NULL,
+	withdraw_fee bigint NOT NULL,
+	pool_fee bigint NOT NULL,
+	receipt_price bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### is_active
+
+```sql
+create table getmethods.is_active (
+	account_id text NOT NULL,
+	is_active boolean,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_jetton_data
+
+```sql
+create table getmethods.get_jetton_data (
+	account_id text NOT NULL,
+	total_supply numeric NOT NULL,
+	mintable boolean NOT NULL,
+	admin_account_id text,
+	content_layout bigint NOT NULL,
+	content bytea NOT NULL,
+	wallet_code bytea NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_full_domain
 
 ```sql
 create table getmethods.get_full_domain (
-	account_id bigint DEFAULT nextval('getmethods.get_full_domain_account_id_seq'::regclass) NOT NULL,
+	account_id text NOT NULL,
 	domain text NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_pool_data__tf  
+### get_order_data
+
+```sql
+create table getmethods.get_order_data (
+	account_id text NOT NULL,
+	multisig_address text,
+	order_seqno numeric NOT NULL,
+	threshold smallint,
+	sent_for_execution boolean,
+	signers ARRAY,
+	approvals_mask bytea,
+	approvals_num smallint,
+	expiration_date bigint,
+	orders ARRAY,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### dnsresolve
+
+```sql
+create table getmethods.dnsresolve (
+	account_id text NOT NULL,
+	records jsonb NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_storage_params
+
+```sql
+create table getmethods.get_storage_params (
+	account_id text NOT NULL,
+	accept_new_contracts boolean NOT NULL,
+	rate_per_mb_day bigint NOT NULL,
+	max_span bigint NOT NULL,
+	minimal_file_size bigint NOT NULL,
+	maximal_file_size bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_torrent_hash
+
+```sql
+create table getmethods.get_torrent_hash (
+	account_id text NOT NULL,
+	torrent_hash numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_assets__dedust
+
+```sql
+create table getmethods.get_assets__dedust (
+	account_id text NOT NULL,
+	asset0_native boolean NOT NULL,
+	asset_0_account_id text,
+	asset1_native boolean NOT NULL,
+	asset_1_account_id text,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_subscription_data
+
+```sql
+create table getmethods.get_subscription_data (
+	account_id text NOT NULL,
+	wallet_account_id text,
+	beneficiary_account_id text,
+	amount bigint NOT NULL,
+	period bigint NOT NULL,
+	start_time bigint NOT NULL,
+	timeout bigint NOT NULL,
+	last_payment_time bigint NOT NULL,
+	last_request_time bigint NOT NULL,
+	failed_attempts bigint NOT NULL,
+	subscription_id bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__tf
 
 ```sql
 create table getmethods.get_pool_data__tf (
-	account_id bigint DEFAULT nextval('getmethods.get_pool_data__tf_account_id_seq'::regclass) NOT NULL,
+	account_id text NOT NULL,
 	state smallint NOT NULL,
 	nominators_count bigint NOT NULL,
 	stake_amount_sent bigint NOT NULL,
 	validator_amount bigint NOT NULL,
-	validator_account_id bigint,
+	validator_account_id text,
 	validator_reward_share bigint NOT NULL,
 	max_nominators_count bigint NOT NULL,
 	min_validator_stake bigint NOT NULL,
@@ -288,34 +495,327 @@ create table getmethods.get_pool_data__tf (
 );
 ```
 
-### get_torrent_hash  
+### get_wallet_params
 
 ```sql
-create table getmethods.get_torrent_hash (
-	account_id bigint DEFAULT nextval('getmethods.get_torrent_hash_account_id_seq'::regclass) NOT NULL,
-	torrent_hash numeric NOT NULL,
+create table getmethods.get_wallet_params (
+	account_id text NOT NULL,
+	seqno bigint NOT NULL,
+	subwallet bigint NOT NULL,
+	public_key numeric NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_locker_bill_data  
+### get_reserves__dedust
 
 ```sql
-create table getmethods.get_locker_bill_data (
-	account_id bigint DEFAULT nextval('getmethods.get_locker_bill_data_account_id_seq'::regclass) NOT NULL,
-	locker_account_id bigint,
-	total_coins_deposit bigint,
-	user_account_id bigint,
-	last_withdraw_time bigint,
+create table getmethods.get_reserves__dedust (
+	account_id text NOT NULL,
+	reserve0 numeric NOT NULL,
+	reserve1 numeric NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_pool_status  
+
+
+
+
+### seqno
+
+```sql
+create table getmethods.seqno (
+	account_id text NOT NULL,
+	state bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_telemint_auction_state
+
+```sql
+create table getmethods.get_telemint_auction_state (
+	account_id text NOT NULL,
+	bidder_account_id text,
+	bid bigint NOT NULL,
+	bid_ts bigint NOT NULL,
+	min_bid bigint NOT NULL,
+	end_time bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_balances__lockup
+
+```sql
+create table getmethods.get_balances__lockup (
+	account_id text NOT NULL,
+	ton_balance bigint NOT NULL,
+	total_restricted_value bigint NOT NULL,
+	total_locked_value bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_wallet_data
+
+```sql
+create table getmethods.get_wallet_data (
+	account_id text NOT NULL,
+	balance numeric NOT NULL,
+	owner_account_id text,
+	jetton_account_id text NOT NULL,
+	code bytea NOT NULL,
+	verified boolean,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_editor
+
+```sql
+create table getmethods.get_editor (
+	account_id text NOT NULL,
+	editor_account_id text,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_auction_info
+
+```sql
+create table getmethods.get_auction_info (
+	account_id text NOT NULL,
+	max_bid_account_id text,
+	max_bid_amount bigint NOT NULL,
+	auctions_end_time bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_nft_api_info
+
+```sql
+create table getmethods.get_nft_api_info (
+	account_id text NOT NULL,
+	version bigint NOT NULL,
+	uri text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_collection_data
+
+```sql
+create table getmethods.get_collection_data (
+	account_id text NOT NULL,
+	owner_account_id text,
+	content_layout bigint NOT NULL,
+	collection_content bytea NOT NULL,
+	next_item_index bigint NOT NULL,
+	in_whitelist boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_nft_data
+
+```sql
+create table getmethods.get_nft_data (
+	account_id text NOT NULL,
+	owner_account_id text,
+	collection_account_id text,
+	init boolean NOT NULL,
+	index numeric NOT NULL,
+	content_layout bigint NOT NULL,
+	individual_content bytea NOT NULL,
+	url text,
+	verified boolean,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_members_raw__whalesnominator
+
+```sql
+create table getmethods.get_members_raw__whalesnominator (
+	account_id text NOT NULL,
+	profit_per_coin bigint NOT NULL,
+	member_account_id text NOT NULL,
+	balance bigint NOT NULL,
+	pending_deposit bigint NOT NULL,
+	pending_withdraw bigint NOT NULL,
+	member_withdraw bigint NOT NULL,
+	pending_withdraw_all boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### jetton_wallet_lock_data
+
+```sql
+create table getmethods.jetton_wallet_lock_data (
+	account_id text NOT NULL,
+	full_balance numeric NOT NULL,
+	individual_unlock_time bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+
+### get_telemint_auction_config
+
+```sql
+create table getmethods.get_telemint_auction_config (
+	account_id text NOT NULL,
+	beneficiar_account_id text NOT NULL,
+	initial_min_bid bigint NOT NULL,
+	max_bid bigint NOT NULL,
+	min_bid_step bigint NOT NULL,
+	min_extend_time bigint NOT NULL,
+	duration bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_sale_data__basic
+
+```sql
+create table getmethods.get_sale_data__basic (
+	account_id text NOT NULL,
+	marketplace_account_id text NOT NULL,
+	nft_account_id text NOT NULL,
+	nft_owner_account_id text,
+	royalty_account_id text,
+	full_price numeric NOT NULL,
+	marketplace_fee bigint NOT NULL,
+	royalty_amount bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+
+### get_next_proof_info
+
+```sql
+create table getmethods.get_next_proof_info (
+	account_id text NOT NULL,
+	next_proof bigint NOT NULL,
+	last_proof_time bigint NOT NULL,
+	max_span bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__stonfi
+
+```sql
+create table getmethods.get_pool_data__stonfi (
+	account_id text NOT NULL,
+	reserve0 numeric NOT NULL,
+	reserve1 numeric NOT NULL,
+	token_0_account_id text NOT NULL,
+	token_1_account_id text NOT NULL,
+	lp_fee smallint NOT NULL,
+	protocol_fee smallint NOT NULL,
+	ref_fee smallint NOT NULL,
+	protocol_fee_account_id text NOT NULL,
+	collected_token0_protocol_fee numeric NOT NULL,
+	collected_token1_protocol_fee numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_asset__dedust
+
+```sql
+create table getmethods.get_asset__dedust (
+	account_id text NOT NULL,
+	asset_native boolean NOT NULL,
+	asset_account_id text,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_plugin_list
+
+```sql
+create table getmethods.get_plugin_list (
+	wallet_account_id text NOT NULL,
+	plugin_account_id text NOT NULL,
+	indexer_last_update_lt bigint
+);
+```
+
+### get_last_fill_up_time
+
+```sql
+create table getmethods.get_last_fill_up_time (
+	account_id text NOT NULL,
+	last_fill_up_time bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### royalty_params
+
+```sql
+create table getmethods.royalty_params (
+	account_id text NOT NULL,
+	numerator integer NOT NULL,
+	denominator integer NOT NULL,
+	destination_account_id text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### list_nominators
+
+```sql
+create table getmethods.list_nominators (
+	account_id text NOT NULL,
+	nominator_account_id text NOT NULL,
+	amount bigint NOT NULL,
+	pending_deposit_amount bigint NOT NULL,
+	withdraw_requested boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_sale_data__getgems_auction
+
+```sql
+create table getmethods.get_sale_data__getgems_auction (
+	account_id text NOT NULL,
+	marketplace_account_id text NOT NULL,
+	nft_account_id text NOT NULL,
+	nft_owner_account_id text,
+	marketplace_fee_account_id text,
+	royalty_account_id text,
+	last_member_account_id text,
+	end boolean NOT NULL,
+	end_time bigint NOT NULL,
+	full_price numeric NOT NULL,
+	min_step bigint NOT NULL,
+	mp_fee_factor bigint NOT NULL,
+	mp_fee_base bigint NOT NULL,
+	royalty_fee_factor bigint NOT NULL,
+	royalty_fee_base bigint NOT NULL,
+	max_bid bigint NOT NULL,
+	min_bid bigint NOT NULL,
+	created_at bigint NOT NULL,
+	last_bid_at bigint NOT NULL,
+	is_canceled boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_status
 
 ```sql
 create table getmethods.get_pool_status (
-	account_id bigint DEFAULT nextval('getmethods.get_pool_status_account_id_seq'::regclass) NOT NULL,
+	account_id text NOT NULL,
 	balance bigint NOT NULL,
 	balance_sent bigint NOT NULL,
 	balance_pending_deposits bigint NOT NULL,
@@ -325,130 +825,61 @@ create table getmethods.get_pool_status (
 );
 ```
 
-### get_reserves__dedust  
+
+### get_multisig_data
 
 ```sql
-create table getmethods.get_reserves__dedust (
-	account_id bigint DEFAULT nextval('getmethods.get_reserves__dedust_account_id_seq'::regclass) NOT NULL,
-	reserve0 numeric NOT NULL,
-	reserve1 numeric NOT NULL,
+create table getmethods.get_multisig_data (
+	account_id text NOT NULL,
+	seqno numeric NOT NULL,
+	threshold smallint,
+	signers ARRAY,
+	proposers ARRAY,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_editor  
+### get_storage_contract_data
 
 ```sql
-create table getmethods.get_editor (
-	account_id bigint DEFAULT nextval('getmethods.get_editor_account_id_seq'::regclass) NOT NULL,
-	editor_account_id bigint,
+create table getmethods.get_storage_contract_data (
+	account_id text NOT NULL,
+	active boolean NOT NULL,
+	balance bigint NOT NULL,
+	provider_account_id text,
+	merkle_hash numeric NOT NULL,
+	file_size bigint NOT NULL,
+	next_proof bigint NOT NULL,
+	rate_per_mb_day bigint NOT NULL,
+	max_span bigint NOT NULL,
+	last_proof_time bigint NOT NULL,
+	client_account_id text,
+	torrent_hash numeric NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_telemint_auction_state  
+### get_staking_status
 
 ```sql
-create table getmethods.get_telemint_auction_state (
-	account_id bigint DEFAULT nextval('getmethods.get_telemint_auction_state_account_id_seq'::regclass) NOT NULL,
-	bidder_account_id bigint,
-	bid bigint NOT NULL,
-	bid_ts bigint NOT NULL,
-	min_bid bigint NOT NULL,
-	end_time bigint NOT NULL,
+create table getmethods.get_staking_status (
+	account_id text NOT NULL,
+	stake_at bigint NOT NULL,
+	stake_until bigint NOT NULL,
+	stake_sent bigint NOT NULL,
+	query_sent boolean NOT NULL,
+	could_unlock boolean NOT NULL,
+	locked boolean NOT NULL,
+	proxy_stake_lock_final boolean NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### get_plugin_list  
-
-```sql
-create table getmethods.get_plugin_list (
-	wallet_account_id bigint NOT NULL,
-	plugin_account_id bigint NOT NULL,
-	indexer_last_update_lt bigint
-);
-```
-
-### get_sale_data__getgems  
-
-```sql
-create table getmethods.get_sale_data__getgems (
-	account_id bigint DEFAULT nextval('getmethods.get_sale_data__getgems_account_id_seq'::regclass) NOT NULL,
-	marketplace_account_id bigint NOT NULL,
-	nft_account_id bigint NOT NULL,
-	nft_owner_account_id bigint,
-	marketplace_fee_account_id bigint,
-	royalty_account_id bigint,
-	full_price numeric NOT NULL,
-	marketplace_fee bigint NOT NULL,
-	royalty_amount bigint NOT NULL,
-	is_complete boolean NOT NULL,
-	created_at bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### royalty_params  
-
-```sql
-create table getmethods.royalty_params (
-	account_id bigint DEFAULT nextval('getmethods.royalty_params_account_id_seq'::regclass) NOT NULL,
-	numerator integer NOT NULL,
-	denominator integer NOT NULL,
-	destination_account_id bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_assets__dedust  
-
-```sql
-create table getmethods.get_assets__dedust (
-	account_id bigint DEFAULT nextval('getmethods.get_assets__dedust_account_id_seq'::regclass) NOT NULL,
-	asset0_native boolean NOT NULL,
-	asset_0_account_id bigint,
-	asset1_native boolean NOT NULL,
-	asset_1_account_id bigint,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_domain  
-
-```sql
-create table getmethods.get_domain (
-	account_id bigint DEFAULT nextval('getmethods.get_domain_account_id_seq'::regclass) NOT NULL,
-	domain text NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_last_fill_up_time  
-
-```sql
-create table getmethods.get_last_fill_up_time (
-	account_id bigint DEFAULT nextval('getmethods.get_last_fill_up_time_account_id_seq'::regclass) NOT NULL,
-	last_fill_up_time bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### dnsresolve  
-
-```sql
-create table getmethods.dnsresolve (
-	account_id bigint DEFAULT nextval('getmethods.dnsresolve_account_id_seq'::regclass) NOT NULL,
-	records jsonb NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_pool_full_data  
+### get_pool_full_data
 
 ```sql
 create table getmethods.get_pool_full_data (
-	account_id bigint DEFAULT nextval('getmethods.get_pool_full_data_account_id_seq'::regclass) NOT NULL,
+	account_id text NOT NULL,
 	state integer NOT NULL,
 	halted boolean NOT NULL,
 	total_balance bigint NOT NULL,
@@ -471,18 +902,18 @@ create table getmethods.get_pool_full_data (
 	min_loan_per_validator bigint NOT NULL,
 	max_loan_per_validator bigint NOT NULL,
 	governance_fee integer NOT NULL,
-	jetton_minter_account_id bigint NOT NULL,
+	jetton_minter_account_id text NOT NULL,
 	supply bigint NOT NULL,
-	deposit_payout_account_id bigint,
+	deposit_payout_account_id text,
 	requested_for_deposit bigint NOT NULL,
-	withdrawal_payout_account_id bigint,
+	withdrawal_payout_account_id text,
 	requested_for_withdrawal bigint NOT NULL,
-	sudoer_account_id bigint,
+	sudoer_account_id text,
 	sudoer_set_at integer NOT NULL,
-	governor_account_id bigint,
-	interest_manager_account_id bigint,
-	halter_account_id bigint,
-	approver_account_id bigint,
+	governor_account_id text,
+	interest_manager_account_id text,
+	halter_account_id text,
+	approver_account_id text,
 	controller_code bytea NOT NULL,
 	pool_jetton_wallet_code bytea NOT NULL,
 	payout_minter_code bytea NOT NULL,
@@ -492,366 +923,12 @@ create table getmethods.get_pool_full_data (
 );
 ```
 
-### list_votes  
+### get_domain
 
 ```sql
-create table getmethods.list_votes (
-	account_id bigint NOT NULL,
-	proposal_hash text NOT NULL,
-	vote_create_time bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_storage_params  
-
-```sql
-create table getmethods.get_storage_params (
-	account_id bigint DEFAULT nextval('getmethods.get_storage_params_account_id_seq'::regclass) NOT NULL,
-	accept_new_contracts boolean NOT NULL,
-	rate_per_mb_day bigint NOT NULL,
-	max_span bigint NOT NULL,
-	minimal_file_size bigint NOT NULL,
-	maximal_file_size bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_pool_data__stonfi  
-
-```sql
-create table getmethods.get_pool_data__stonfi (
-	account_id bigint DEFAULT nextval('getmethods.get_pool_data__stonfi_account_id_seq'::regclass) NOT NULL,
-	reserve0 numeric NOT NULL,
-	reserve1 numeric NOT NULL,
-	token_0_account_id bigint NOT NULL,
-	token_1_account_id bigint NOT NULL,
-	lp_fee smallint NOT NULL,
-	protocol_fee smallint NOT NULL,
-	ref_fee smallint NOT NULL,
-	protocol_fee_account_id bigint NOT NULL,
-	collected_token0_protocol_fee numeric NOT NULL,
-	collected_token1_protocol_fee numeric NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_staking_status  
-
-```sql
-create table getmethods.get_staking_status (
-	account_id bigint DEFAULT nextval('getmethods.get_staking_status_account_id_seq'::regclass) NOT NULL,
-	stake_at bigint NOT NULL,
-	stake_until bigint NOT NULL,
-	stake_sent bigint NOT NULL,
-	query_sent boolean NOT NULL,
-	could_unlock boolean NOT NULL,
-	locked boolean NOT NULL,
-	proxy_stake_lock_final boolean NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_next_proof_info  
-
-```sql
-create table getmethods.get_next_proof_info (
-	account_id bigint DEFAULT nextval('getmethods.get_next_proof_info_account_id_seq'::regclass) NOT NULL,
-	next_proof bigint NOT NULL,
-	last_proof_time bigint NOT NULL,
-	max_span bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_collection_data  
-
-```sql
-create table getmethods.get_collection_data (
-	account_id bigint DEFAULT nextval('getmethods.get_collection_data_account_id_seq'::regclass) NOT NULL,
-	owner_account_id bigint,
-	content_layout bigint NOT NULL,
-	collection_content bytea NOT NULL,
-	next_item_index bigint NOT NULL,
-	in_whitelist boolean NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_params__whalesnominator  
-
-```sql
-create table getmethods.get_params__whalesnominator (
-	account_id bigint DEFAULT nextval('getmethods.get_params__whalesnominator_account_id_seq'::regclass) NOT NULL,
-	enabled boolean NOT NULL,
-	updates_enables boolean NOT NULL,
-	min_stake bigint NOT NULL,
-	deposit_fee bigint NOT NULL,
-	withdraw_fee bigint NOT NULL,
-	pool_fee bigint NOT NULL,
-	receipt_price bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### is_active  
-
-```sql
-create table getmethods.is_active (
-	account_id bigint DEFAULT nextval('getmethods.is_active_account_id_seq'::regclass) NOT NULL,
-	is_active boolean,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_asset__dedust  
-
-```sql
-create table getmethods.get_asset__dedust (
-	account_id bigint DEFAULT nextval('getmethods.get_asset__dedust_account_id_seq'::regclass) NOT NULL,
-	asset_native boolean NOT NULL,
-	asset_account_id bigint,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_subscription_data  
-
-```sql
-create table getmethods.get_subscription_data (
-	account_id bigint DEFAULT nextval('getmethods.get_subscription_data_account_id_seq'::regclass) NOT NULL,
-	wallet_account_id bigint,
-	beneficiary_account_id bigint,
-	amount bigint NOT NULL,
-	period bigint NOT NULL,
-	start_time bigint NOT NULL,
-	timeout bigint NOT NULL,
-	last_payment_time bigint NOT NULL,
-	last_request_time bigint NOT NULL,
-	failed_attempts bigint NOT NULL,
-	subscription_id bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_balances__lockup  
-
-```sql
-create table getmethods.get_balances__lockup (
-	account_id bigint DEFAULT nextval('getmethods.get_balances__lockup_account_id_seq'::regclass) NOT NULL,
-	ton_balance bigint NOT NULL,
-	total_restricted_value bigint NOT NULL,
-	total_locked_value bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_public_key  
-
-```sql
-create table getmethods.get_public_key (
-	account_id bigint DEFAULT nextval('getmethods.get_public_key_account_id_seq'::regclass) NOT NULL,
-	public_key bytea NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_wallet_data  
-
-```sql
-create table getmethods.get_wallet_data (
-	account_id bigint DEFAULT nextval('getmethods.get_wallet_data_account_id_seq'::regclass) NOT NULL,
-	balance numeric NOT NULL,
-	owner_account_id bigint,
-	jetton_account_id bigint NOT NULL,
-	code bytea NOT NULL,
-	verified boolean,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_telemint_token_name  
-
-```sql
-create table getmethods.get_telemint_token_name (
-	account_id bigint DEFAULT nextval('getmethods.get_telemint_token_name_account_id_seq'::regclass) NOT NULL,
-	username text NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_sale_data__getgems_auction  
-
-```sql
-create table getmethods.get_sale_data__getgems_auction (
-	account_id bigint DEFAULT nextval('getmethods.get_sale_data__getgems_auction_account_id_seq'::regclass) NOT NULL,
-	marketplace_account_id bigint NOT NULL,
-	nft_account_id bigint NOT NULL,
-	nft_owner_account_id bigint,
-	marketplace_fee_account_id bigint,
-	royalty_account_id bigint,
-	last_member_account_id bigint,
-	end boolean NOT NULL,
-	end_time bigint NOT NULL,
-	full_price numeric NOT NULL,
-	min_step bigint NOT NULL,
-	mp_fee_factor bigint NOT NULL,
-	mp_fee_base bigint NOT NULL,
-	royalty_fee_factor bigint NOT NULL,
-	royalty_fee_base bigint NOT NULL,
-	max_bid bigint NOT NULL,
-	min_bid bigint NOT NULL,
-	created_at bigint NOT NULL,
-	last_bid_at bigint NOT NULL,
-	is_canceled boolean NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### seqno  
-
-```sql
-create table getmethods.seqno (
-	account_id bigint DEFAULT nextval('getmethods.seqno_account_id_seq'::regclass) NOT NULL,
-	state bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_jetton_data  
-
-```sql
-create table getmethods.get_jetton_data (
-	account_id bigint DEFAULT nextval('getmethods.get_jetton_data_account_id_seq'::regclass) NOT NULL,
-	total_supply numeric NOT NULL,
-	mintable boolean NOT NULL,
-	admin_account_id bigint,
-	content_layout bigint NOT NULL,
-	content bytea NOT NULL,
-	wallet_code bytea NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_auction_info  
-
-```sql
-create table getmethods.get_auction_info (
-	account_id bigint DEFAULT nextval('getmethods.get_auction_info_account_id_seq'::regclass) NOT NULL,
-	max_bid_account_id bigint,
-	max_bid_amount bigint NOT NULL,
-	auctions_end_time bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_sale_data__basic  
-
-```sql
-create table getmethods.get_sale_data__basic (
-	account_id bigint DEFAULT nextval('getmethods.get_sale_data__basic_account_id_seq'::regclass) NOT NULL,
-	marketplace_account_id bigint NOT NULL,
-	nft_account_id bigint NOT NULL,
-	nft_owner_account_id bigint,
-	royalty_account_id bigint,
-	full_price numeric NOT NULL,
-	marketplace_fee bigint NOT NULL,
-	royalty_amount bigint NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_wallet_params  
-
-```sql
-create table getmethods.get_wallet_params (
-	account_id bigint DEFAULT nextval('getmethods.get_wallet_params_account_id_seq'::regclass) NOT NULL,
-	seqno bigint NOT NULL,
-	subwallet bigint NOT NULL,
-	public_key numeric NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_nft_data  
-
-```sql
-create table getmethods.get_nft_data (
-	account_id bigint DEFAULT nextval('getmethods.get_nft_data_account_id_seq'::regclass) NOT NULL,
-	owner_account_id bigint,
-	collection_account_id bigint,
-	init boolean NOT NULL,
-	index numeric NOT NULL,
-	content_layout bigint NOT NULL,
-	individual_content bytea NOT NULL,
-	verified boolean,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### list_nominators  
-
-```sql
-create table getmethods.list_nominators (
-	account_id bigint NOT NULL,
-	nominator_account_id bigint NOT NULL,
-	amount bigint NOT NULL,
-	pending_deposit_amount bigint NOT NULL,
-	withdraw_requested boolean NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_members_raw__whalesnominator  
-
-```sql
-create table getmethods.get_members_raw__whalesnominator (
-	account_id bigint NOT NULL,
-	profit_per_coin bigint NOT NULL,
-	member_account_id bigint NOT NULL,
-	balance bigint NOT NULL,
-	pending_deposit bigint NOT NULL,
-	pending_withdraw bigint NOT NULL,
-	member_withdraw bigint NOT NULL,
-	pending_withdraw_all boolean NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_validator_controller_data  
-
-```sql
-create table getmethods.get_validator_controller_data (
-	account_id bigint DEFAULT nextval('getmethods.get_validator_controller_data_account_id_seq'::regclass) NOT NULL,
-	state integer NOT NULL,
-	halted boolean NOT NULL,
-	approved boolean NOT NULL,
-	stake_amount_sent bigint NOT NULL,
-	stake_at bigint NOT NULL,
-	saved_validator_set_hash bytea NOT NULL,
-	validator_set_changes_count integer NOT NULL,
-	validator_set_change_time bigint NOT NULL,
-	stake_held_for bigint NOT NULL,
-	borrowed_amount bigint NOT NULL,
-	borrowing_time bigint NOT NULL,
-	validator bigint NOT NULL,
-	pool bigint NOT NULL,
-	sudoer bigint,
-	indexer_last_update_lt bigint NOT NULL
-);
-```
-
-### get_telemint_auction_config  
-
-```sql
-create table getmethods.get_telemint_auction_config (
-	account_id bigint DEFAULT nextval('getmethods.get_telemint_auction_config_account_id_seq'::regclass) NOT NULL,
-	beneficiar_account_id bigint NOT NULL,
-	initial_min_bid bigint NOT NULL,
-	max_bid bigint NOT NULL,
-	min_bid_step bigint NOT NULL,
-	min_extend_time bigint NOT NULL,
-	duration bigint NOT NULL,
+create table getmethods.get_domain (
+	account_id text NOT NULL,
+	domain text NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
@@ -863,23 +940,21 @@ create table getmethods.get_telemint_auction_config (
 
 ```sql
 create table jetton.masters_metadata (
-	jetton_account_id bigint DEFAULT nextval('jetton.masters_metadata_jetton_account_id_seq'::regclass) NOT NULL,
+	jetton_account_id text NOT NULL,
 	metadata jsonb NOT NULL,
 	last_offchain_meta_refresh timestamp with time zone DEFAULT now(),
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
 
-### nft.items_metadata
+### nft.url_metadata
 
 ```sql
-create table nft.items_metadata (
-	item_id bigint DEFAULT nextval('nft.items_metadata_item_id_seq'::regclass) NOT NULL,
-	metadata jsonb NOT NULL,
+create table nft.url_metadata (
 	url text NOT NULL,
-	last_offchain_meta_refresh_try timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
-	last_offchain_meta_refresh_success timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
+	metadata jsonb NOT NULL,
+	last_offchain_meta_refresh_try timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL,
+	last_offchain_meta_refresh_success timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL
 );
 ```
 
@@ -887,9 +962,9 @@ create table nft.items_metadata (
 
 ```sql
 create table nft.collections_metadata (
-	collection_id bigint DEFAULT nextval('nft.collections_metadata_collection_id_seq'::regclass) NOT NULL,
+	collection_id text NOT NULL,
 	metadata jsonb NOT NULL,
-	last_offchain_meta_refresh timestamp with time zone DEFAULT '1969-12-31 23:00:01+00'::timestamp with time zone NOT NULL,
+	last_offchain_meta_refresh timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```

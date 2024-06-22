@@ -4,12 +4,12 @@
 
 ```sql
 select human_readable from blockchain.accounts a join
-(select distinct nft.owner_account_id from getmethods.get_nft_data nft
-          join getmethods.get_wallet_data jetton on jetton.owner_account_id = nft.owner_account_id
-          where nft.collection_account_id = (select id from blockchain.accounts where human_readable = 'EQDvRFMYLdxmvY3Tk-cfWMLqDnXF_EclO2Fp4wwj33WhlNFT' )
-          and jetton.jetton_account_id =  (select id from blockchain.accounts where human_readable = 'EQCcLAW537KnRg_aSPrnQJoyYjOZkzqYp6FVmRUvN1crSazV' )
-          ) t
-on a.id = t.owner_account_id
+                           (select distinct nft.owner_account_id from getmethods.get_nft_data nft
+                                                                          join getmethods.get_wallet_data jetton on jetton.owner_account_id = nft.owner_account_id
+                            where nft.collection_account_id = '0:ef4453182ddc66bd8dd393e71f58c2ea0e75c5fc47253b6169e30c23df75a194'
+                              and jetton.jetton_account_id =  '0:9c2c05b9dfb2a7460fda48fae7409a32623399933a98a7a15599152f37572b49'
+                           ) t
+                           on a.id = t.owner_account_id
 ```
 
 #### TPS per hour
