@@ -1,9 +1,8 @@
 {
   "index": "About Ton Console",
-  "tonapi": "TON Api",
-  "tonkeeper-messages": "Tonkeeper Messages",
-  "invoices": "Payments Processing",
-  "analytics": "Analytics",
+  "tonconsole": "TON Console",
+  "tonkeeper": "Tonkeeper",
+  "tonviewer": "Tonviewer",
   "disclaimer": {
     "display": "hidden"
   }
