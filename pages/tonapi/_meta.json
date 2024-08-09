@@ -3,5 +3,6 @@
   "api-v2": "API v2",
   "streaming-api": "Streaming API",
   "graphql": "GraphQL",
-  "sdk": "SDK Integration"
+  "sdk": "SDK Integration",
+  "recipes": "Recipes"
 }
