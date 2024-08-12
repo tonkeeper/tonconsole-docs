@@ -1,5 +1,6 @@
 .idea
 .next
+.env.local
 node_modules
 dist
 .env.local

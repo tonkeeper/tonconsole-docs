@@ -1,16 +1,17 @@
 import SwaggerLink from "components/SwaggerLink";
+import { SWAGGER_TAGS, SWAGGER_LINKS } from "../../constants";
 
 # REST API
 
 ## Introduction
 
-## Blockchain <SwaggerLink href='http://localhost:3001/api-v2#operations-tag-Blockchain' />
+## Blockchain <SwaggerLink href={SWAGGER_LINKS.BLOCKCHAIN} />
 
 **Blockchain** service provide low-level access to the TON blockchain, allowing developers to retrieve detailed information about blocks, transactions, accounts, and more. These endpoints are essential for building tools that require in-depth blockchain data and are critical for applications that need to interact closely with the TON blockchain.
 
 **TONAPI** ensures that data retrieved from the blockchain is accurate and up-to-date by continuously indexing the blockchain and maintaining a low-latency connection to the TON network.
 
-## Gasless <SwaggerLink href='http://localhost:3001/api-v2#operations-tag-Gasless' />
+## Gasless <SwaggerLink href={SWAGGER_LINKS.GASLESS} />
 
 **Gasless transactions** on the TON platform enable users to send transactions without paying gas fees directly from their wallets. This is achieved using **Signed Internal Messages** sent through a **gas proxy contract**, which covers the transaction fees on behalf of the user. This approach simplifies blockchain interactions, making it easier for users who may not have TON tokens in their wallets.
 
