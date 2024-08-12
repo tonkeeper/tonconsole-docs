@@ -28,3 +28,7 @@ html.dark .swagger-ui .highlight-code {
 .swagger-ui pre > code {
     display: inline;
 }
+
+h1, h2, h3 {
+    display: flex;
+}

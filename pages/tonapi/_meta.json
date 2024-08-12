@@ -1,6 +1,6 @@
 {
   "index": "Introduction",
-  "api-v2": "API v2",
+  "rest-api": "REST API",
   "streaming-api": "Streaming API",
   "graphql": "GraphQL",
   "sdk": "SDK Integration",
