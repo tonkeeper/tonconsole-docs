@@ -8,6 +8,10 @@ export const LINKS = {
   CONSOLE: "https://tonconsole.com",
 } as const;
 
+export const GITHUB_LINKS = {
+  CNFT_SMART_CONTRACT: "https://github.com/ton-community/compressed-nft-contract",
+} as const;
+
 export const SWAGGER_TAGS = {
   BLOCKCHAIN: "Blockchain",
   GASLESS: "Gasless",
