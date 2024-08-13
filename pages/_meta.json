@@ -1,8 +1,24 @@
 {
-  "index": "About Ton Console",
-  "tonapi": "Ton API",
-  "tonconsole": "TON Console",
-  "tonkeeper": "Tonkeeper",
+  "index": {
+    "title": "Welcome to TON Apps",
+    "type": "page"
+  },
+  "tonapi": {
+    "title": "TON Api",
+    "type": "page"
+  },
+  "tonconsole": {
+    "title": "TON Console",
+    "type": "page"
+  },
+  "tonkeeper": {
+    "title": "Tonkeeper",
+    "type": "page"
+  },
+  "tonviewer": {
+    "title": "Tonviewer",
+    "type": "page"
+  },
   "disclaimer": {
     "display": "hidden"
   }

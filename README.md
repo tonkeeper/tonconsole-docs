@@ -1,4 +1,4 @@
-# Tonconsole documentation
+# TonApps documentation
 
 ## Get started
 1. `npm i`

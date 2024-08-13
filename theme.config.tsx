@@ -6,7 +6,7 @@ import {useRouter} from "next/router";
 const config: DocsThemeConfig = {
     logo: <div className="nx-flex nx-items-center max-[500px]:gap-2 min-[500px]:gap-3">
         <ConsoleDocsIcon />
-        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Ton Console Docs</span>
+        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Ton Apps Docs</span>
     </div>,
     head: () => {
         const { title } = useConfig();
@@ -32,7 +32,7 @@ const config: DocsThemeConfig = {
             {/*description*/}
             <meta
                 name="description"
-                content="Knowledge base for Ton Console users and partners: manage dapps, tokens and payments in one place with powerful API and deep commercial integrations"
+                content="Knowledge base for Ton Apps users and partners: manage dapps, tokens and payments in one place with powerful API and deep commercial integrations"
             />
             <meta
                 name="keywords"
@@ -44,12 +44,12 @@ const config: DocsThemeConfig = {
             <meta property="og:type" content="website" />
             <meta property="og:locale" content="en_US" />
             <meta property="og:url" content="https://docs.tonconsole.com" />
-            <meta property="og:site_name" content="Ton Console Documentation" />
+            <meta property="og:site_name" content="Ton Apps Documentation" />
             <meta property="og:title" content="Console Docs" />
             <meta property="og:image" content="https://docs.tonconsole.com/og-image.png" />
             <meta
                 property="og:description"
-                content="Knowledge base for Ton Console users and partners: manage dapps, tokens and payments in one place with powerful API and deep commercial integrations"
+                content="Knowledge base for Ton Apps users and partners: manage dapps, tokens and payments in one place with powerful API and deep commercial integrations"
             />
             {/*Open Graph meta*/}
 
