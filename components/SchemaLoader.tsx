@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { SWAGGER_SCHEMA_JSON_URL } from "../constants";
+import { useSSG } from 'nextra/ssg';
 import { getLinkToSwaggerOperation } from "../utils/links";
 
 const nxCodeClass =
@@ -7,25 +6,12 @@ const nxCodeClass =
 
 interface SchemaLoaderProps {
   tag: string;
+  data: any[];
 }
 
 export function SchemaLoader({ tag }: SchemaLoaderProps) {
-  const [code, setCode] = useState<any>(null);
-
-  useEffect(() => {
-    SWAGGER_SCHEMA_JSON_URL &&
-      fetch(SWAGGER_SCHEMA_JSON_URL)
-        .then((response) => response.json())
-        .then((data) => setCode(data));
-  }, [SWAGGER_SCHEMA_JSON_URL]);
-
-  const data = code
-    ? Object.values(code.paths)
-        .map((value) => Object.values(value as any))
-        .flat()
-        .filter((value: any) => value.tags.includes(tag))
-    : [];
-
+  const { data } = useSSG()
+  
   return (
     <ul className="pt-4">
       {data.map((value: any) => (
@@ -43,3 +29,44 @@ export function SchemaLoader({ tag }: SchemaLoaderProps) {
     </ul>
   );
 }
+
+
+// export const getStaticProps = async () => {
+//   const res = await fetch('https://api.github.com/repos/shuding/nextra');
+//   const repo = await res.json();
+
+//   return {
+//     props: {
+//       // Добавляем `ssg` поле в пропсы страницы, которое затем будет использовано в `useSSG` хуке.
+//       ssg: {
+//         stars: repo.stargazers_count,
+//       },
+//     },
+//     // Страница будет считаться устаревшей и будет пересоздаваться каждые 60 секунд.
+//     revalidate: 60,
+//   };
+// };
+
+// export const getStaticProps: GetStaticProps = async (context) => {
+//   const tag = context.params?.tag as string;
+//   const schemaLink = SWAGGER_SCHEMA_JSON_URL as string;
+
+//   const response = await fetch(schemaLink);
+//   const code = await response.json();
+
+//   const data = Object.values(code.paths)
+//     .map((value) => Object.values(value as any))
+//     .flat()
+//     .filter((value: any) => value.tags.includes(tag));
+
+//   console.log(data);
+
+//   return {
+//     props: {
+//       tag,
+//       data,
+//     },
+//   };
+// };
+
+// export default SchemaLoader;
