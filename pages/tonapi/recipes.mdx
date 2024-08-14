@@ -1,12 +1,15 @@
-import {ExampleTabs, ExampleTab} from '../../components/ExampleTabs';
-import GaslessGo from './recipes/gasless.go.mdx';
-import GaslessTs from './recipes/gasless.ts.mdx';
+import { Callout } from "nextra-theme-docs";
+import { ExampleTabs, ExampleTab } from "../../components/ExampleTabs";
+import GaslessGo from "./recipes/gasless.go.mdx";
+import GaslessTs from "./recipes/gasless.ts.mdx";
 
-# Recipes (DRAFT)
+# Recipes
+
+<Callout type="warning" emoji="🚨">
+  This page is a draft.
+</Callout>
 
 ## Gasless Transfer
-
-TODO: separate examples by blocks with description
 
 Originating from the [Gasless](/api-v2#operations-tag-Gasless) section of the API v2 documentation, this recipe provides implementation examples for gasless transactions in TypeScript and Go. Developers can use these examples to integrate gasless transactions into their applications.
 
@@ -16,7 +19,7 @@ Swagger documentation for Gasless transactions can be found [here](http://localh
   <ExampleTab label="TypeScript">
     <GaslessTs />
   </ExampleTab>
-  
+
   <ExampleTab label="Go">
     <GaslessGo />
   </ExampleTab>
