@@ -9,17 +9,18 @@ export const LINKS = {
 } as const;
 
 export const GITHUB_LINKS = {
-  CNFT_SMART_CONTRACT: "https://github.com/ton-community/compressed-nft-contract",
+  CNFT_SMART_CONTRACT:
+    "https://github.com/ton-community/compressed-nft-contract",
 } as const;
+
+export const SWAGGER_SCHEMA_JSON_URL =
+  process.env.NEXT_PUBLIC_TONAPI_OPENAPI_JSON_URL;
+export const TONAPI_LANDING_PAGE_URL =
+  process.env.NEXT_PUBLIC_TONAPI_LANDING_PAGE_URL;
 
 export const SWAGGER_TAGS = {
   BLOCKCHAIN: "Blockchain",
   GASLESS: "Gasless",
+  NFT: "NFT",
+  ACCOUNTS: "Accounts",
 } as const;
-
-export const SWAGGER_LINKS = Object.keys(SWAGGER_TAGS).reduce((acc, key) => {
-  acc[key] = `${process.env.NEXT_PUBLIC_TONAPI_LANDING_PAGE_URL}/api-v2#operations-tag-${
-    SWAGGER_TAGS[key as keyof typeof SWAGGER_TAGS]
-  }`;
-  return acc;
-}, {} as { [key: string]: string });

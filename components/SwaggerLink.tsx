@@ -1,13 +1,15 @@
-export default function SwaggerLink({ href }: { href: string }) {
+import { getLinkToSwaggerTag } from "../utils/links";
+
+export default function SwaggerLink({ tag }: { tag: string }) {
   return (
     <a
-      href={href}
+      href={getLinkToSwaggerTag(tag)}
       target="_blank"
       rel="noopener noreferrer"
       className="swagger-anchor"
       style={{
         order: 5,
-        marginLeft: 'auto',
+        marginLeft: "auto",
       }}
     >
       <style>
