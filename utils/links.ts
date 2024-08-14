@@ -1,9 +1,9 @@
-import { TONAPI_LANDING_PAGE_URL } from "../constants";
+import { TONAPI_LANDING_PAGE_SWAGGER_URL } from "../constants";
 
 export const getLinkToSwaggerTag = (tag: string) => {
-  return `${TONAPI_LANDING_PAGE_URL}/api-v2#operations-tag-${tag}`;
+  return `${TONAPI_LANDING_PAGE_SWAGGER_URL}#operations-tag-${tag}`;
 };
 
 export const getLinkToSwaggerOperation = (tag: string, operationId: string) => {
-  return `${TONAPI_LANDING_PAGE_URL}/api-v2#operations-${tag}-${operationId}`;
+  return `${TONAPI_LANDING_PAGE_SWAGGER_URL}#operations-${tag}-${operationId}`;
 };

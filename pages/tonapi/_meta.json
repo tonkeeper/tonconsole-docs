@@ -3,6 +3,6 @@
   "rest-api": "REST API",
   "streaming-api": "Streaming API",
   "graphql": "GraphQL",
-  "sdk": "SDK Integration",
+  "sdk": "SDKs & Swagger",
   "recipes": "Recipes"
 }

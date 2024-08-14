@@ -1,6 +1,6 @@
 import { getLinkToSwaggerTag } from "../utils/links";
 
-export default function SwaggerLink({ tag }: { tag: string }) {
+export function SwaggerLink({ tag }: { tag: string }) {
   return (
     <a
       href={getLinkToSwaggerTag(tag)}

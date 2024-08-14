@@ -15,8 +15,12 @@ export const GITHUB_LINKS = {
 
 export const SWAGGER_SCHEMA_JSON_URL =
   process.env.NEXT_PUBLIC_TONAPI_OPENAPI_JSON_URL;
+export const SWAGGER_SCHEMA_YAML_URL =
+  process.env.NEXT_PUBLIC_TONAPI_OPENAPI_YANL_URL;
 export const TONAPI_LANDING_PAGE_URL =
   process.env.NEXT_PUBLIC_TONAPI_LANDING_PAGE_URL;
+
+export const TONAPI_LANDING_PAGE_SWAGGER_URL = `${TONAPI_LANDING_PAGE_URL}/api-v2`;
 
 export const SWAGGER_TAGS = {
   BLOCKCHAIN: "Blockchain",
