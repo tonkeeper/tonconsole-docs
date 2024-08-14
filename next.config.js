@@ -8,6 +8,6 @@ module.exports = withNextra({
         unoptimized: true
     },
     experimental: {
-        transpilePackages: ['react-syntax-highlighter', 'swagger-client', 'swagger-ui-react'],
+        transpilePackages: ['react-syntax-highlighter'],
     }
 });
