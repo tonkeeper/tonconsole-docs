@@ -1,6 +1,6 @@
 import { Card, Cards, Callout } from "nextra-theme-docs";
-import { LINKS, GITHUB_LINKS } from "../../constants";
-import { ExternalLink } from "../../components/ExternalLink";
+import { CONSOLE_LINKS, GITHUB_LINKS } from "constants/index";
+import { ExternalLink } from "components/ExternalLink";
  
 # NFT
 
@@ -25,7 +25,7 @@ For technical implementation details on how to create and manage cNFTs, please r
 
 ### cNFT Indexing Service
 
-The cNFT Indexing Service allows you to add and index your cNFTs via the <ExternalLink href={LINKS.CONSOLE}>Tonconsole</ExternalLink> interface, making them available through TonAPI without requiring immediate on-chain minting.
+The cNFT Indexing Service allows you to add and index your cNFTs via the <ExternalLink href={CONSOLE_LINKS.CNFT}>Tonconsole</ExternalLink> interface, making them available through TonAPI without requiring immediate on-chain minting.
 
 - **Tonconsole Interface:** Enables the addition and indexing of cNFTs, making them searchable and accessible across all applications that use TonAPI, including Tonviewer and Tonkeeper, without needing to mint them on-chain until the first interaction.
 

@@ -1,5 +1,7 @@
 import { Callout } from "nextra-theme-docs";
-import { ExampleTabs, ExampleTab } from "../../components/ExampleTabs";
+import { ExampleTabs, ExampleTab, ExternalLink } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { getLinkToSwaggerTag } from "utils/links";
 import GaslessGo from "./recipes/gasless.go.mdx";
 import GaslessTs from "./recipes/gasless.ts.mdx";
 
@@ -11,9 +13,9 @@ import GaslessTs from "./recipes/gasless.ts.mdx";
 
 ## Gasless Transfer
 
-Originating from the [Gasless](/api-v2#operations-tag-Gasless) section of the API v2 documentation, this recipe provides implementation examples for gasless transactions in TypeScript and Go. Developers can use these examples to integrate gasless transactions into their applications.
+Originating from the [Gasless](/tonapi/rest-api/gasless) section of the REST API documentation, this recipe provides implementation examples for gasless transactions in TypeScript and Go. Developers can use these examples to integrate gasless transactions into their applications.
 
-Swagger documentation for Gasless transactions can be found [here](http://localhost:3001/api-v2#operations-tag-Gasless).
+Swagger documentation for Gasless operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.GASLESS)}>here</ExternalLink>.
 
 <ExampleTabs>
   <ExampleTab label="TypeScript">
