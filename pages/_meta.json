@@ -3,5 +3,8 @@
   "tonapi": "TON Api",
   "tonkeeper-messages": "Tonkeeper Messages",
   "invoices": "Payments Processing",
-  "analytics": "Analytics"
+  "analytics": "Analytics",
+  "disclaimer": {
+    "display": "hidden"
+  }
 }
