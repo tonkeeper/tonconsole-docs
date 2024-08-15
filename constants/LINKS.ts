@@ -6,6 +6,7 @@ export const LINKS = {
   SUPPORT: "https://t.me/tonrostislav",
   CONTACT: "https://t.me/tonrostislav",
   CONSOLE: "https://tonconsole.com",
+  TONDNS_ABOUT: "https://dns.ton.org/about.html"
 } as const;
 
 export const GITHUB_LINKS = {
@@ -23,8 +24,21 @@ export const TONAPI_LANDING_PAGE_URL =
 export const TONAPI_LANDING_PAGE_SWAGGER_URL = `${TONAPI_LANDING_PAGE_URL}/api-v2`;
 
 export const SWAGGER_TAGS = {
-  BLOCKCHAIN: "Blockchain",
-  GASLESS: "Gasless",
-  NFT: "NFT",
   ACCOUNTS: "Accounts",
+  NFT: "NFT",
+  JETTONS: "Jettons",
+  RATES: "Rates",
+  DNS: "DNS",
+  GASLESS: "Gasless",
+  STAKING: "Staking",
+  EVENTS: "Events",
+  TRACES: "Traces",
+  EMULATION: "Emulation",
+  WALLET: "Wallet",
+  INSCRIPTIONS: "Inscriptions",
+  STORAGE: "Storage",
+  CONNECT: "Connect",
+  MULTISIG: "Multisig",
+  BLOCKCHAIN: "Blockchain",
+  LITE_SERVER: "Lite Server"
 } as const;

@@ -1,5 +1,11 @@
+import { Callout } from "nextra-theme-docs";
 import { SwaggerLink, SchemaLoader, ExternalLink } from "components";
-import { SWAGGER_TAGS, SWAGGER_SCHEMA_YAML_URL, TONAPI_LANDING_PAGE_SWAGGER_URL } from "../../constants";
+import {
+  SWAGGER_TAGS,
+  SWAGGER_SCHEMA_YAML_URL,
+  TONAPI_LANDING_PAGE_SWAGGER_URL,
+  LINKS,
+} from "../../constants";
 import { loadStatic } from "utils/schemas";
 
 export const getStaticProps = loadStatic;
@@ -26,15 +32,63 @@ To facilitate integration and testing of the REST API, the following resources a
 
 <SchemaLoader tag={SWAGGER_TAGS.ACCOUNTS} />
 
-### Blockchain <SwaggerLink tag={SWAGGER_TAGS.BLOCKCHAIN} />
+### NFT <SwaggerLink tag={SWAGGER_TAGS.NFT} />
 
-**Blockchain** service provide low-level access to the TON blockchain, allowing developers to retrieve detailed information about blocks, transactions, accounts, and more. These endpoints are essential for building tools that require in-depth blockchain data and are critical for applications that need to interact closely with the TON blockchain.
-
-**TONAPI** ensures that data retrieved from the blockchain is accurate and up-to-date by continuously indexing the blockchain and maintaining a low-latency connection to the TON network.
+The **NFT** service provides access to non-fungible tokens (NFTs) on the TON blockchain. This service enables retrieval of detailed information about NFTs, including metadata, ownership, and transaction history. NFTs are unique digital assets that represent ownership of various items, such as collectibles, art, and virtual real estate.
 
 #### Operations
 
-<SchemaLoader tag={SWAGGER_TAGS.BLOCKCHAIN} />
+<SchemaLoader tag={SWAGGER_TAGS.NFT} />
+
+### Jettons <SwaggerLink tag={SWAGGER_TAGS.JETTONS} />
+
+The **Jettons** service provides access to fungible tokens on the TON blockchain. This service enables retrieval of detailed information about fungible tokens, including balances, transaction history, and metadata. Jettons are digital assets that can be transferred between users and used as a medium of exchange within the TON ecosystem.
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.JETTONS} />
+
+{/* An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time. */}
+
+### Rates <SwaggerLink tag={SWAGGER_TAGS.RATES} />
+
+**Rates** service provides access to exchange rates for various tokens on the TON blockchain.
+TODO: Add more details about source of data
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.RATES} />
+
+### DNS <SwaggerLink tag={SWAGGER_TAGS.DNS} />
+
+The **DNS** service provides access to the <ExternalLink href={LINKS.TONDNS_ABOUT}>TON DNS</ExternalLink>. This service enables retrieval of detailed information about domain names, including ownership, expiration dates, and associated accounts. DNS is used to map human-readable domain names to blockchain addresses, facilitating interaction with accounts and services on the TON network.
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.DNS} />
+
+### Events
+
+**Events** service provides access to high-level actions that occur on the TON blockchain. These actions are derived from traces, which represent a series of transactions caused by a single inbound message. Events are meaningful operations such as Jetton transfers, NFT purchases, and other user interactions. By using the **Events** service, you can retrieve detailed information about user activities on the TON blockchain.
+
+<Callout type="warning" emoji="⚠️">
+  Can't be used for building logic, as the structure of events can change at any
+  time.
+</Callout>
+
+Use it only for displaying information to users.
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.EVENTS} />
+
+### Traces <SwaggerLink tag={SWAGGER_TAGS.TRACES} />
+
+**Traces** service provides access to low-level transaction traces on the TON blockchain. This service enables retrieval of detailed information about individual transactions, including input and output data, gas usage, and execution status. Traces are essential for debugging and analyzing blockchain interactions, as they provide a detailed view of the transaction lifecycle.
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.TRACES} />
 
 ### Gasless <SwaggerLink tag={SWAGGER_TAGS.GASLESS} />
 
@@ -63,3 +117,13 @@ Gasless transactions leverage **Signed Internal Messages**. These messages are s
 #### Operations
 
 <SchemaLoader tag={SWAGGER_TAGS.GASLESS} />
+
+### Blockchain <SwaggerLink tag={SWAGGER_TAGS.BLOCKCHAIN} />
+
+The **Blockchain** service provides low-level access to the TON blockchain, enabling retrieval of detailed information about blocks, transactions, accounts, and more. These endpoints are essential for building tools that require deep blockchain data and are critical for applications that interact closely with the TON blockchain.
+
+**TONAPI** ensures that data retrieved from the blockchain is accurate and up-to-date by continuously indexing the blockchain and maintaining a low-latency connection to the TON network.
+
+#### Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.BLOCKCHAIN} />
