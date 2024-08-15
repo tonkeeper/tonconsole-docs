@@ -1,0 +1,14 @@
+import { Callout } from "nextra-theme-docs";
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Wallet <SwaggerLink tag={SWAGGER_TAGS.WALLET} />
+
+The Wallet service provides a comprehensive set of endpoints for managing and interacting with blockchain wallets. This service is designed to support various wallet operations, including emulation, backup, authentication, and retrieval of wallet-specific data.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.WALLET} />

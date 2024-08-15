@@ -7,7 +7,4 @@ module.exports = withNextra({
     images: {
         unoptimized: true
     },
-    experimental: {
-        transpilePackages: ['react-syntax-highlighter'],
-    }
 });

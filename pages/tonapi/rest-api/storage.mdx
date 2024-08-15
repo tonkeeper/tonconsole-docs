@@ -1,0 +1,12 @@
+import { Callout } from "nextra-theme-docs";
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Storage <SwaggerLink tag={SWAGGER_TAGS.STORAGE} />
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.STORAGE} />

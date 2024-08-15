@@ -16,7 +16,8 @@ export function SwaggerLink({ tag }: { tag: string }) {
         {`
             .swagger-anchor::after {
                 content: url(/assets/swagger-icon.svg);
-                height: 1em;
+                height: 100%;
+                vertical-align: middle;
                 width: 1em;
                 display: inline-block;
             }

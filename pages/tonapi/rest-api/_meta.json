@@ -4,9 +4,18 @@
   "nft": "NFT",
   "jettons": "Jettons",
   "dns": "DNS",
+  "wallet": "Wallet",
   "rates": "Rates",
+  "staking": "Staking",
   "traces": "Traces",
   "events": "Events",
+  "storage": "Storage",
+  "connect": "Connect",
   "gasless": "Gasless",
-  "blockchain": "Blockchain"
+  "multisig": "Multisig",
+  "blockchain": "Blockchain",
+  "lite-server": "Lite Server",
+  "emulation": "Emulation",
+  "inscriptions": "Inscriptions",
+  "utilities": "Utilities"
 }
