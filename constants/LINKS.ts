@@ -12,6 +12,7 @@ export const LINKS = {
 export const GITHUB_LINKS = {
   CNFT_SMART_CONTRACT:
     "https://github.com/ton-community/compressed-nft-contract",
+  W5_SPECIFICATION: "https://github.com/tonkeeper/w5/blob/main/Specification.md"
 } as const;
 
 export const SWAGGER_SCHEMA_JSON_URL =
