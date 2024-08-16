@@ -15,7 +15,7 @@ export function SchemaLoader({ tag }: SchemaLoaderProps) {
     .map((value) => Object.values(value as Object))
     .flat()
     .filter((value) => value.tags.includes(tag))
-    .toSorted((a, b) => a.tags.length - b.tags.length);
+    .slice().sort((a, b) => a.tags.length - b.tags.length);
 
   return (
     <ul className="pt-4">
