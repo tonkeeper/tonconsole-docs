@@ -1,8 +1,8 @@
 {
   "index": "About Ton Console",
+  "tonapi": "Ton API",
   "tonconsole": "TON Console",
   "tonkeeper": "Tonkeeper",
-  "tonviewer": "Tonviewer",
   "disclaimer": {
     "display": "hidden"
   }
