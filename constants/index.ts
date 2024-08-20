@@ -1,2 +1,2 @@
-export * from './LINKS';
-export * from './API_TAGS';
+export * from "./LINKS";
+export * from "./API_TAGS";

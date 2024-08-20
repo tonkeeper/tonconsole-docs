@@ -1,8 +1,8 @@
 export const LINKS = {
   GITHUB: "https://github.com/tonkeeper",
   TELEGRAM_CHANNEL: "https://t.me/tonkeeper",
-  TERMS: "#", // TODO: Add link
-  PRIVACY: "#", // TODO: Add link
+  // TERMS: "#", // TODO: Add link
+  // PRIVACY: "#", // TODO: Add link
   SUPPORT: "https://t.me/tonrostislav",
   CONTACT: "https://t.me/tonrostislav",
   CONSOLE: "https://tonconsole.com",
@@ -11,7 +11,8 @@ export const LINKS = {
 export const TONORG_LINKS = {
   TONDNS_ABOUT: "https://dns.ton.org/about.html",
   TONCONNECT_ABOUT: "https://docs.ton.org/develop/dapps/ton-connect/overview",
-  TONCONNECT_MANIFEST: "https://docs.ton.org/develop/dapps/ton-connect/protocol/requests-responses#app-manifest",
+  TONCONNECT_MANIFEST:
+    "https://docs.ton.org/develop/dapps/ton-connect/protocol/requests-responses#app-manifest",
 } as const;
 
 export const CONSOLE_LINKS = {
@@ -22,7 +23,8 @@ export const CONSOLE_LINKS = {
 export const GITHUB_LINKS = {
   CNFT_SMART_CONTRACT:
     "https://github.com/ton-community/compressed-nft-contract",
-  W5_SPECIFICATION: "https://github.com/tonkeeper/w5/blob/main/Specification.md"
+  W5_SPECIFICATION:
+    "https://github.com/tonkeeper/w5/blob/main/Specification.md",
 } as const;
 
 export const SWAGGER_SCHEMA_JSON_URL =

@@ -6,7 +6,7 @@ import {useRouter} from "next/router";
 const config: DocsThemeConfig = {
     logo: <div className="nx-flex nx-items-center max-[500px]:gap-2 min-[500px]:gap-3">
         <ConsoleDocsIcon />
-        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Ton Console Docs</span>
+        <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Documentation</span>
     </div>,
     head: () => {
         const { title } = useConfig();
@@ -44,7 +44,7 @@ const config: DocsThemeConfig = {
             <meta property="og:type" content="website" />
             <meta property="og:locale" content="en_US" />
             <meta property="og:url" content="https://docs.tonconsole.com" />
-            <meta property="og:site_name" content="Ton Console Documentation" />
+            <meta property="og:site_name" content="Documentation" />
             <meta property="og:title" content="Console Docs" />
             <meta property="og:image" content="https://docs.tonconsole.com/og-image.png" />
             <meta
@@ -98,8 +98,8 @@ const config: DocsThemeConfig = {
                     className="nx-mx-auto nx-flex gap-8 flex-wrap justify-between nx-max-w-[90rem] py-5 nx-text-gray-600 dark:nx-text-gray-400 md:nx-justify-start nx-pl-[max(env(safe-area-inset-left),1.5rem)] nx-pr-[max(env(safe-area-inset-right),1.5rem)]"
                 >
                     <a className="nx-text-gray-500 hover:nx-text-gray-900 dark:nx-text-gray-400 dark:hover:nx-text-gray-100 contrast-more:nx-text-gray-800 contrast-more:dark:nx-text-gray-50" href="/disclaimer">Disclaimer</a>
-                    <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink>
-                    <ExternalLink variant="secondary" href={LINKS.PRIVACY}>Privacy</ExternalLink>
+                    {/* <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink> */}
+                    {/* <ExternalLink variant="secondary" href={LINKS.PRIVACY}>Privacy</ExternalLink> */}
                     <ExternalLink variant="secondary" href={LINKS.SUPPORT}>Support</ExternalLink>
                     <ExternalLink variant="secondary" href={LINKS.CONTACT}>Contact us</ExternalLink>
                     <div  className="flex flex-1 justify-end">
