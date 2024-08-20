@@ -1,3 +1,4 @@
+import { Callout } from "nextra-theme-docs";
 import { SwaggerLink, SchemaLoader } from "components";
 import { SWAGGER_TAGS } from "constants/index";
 import { loadStatic } from "utils/schemas";
@@ -9,7 +10,7 @@ export const getStaticProps = loadStatic;
 **Rates** service provides access to exchange rates for various tokens on the TON blockchain.
 
 <Callout type="warning" emoji="⚠️">
-  Can't be used for financial transactions
+  Don’t use this for financial transactions.
 </Callout>
 
 ## Operations
