@@ -1,0 +1,13 @@
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Jettons<SwaggerLink tag={SWAGGER_TAGS.JETTONS} />
+
+The **Jettons** service provides access to fungible tokens on the TON blockchain. This service enables retrieval of detailed information about fungible tokens, including balances, transaction history, and metadata. Jettons are digital assets that can be transferred between users and used as a medium of exchange within the TON ecosystem.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.JETTONS} />

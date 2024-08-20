@@ -1,0 +1,14 @@
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Traces<SwaggerLink tag={SWAGGER_TAGS.TRACES} />
+
+**Traces** service provides access to low-level transaction traces on the TON blockchain. This service enables retrieval of detailed information about individual transactions, including input and output data, gas usage, and execution status. Traces are essential for debugging and analyzing blockchain interactions, as they provide a detailed view of the transaction lifecycle.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.TRACES} />
+

@@ -1,0 +1,14 @@
+import { Callout } from "nextra-theme-docs";
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Staking<SwaggerLink tag={SWAGGER_TAGS.STAKING} />
+
+The Staking service provides essential endpoints for interacting with staking pools on the network. It allows users to view and manage their participation in various staking pools.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.STAKING} />

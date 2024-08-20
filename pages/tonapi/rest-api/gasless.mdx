@@ -1,0 +1,38 @@
+import { ExternalLink, SchemaLoader, SwaggerLink } from "components";
+import {
+  SWAGGER_SCHEMA_YAML_URL,
+  TONAPI_LANDING_PAGE_SWAGGER_URL,
+  GITHUB_LINKS,
+  SWAGGER_TAGS
+} from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Gasless<SwaggerLink tag={SWAGGER_TAGS.GASLESS} />
+
+**Gasless transactions** on the TON platform enable users to send transactions without paying gas fees directly from their wallets. This is achieved using **Signed Internal Messages** sent through a **gas proxy contract**, which covers the transaction fees on behalf of the user. This approach simplifies blockchain interactions, making it easier for users who may not have TON tokens in their wallets.
+
+This service only works with <ExternalLink href={GITHUB_LINKS.W5_SPECIFICATION}>W5 wallets</ExternalLink>
+
+## Architecture
+
+Gasless transactions leverage **Signed Internal Messages**. These messages are signed by the user but routed through a smart contract that pays the fees using a **gas proxy**. This eliminates the need for users to hold TON tokens for transaction fees.
+
+**TONAPI** plays a critical role by simulating transaction execution to accurately estimate fees and sending the transaction to multiple validators to increase the chances of successful processing. Additionally, **TONAPI** ensures that the user’s wallet and gas proxy contract are in the same shard, minimizing latency and ensuring fast transaction processing.
+
+## Process for Executing
+
+1. **Fetch Configuration:** Request the gasless transaction parameters using `/v2/gasless/config`.
+2. **Estimate Transaction:** Send a POST request to `/v2/gasless/estimate/{master_id}` to receive a payload for signing.
+3. **Sign Payload:** Sign the received payload with your private key.
+4. **Send Transaction:** Submit the signed message via POST to `/v2/gasless/send`.
+
+## Implementation Examples
+
+- **TypeScript:** See an implementation example for gasless transactions in TypeScript [here](/tonapi/recipes#gasless-transfer).
+- **Go:** Find the Go implementation example [here](/tonapi/recipes#gasless-transfer).
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.GASLESS} />

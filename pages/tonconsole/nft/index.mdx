@@ -1,0 +1,28 @@
+import { Card, Cards, Callout } from "nextra-theme-docs";
+import { CONSOLE_LINKS, GITHUB_LINKS } from "constants/index";
+import { ExternalLink } from "components/ExternalLink";
+ 
+# NFT
+
+## Compressed NFTs (cNFTs)
+
+Compressed NFTs (cNFTs) are a format that allows for the creation of massive collections (up to one billion NFTs) without significant time and $TON costs typically associated with minting. The cNFT format combines two types of storage:
+
+- **On-chain:** Data is stored directly on the blockchain, making it visible and accessible to all network participants.
+- **Off-chain:** Data is stored on a secure server (e.g., Amazon), which enables faster and more efficient operations with NFTs since they do not require direct blockchain processing.
+
+Minting (registering on the blockchain) of a cNFT occurs upon the first interaction with the digital item. At this moment, the cNFT becomes indistinguishable from a regular NFT, as the digital item is added to the blockchain, making it visible and exchangeable. The cost of registering a cNFT on the blockchain is equivalent to the cost of minting a regular NFT, which is a small symbolic fee.
+
+For technical implementation details on how to create and manage cNFTs, please refer to:
+
+- **<ExternalLink href={GITHUB_LINKS.CNFT_SMART_CONTRACT}>Compressed NFT Smart Contract:</ExternalLink>:** This repository provides the smart contract required for working with cNFTs on the TON blockchain and includes all necessary documentation to get started.
+
+---
+
+### cNFT Indexing Service
+
+The cNFT Indexing Service allows you to add and index your cNFTs via the <ExternalLink href={CONSOLE_LINKS.CNFT}>Tonconsole</ExternalLink> interface, making them available through TonAPI without requiring immediate on-chain minting.
+
+- **Tonconsole Interface:** Enables the addition and indexing of cNFTs, making them searchable and accessible across all applications that use TonAPI, including Tonviewer and Tonkeeper, without needing to mint them on-chain until the first interaction.
+
+For more information on how to index your cNFTs using Tonconsole, please refer to the relevant documentation and console usage guides.

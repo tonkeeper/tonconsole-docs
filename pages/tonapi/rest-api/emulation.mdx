@@ -1,0 +1,14 @@
+import { Callout } from "nextra-theme-docs";
+import { SwaggerLink, SchemaLoader } from "components";
+import { SWAGGER_TAGS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# Emulation<SwaggerLink tag={SWAGGER_TAGS.EMULATION} />
+
+The Emulation methods offers tools for simulating the behavior of messages within the blockchain before they are actually sent. This service is particularly useful for developers and users who wish to test and verify the potential outcomes of their actions without committing them to the blockchain.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.EMULATION} />

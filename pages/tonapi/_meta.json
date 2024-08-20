@@ -1,7 +1,8 @@
 {
   "index": "Introduction",
-  "api-v2": "API v2",
+  "rest-api": "REST API",
   "streaming-api": "Streaming API",
-  "sdk": "SDK",
-  "graphql": "GraphQL"
+  "graphql": "GraphQL",
+  "sdk": "SDKs & Swagger",
+  "recipes": "Recipes"
 }

@@ -1,0 +1,13 @@
+import { SwaggerLink, SchemaLoader, ExternalLink } from "components";
+import { SWAGGER_TAGS, TONORG_LINKS } from "constants/index";
+import { loadStatic } from "utils/schemas";
+
+export const getStaticProps = loadStatic;
+
+# DNS<SwaggerLink tag={SWAGGER_TAGS.DNS} />
+
+The **DNS** service provides access to the <ExternalLink href={TONORG_LINKS.TONDNS_ABOUT}>TON DNS</ExternalLink>. This service enables retrieval of detailed information about domain names, including ownership, expiration dates, and associated accounts. DNS is used to map human-readable domain names to blockchain addresses, facilitating interaction with accounts and services on the TON network.
+
+## Operations
+
+<SchemaLoader tag={SWAGGER_TAGS.DNS} />

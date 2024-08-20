@@ -1,0 +1,168 @@
+import { Callout } from "nextra-theme-docs";
+
+# Deep Linking into Tonkeeper
+
+<Callout type="warning" emoji="🚨">
+  This page is a draft, and not verified by the Tonkeeper team.
+</Callout>
+
+Your application might operate outside of Tonkeeper, like a website or a mobile app. Deep links allow you to seamlessly direct users back to a meaningful location within the Tonkeeper app.
+
+## Deep linking with `tonkeeper://`
+
+Use the `tonkeeper://` URI scheme to deep link into a user's Tonkeeper client on the following platforms:
+
+- **Mobile clients**:
+  - iPhone
+  - Android
+
+### Supported URI Schemes
+
+Tonkeeper supports multiple URI schemes, allowing for flexibility depending on the context in which the link is used. The following schemes are supported:
+
+- **`ton://`**: This scheme is part of the broader TON blockchain standard, enabling interoperability across different TON-based wallets and services.
+- **`tonkeeper://`**: A custom URI scheme specifically for deep linking into the Tonkeeper app.
+- **`https://app.tonkeeper.com/`**: A web-based scheme that can be used in browsers and other environments that do not support custom URI schemes.
+
+All three schemes are interchangeable and serve similar purposes, directing users to specific actions or pages within Tonkeeper.
+
+### Supported URIs
+
+For each supported action, the structure of the URI is the same across all three schemes. Replace `{PREFIX}` with the desired scheme (`ton://`, `tonkeeper://`, or `https://app.tonkeeper.com/`).
+
+#### **Transfer**
+
+**1. Open Transfer Screen**
+
+**Description:** Opens the pre-filled Send screen and prompts the user to enter the missing data.
+
+- **Format:**
+  ```
+  {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
+  ```
+- **Parameters:**
+  - `{ADDRESS}` (required): The recipient's TON address.
+  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
+
+**Examples:**
+
+- **Address only:** 
+  ```
+  ton://transfer/{ADDRESS}
+  tonkeeper://transfer/{ADDRESS}
+  https://app.tonkeeper.com/transfer/{ADDRESS}
+  ```
+- **Address + Amount:** 
+  ```
+  {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}
+  ```
+- **Address + Text:** 
+  ```
+  {PREFIX}transfer/{ADDRESS}?text={TEXT}
+  ```
+- **Address + Amount + Text:** 
+  ```
+  {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
+  ```
+
+##### **2. Address with Encrypted Comment**
+
+**Description:** Opens the Send screen with a pre-filled encrypted comment. This can be done using either `https://app.tonkeeper.com/` or `tonkeeper://` schemes.
+
+TODO: no support for `ton://` scheme???
+
+- **Format:**
+  ```
+  tonkeeper://transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
+  ```
+  ```
+  https://app.tonkeeper.com/transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
+  ```
+
+- **Parameters:**
+  - `{ADDRESS}` (required): The recipient's TON address.
+  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `bin` (optional): Encrypted binary data to include in the transaction.
+
+---
+
+### Standard Reference
+
+The `ton://` scheme is part of the broader TON blockchain standard, which defines how TON-based applications and services should implement deep linking. You can learn more about the TON standard and its URI scheme by visiting the official documentation [here](https://docs.ton.org/).
+
+---
+
+### Example Workflows
+
+- **Quick Payments:** Integrate payment requests directly from your website, allowing users to complete transactions with a single tap using any of the supported URI schemes.
+- **In-app Transactions:** Use deep links to facilitate seamless transfers between users within your application.
+- **Cross-Wallet Compatibility:** Utilize the `ton://` scheme to ensure compatibility with other TON-based wallets and services.
+
+##### **3. Expiry Timestamp**
+
+**Description:** Opens the Send screen with an expiry timestamp for the transaction.
+
+- **Format:**
+  ```
+  https://app.tonkeeper.com/transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}&exp={EXPIRY_TIMESTAMP}
+  ```
+- **Parameters:**
+  - `{ADDRESS}` (required): The recipient's TON address.
+  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
+  - `exp` (optional): Expiry timestamp in seconds since the Unix epoch.
+
+**Example:**
+```
+https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000&text=test&exp=500
+```
+
+---
+
+### External Deep Links
+
+Tonkeeper supports integration with other TON services through similar deep linking structures.
+
+#### **Tonhub**
+
+**Description:** Tonhub also supports deep linking for transfers, compatible with Tonkeeper.
+
+- **Format:**
+  ```
+  https://tonhub.com/transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
+  ```
+
+**Examples:**
+```
+https://tonhub.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n
+https://tonhub.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=10000
+https://tonhub.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?text=just%20message
+https://tonhub.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=7000&text=just%20message
+```
+
+#### **Ton.app**
+
+**Description:** Ton.app allows users to initiate transfers through its deep linking structure.
+
+- **Format:**
+  ```
+  https://ton.app/pay/transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
+  ```
+
+**Examples:**
+```
+https://ton.app/pay/transfer/UQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOGzCi?amount=1000000000&text=qwerty
+```
+
+---
+
+### Example Workflows
+
+- **Quick Payments:** Integrate payment requests directly from your website, allowing users to complete transactions with a single tap using `tonkeeper://transfer` links.
+- **In-app Transactions:** Use deep links to facilitate seamless transfers between users within your application.
+- **Link to Specific Transfers:** Provide support or history review by linking directly to specific transactions or transfers.
+
+---
+
+This restructured documentation groups related deep links together, making it easier to understand the available options and how to use them effectively.
