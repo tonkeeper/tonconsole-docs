@@ -123,4 +123,53 @@ The camera in Android normally reads this size of each code at this speed.
 
 The follow diagrams shows the diagrams for connecting and signing a transaction via signer mobile application:
 
-![Interaction diagram](https://www.plantuml.com/plantuml/png/pLGnZjim4EprYeNhv0CkWiDToZHnpaZZmWovbWbHIuLBHTyFAAo84BOOo8slSM5gPcU6EtpXg48SUzSqRV3Z05yH1sUfW_HZgMsQ8sE0pr_WtLE7E63Omn2G6SxpTvDo3YDSWk-1RKiOpl1hZD4JD0AvmRT865J4PGWOcLeYVinqU_034kHFvd_dyoFdKqQ7EYvYM0T4oig5f_peaxZO_UDY9yhpZ8mj9MSnCDbuXPyp-9kbxe0yU68KWj9szb672k36eZ8cX-tyTEzUjAUB3VrwyAp-e90q3P9PRltx0TwymUBI2_iFPPLeTQ9DLazKpKcSyjLF6MyMWdjUMIkIYIKW6LaDO521iwwdH9qBbifIBzXk6QB802EPdFdQK1qmvHw38hvWW5V_zlyI9Y4PKkxdYLB2xt9smDyZSgoKT3FLtJABRHMjfxKkIq9fO6KJqt4AeRQa5PKRwbn1btczEgyxVLMMzlET5fTLbbBQyq4NHUITA3c7ofvK-hsLiTm2UGGUfoktedmVwiZdxsr5v8RNjSwm-l1k8jc-_oz8PkpTNm00)
+#### Deeplink linking
+```mermaid
+sequenceDiagram
+    participant User
+    participant Tonkeeper
+    participant Signer
+    participant Blockchain
+    
+    User->>Tonkeeper: press 'link wallet from signer' button
+    Tonkeeper->>Tonkeeper: generate linking deeplink
+    Tonkeeper->>Signer: open deeplink
+    Signer->>User: open select wallet screen
+    User->>Signer: select wallet, press "link wallet" button
+    Signer->>Signer: generate link deeplink with WalletLinkResponse
+    Signer->>Tonkeeper: open deeplink with WalletLinkResponse
+    Tonkeeper->>User: open add wallet flow
+    User->>Tonkeeper: confirm
+    Tonkeeper->>Tonkeeper: save wallet
+```
+
+#### QR Code linking
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Tonkeeper
+    participant Signer
+    participant Blockchain
+```
+#### Deeplink signing
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Tonkeeper
+    participant Signer
+    participant Blockchain
+```
+
+#### QR code signing
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Tonkeeper
+    participant Signer
+    participant Blockchain
+```
+
+{/* ![Interaction diagram](https://www.plantuml.com/plantuml/png/pLGnZjim4EprYeNhv0CkWiDToZHnpaZZmWovbWbHIuLBHTyFAAo84BOOo8slSM5gPcU6EtpXg48SUzSqRV3Z05yH1sUfW_HZgMsQ8sE0pr_WtLE7E63Omn2G6SxpTvDo3YDSWk-1RKiOpl1hZD4JD0AvmRT865J4PGWOcLeYVinqU_034kHFvd_dyoFdKqQ7EYvYM0T4oig5f_peaxZO_UDY9yhpZ8mj9MSnCDbuXPyp-9kbxe0yU68KWj9szb672k36eZ8cX-tyTEzUjAUB3VrwyAp-e90q3P9PRltx0TwymUBI2_iFPPLeTQ9DLazKpKcSyjLF6MyMWdjUMIkIYIKW6LaDO521iwwdH9qBbifIBzXk6QB802EPdFdQK1qmvHw38hvWW5V_zlyI9Y4PKkxdYLB2xt9smDyZSgoKT3FLtJABRHMjfxKkIq9fO6KJqt4AeRQa5PKRwbn1btczEgyxVLMMzlET5fTLbbBQyq4NHUITA3c7ofvK-hsLiTm2UGGUfoktedmVwiZdxsr5v8RNjSwm-l1k8jc-_oz8PkpTNm00) */}
