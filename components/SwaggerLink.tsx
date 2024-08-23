@@ -1,4 +1,4 @@
-import { getLinkToSwaggerTag } from "../utils/links";
+import { getLinkToSwaggerTag } from '../utils/links';
 
 export function SwaggerLink({ tag }: { tag: string }) {
   return (
@@ -9,9 +9,8 @@ export function SwaggerLink({ tag }: { tag: string }) {
       className="swagger-anchor"
       style={{
         order: 5,
-        marginLeft: "auto",
-      }}
-    >
+        marginLeft: 'auto',
+      }}>
       <style>
         {`
             .swagger-anchor::after {

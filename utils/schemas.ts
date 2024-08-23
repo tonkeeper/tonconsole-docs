@@ -1,4 +1,4 @@
-import { SWAGGER_SCHEMA_JSON_URL } from "../constants";
+import { SWAGGER_SCHEMA_JSON_URL } from '../constants';
 
 export const loadStatic = () => {
   return fetch(SWAGGER_SCHEMA_JSON_URL as string)
