@@ -50,7 +50,7 @@ Receiving and sending data can be done via:
 
 ### Sign the transaction (from Tonkeeper → Signer)
 
-#### Scheme: `tonsign://v1/`
+**Scheme**: `tonsign://v1/`
 
 Parameters marked with an asterisk (*) are required.
 
@@ -64,7 +64,7 @@ Parameters marked with an asterisk (*) are required.
 | seqno     |                                                                                                 | 1                                      |
 | network   | Ton network version: Mainnet = -239 Testnet = -3                                                | -239                                   |
 
-Example link: `tonsign://v1/?network=ton&pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&body=b5ee9c7241010101000a0000100000000000000000768999bf`
+Example link: `tonsign://v1/?network=ton&pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&body=b5ee9c7241010101000a0000100000000000000000768999bf`  
 This URL must be included in the QR code.
 
 #### Parameter `return` 
@@ -77,7 +77,7 @@ Example link: `tonsign://v1/?network=ton&pk=5a13667c677535f94d8b365c7952e3b63e06
 
 ### Return signed transaction (Signer → Tonkeeper)
 
-#### Scheme: `tonkeeper://publish` or `https://app.tonkeeper.com/publish` if opening by click/direct redirect (mainly needed for iOS)
+**Scheme**: `tonkeeper://publish` or `https://app.tonkeeper.com/publish` if opening by click/direct redirect (mainly needed for iOS)
 
 Web wallet use `return` for interaction on one device. Doesn't need a special scheme.
 
@@ -87,12 +87,12 @@ Parameters marked with an asterisk (*) are required.
 |-----------|-------------------------------------------------------------------------------------------------|
 | sign*     | Signature of transaction hash in hex. (Result from: PrivateKey.sign(body.hash) )                |
 
-Example link: `tonkeeper://publish?sign=9dfab96f555563f48a641c628ae74168d37f7da1745bfd3cbf1b6013cce5533c03ae59e87c8ebe0146c1d832b797020ac29ff6a1797e7ae7d4b61df89c34540f`
+Example link: `tonkeeper://publish?sign=9dfab96f555563f48a641c628ae74168d37f7da1745bfd3cbf1b6013cce5533c03ae59e87c8ebe0146c1d832b797020ac29ff6a1797e7ae7d4b61df89c34540f`  
 This URL must be included in the QR code.
 
 ### Pairing (Signer → Tonkeeper)
 
-#### Scheme: `tonkeeper://signer/link` or `https://app.tonkeeper.com/signer/link` if opening by click/direct redirection (mainly needed for iOS). For web: `https://wallet.tonkeeper.com/signer/link`.
+**Scheme**: `tonkeeper://signer/link` or `https://app.tonkeeper.com/signer/link` if opening by click/direct redirection (mainly needed for iOS). For web: `https://wallet.tonkeeper.com/signer/link`.
 
 Parameters marked with an asterisk (*) are required.
 
@@ -104,7 +104,7 @@ Parameters marked with an asterisk (*) are required.
 | local     | We pass true only to open Tonkeeper locally. This way we can determine that Tonkeeper is opened directly from Signer. |               |
 
 Example link for app: `tonkeeper://signer/link?pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&name=MyKey`
-Example link for web: `https://wallet.tonkeeper.com/signer/link?pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&name=MyKey`
+Example link for web: `https://wallet.tonkeeper.com/signer/link?pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&name=MyKey`  
 This URL must be included in the QR code.
 
 ### QR code specification
@@ -125,8 +125,9 @@ The follow diagrams shows the diagrams for connecting and signing a transaction 
 
 #### Deeplink linking
 ```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
 sequenceDiagram
-    participant User
+    actor User
     participant Tonkeeper
     participant Signer
     participant Blockchain
@@ -136,8 +137,8 @@ sequenceDiagram
     Tonkeeper->>Signer: open deeplink
     Signer->>User: open select wallet screen
     User->>Signer: select wallet, press "link wallet" button
-    Signer->>Signer: generate link deeplink with WalletLinkResponse
-    Signer->>Tonkeeper: open deeplink with WalletLinkResponse
+    Signer->>Signer: generate link deeplink <br> with WalletLinkResponse
+    Signer->>Tonkeeper: open deeplink <br> with WalletLinkResponse
     Tonkeeper->>User: open add wallet flow
     User->>Tonkeeper: confirm
     Tonkeeper->>Tonkeeper: save wallet
@@ -146,30 +147,65 @@ sequenceDiagram
 #### QR Code linking
 
 ```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
 sequenceDiagram
-    participant User
+    actor User
     participant Tonkeeper
     participant Signer
     participant Blockchain
+
+    User->>Signer: press 'link wallet' button
+    Signer->>Signer: generate QR code <br> with WalletLinkResponse
+    Signer->>User: show generated QR code
+    User->>Tonkeeper: scan Signer generated QR code
+    Tonkeeper->>Tonkeeper: parse QR code
+    Tonkeeper->>User: open add wallet flow
+    User->>Tonkeeper: confirm
+    Tonkeeper->>Tonkeeper: save wallet
 ```
 #### Deeplink signing
 
 ```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
 sequenceDiagram
-    participant User
+    actor User
     participant Tonkeeper
     participant Signer
     participant Blockchain
+
+    User->>Tonkeeper: press "confirm and send" button
+    Tonkeeper->>Tonkeeper: create transfer BoC
+    Tonkeeper->>Tonkeeper: generate sign transfer deeplink with SignTransferRequest
+    Tonkeeper->>Signer: open sign transfer deeplink with SignTransferRequest
+    Signer->>User: open confirmation screen
+    User->>Signer: press "sign" button
+    Signer->>Signer: sign BoC
+    Signer->>Signer: generate deeplink with <br> SignTransferResponse
+    Signer->>Tonkeeper: open deeplink with <br> SignTransferResponse
+    Tonkeeper->>Blockchain: send transfer BoC
 ```
 
 #### QR code signing
 
 ```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
 sequenceDiagram
-    participant User
+    actor User
     participant Tonkeeper
     participant Signer
     participant Blockchain
-```
 
-{/* ![Interaction diagram](https://www.plantuml.com/plantuml/png/pLGnZjim4EprYeNhv0CkWiDToZHnpaZZmWovbWbHIuLBHTyFAAo84BOOo8slSM5gPcU6EtpXg48SUzSqRV3Z05yH1sUfW_HZgMsQ8sE0pr_WtLE7E63Omn2G6SxpTvDo3YDSWk-1RKiOpl1hZD4JD0AvmRT865J4PGWOcLeYVinqU_034kHFvd_dyoFdKqQ7EYvYM0T4oig5f_peaxZO_UDY9yhpZ8mj9MSnCDbuXPyp-9kbxe0yU68KWj9szb672k36eZ8cX-tyTEzUjAUB3VrwyAp-e90q3P9PRltx0TwymUBI2_iFPPLeTQ9DLazKpKcSyjLF6MyMWdjUMIkIYIKW6LaDO521iwwdH9qBbifIBzXk6QB802EPdFdQK1qmvHw38hvWW5V_zlyI9Y4PKkxdYLB2xt9smDyZSgoKT3FLtJABRHMjfxKkIq9fO6KJqt4AeRQa5PKRwbn1btczEgyxVLMMzlET5fTLbbBQyq4NHUITA3c7ofvK-hsLiTm2UGGUfoktedmVwiZdxsr5v8RNjSwm-l1k8jc-_oz8PkpTNm00) */}
+    User->>Tonkeeper: press "confirm and send" button
+    Tonkeeper->>Tonkeeper: create transfer BoC
+    Tonkeeper->>Tonkeeper: generate sign transfer <br> QR code with <br> SignTransferRequest
+    Tonkeeper->>User: show generated sign <br> transfer QR code with <br> SignTransferRequest
+    User->>Signer: scan generated sign transfer QR code <br> with SignTransferRequest
+    Signer->>Signer: parse QR code with <br>SignTransferRequest
+    Signer->>User: open confirmation screen
+    User->>Signer: press "sign" button
+    Signer->>Signer: sign BoC
+    Signer->>Signer: generate QR code with <br>SignTransferResponse
+    Signer->>User: show generated <br> QR code with <br> SignTransferResponse
+    User->>Tonkeeper: scan generated QR code <br>with SignTransferResponse
+    Tonkeeper->>Blockchain: send transfer BoC
+```
