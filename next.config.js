@@ -7,4 +7,11 @@ module.exports = withNextra({
     images: {
         unoptimized: true
     },
+    redirects: () => [
+        {
+          source: '/tonapi/api-v2',
+          destination: '/tonapi/rest-api',
+          permanent: true
+        },
+    ]
 });
