@@ -1,2 +1,2 @@
-export { getLinkToSwaggerTag, getLinkToSwaggerOperation } from "./links";
-export { loadStatic } from "./schemas";
+export * from "./links";
+export * from "./schemas";
