@@ -15,8 +15,8 @@ pipeline {
                 cleanWs()
                 git branch: 'master', credentialsId: 'tonkeeper-build-bot', url: 'https://github.com/tonkeeper/tonconsole-docs'
                 sh  '''
-                    docker run --rm --name=ton_console_prod_npm_install -v "$PWD":/local --workdir=/local node:18.1-alpine npm ci
-                    docker run --rm --name=ton_console_prod_build       -v "$PWD":/local --workdir=/local node:18.1-alpine npm run build
+                    docker run --rm --name=ton_console_prod_npm_install -v "$PWD":/local --workdir=/local node:20.17.0-alpine3.20 npm ci
+                    docker run --rm --name=ton_console_prod_build       -v "$PWD":/local --workdir=/local node:20.17.0-alpine3.20 npm run build
                     '''
                 archiveArtifacts artifacts: 'dist/', followSymlinks: false, onlyIfSuccessful: true
             }
