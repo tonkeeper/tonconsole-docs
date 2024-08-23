@@ -1,11 +1,11 @@
-import { ExternalLink, SchemaLoader, SwaggerLink } from "components";
+import { ExternalLink, SchemaLoader, SwaggerLink } from "@/components";
 import {
   SWAGGER_SCHEMA_YAML_URL,
   TONAPI_LANDING_PAGE_SWAGGER_URL,
   GITHUB_LINKS,
   SWAGGER_TAGS
-} from "constants/index";
-import { loadStatic } from "utils/schemas";
+} from "@/constants";
+import { loadStatic } from "@/utils";
 
 export const getStaticProps = loadStatic;
 
