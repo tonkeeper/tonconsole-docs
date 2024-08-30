@@ -4,6 +4,7 @@ import { SWAGGER_TAGS } from "@/constants";
 import { getLinkToSwaggerTag } from "@/utils";
 import GaslessGo from "./recipes/gasless.go.mdx";
 import GaslessTs from "./recipes/gasless.ts.mdx";
+import GaslessPy from "./recipes/gasless.py.mdx";
 
 # Recipes
 
@@ -13,7 +14,7 @@ import GaslessTs from "./recipes/gasless.ts.mdx";
 
 ## Gasless Transfer
 
-Originating from the [Gasless](/tonapi/rest-api/gasless) section of the REST API documentation, this recipe provides implementation examples for gasless transactions in TypeScript and Go. Developers can use these examples to integrate gasless transactions into their applications.
+Originating from the [Gasless](/tonapi/rest-api/gasless) section of the REST API documentation, this recipe provides implementation examples for gasless transactions in TypeScript, Go and Python. Developers can use these examples to integrate gasless transactions into their applications.
 
 Swagger documentation for Gasless operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.GASLESS)}>here</ExternalLink>.
 
@@ -24,5 +25,9 @@ Swagger documentation for Gasless operations can be found <ExternalLink href={ge
 
   <ExampleTab label="Go">
     <GaslessGo />
+  </ExampleTab>
+
+  <ExampleTab label="Python">
+    <GaslessPy />
   </ExampleTab>
 </ExampleTabs>
