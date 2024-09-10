@@ -1,3 +1,5 @@
+import { Steps } from 'nextra/components'
+
 # TonAPI SDK Guide
 
 TonAPI provides a set of tools and libraries to simplify the integration with the TON blockchain. This guide covers both official and third-party SDKs available for different programming languages, as well as instructions on how to generate an SDK yourself using the provided Swagger specification.
@@ -20,24 +22,32 @@ These SDKs are maintained by the community and provide additional language suppo
 
 - **Python SDK**: [pytonapi on GitHub](https://github.com/tonkeeper/pytonapi)
 
-## Generating an SDK Using the Swagger File
+## Generating an SDK Using the OpenAPI Generator
 
-If you prefer to generate an SDK yourself, you can do so using the TonAPI Swagger specification. Follow these steps:
+If you prefer to generate an SDK yourself, you can do so using the TonAPI OpenAPI specification. Follow these steps:
 
-1. **Download the Swagger Codegen CLI Tool:**
+<Steps>
 
+### Install the OpenAPI Generator CLI Tool:
+
+   Install the OpenAPI generator globally using `npm`:
    ```bash
-   wget https://raw.githubusercontent.com/swagger-api/swagger-codegen/master/bin/swagger-codegen-cli.jar
+   npm install @openapitools/openapi-generator-cli -g
    ```
 
-2. **Generate the SDK:**
-   Use the command below to generate the SDK. The example is for Python, but you can specify a different language by changing the `-l` parameter.
+### Generate the SDK:
 
+   Use the command below to generate the SDK. The example is for Ruby, but you can specify a different language by changing the `-g` (generator) parameter. If your Swagger file has multiple tags per operation and your language struggles with this, you can add the `--openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true` option.
    ```bash
-   java -jar swagger-codegen-cli.jar generate -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -l python -o /path/to/output
+   npx openapi-generator-cli generate -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -g ruby -o /path/to/output
    ```
 
    - **Note:** Replace `/path/to/output` with the actual directory path where you want to generate the SDK.
-   - **Prerequisites:** Ensure that a Java Virtual Machine (JVM) is installed on your system to run the command.
 
-For more information on available options and supported languages, refer to the [Swagger Codegen documentation](https://swagger.io/tools/swagger-codegen/).
+   If you encounter issues during client generation for certain languages due to multiple tags being present on a single operation in the Swagger file (which is the case for our Swagger file), you can resolve this by adding the option `--openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true`. This option helps handle such cases by keeping only the first tag in operations.
+
+</Steps>
+
+To run the OpenAPI generator, you need to have `Node.js` and `npm` installed on your system, as well as Java 11 or higher. These are necessary prerequisites to ensure proper execution.
+
+Alternatively, if you prefer not to use `npm`, the OpenAPI Generator can be installed via Docker, Homebrew (for macOS), or by downloading the JAR file. Detailed instructions for these installation methods are available in the [OpenAPI Generator Installation Guide](https://openapi-generator.tech/docs/installation/).
