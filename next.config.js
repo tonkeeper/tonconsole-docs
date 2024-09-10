@@ -13,5 +13,10 @@ module.exports = withNextra({
       destination: '/tonapi/rest-api',
       permanent: true,
     },
+    {
+      source: '/tonapi/recipes',
+      destination: '/tonapi/cookbook',
+      permanent: true,
+    },
   ],
 });

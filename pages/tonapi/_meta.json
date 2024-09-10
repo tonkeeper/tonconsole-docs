@@ -4,8 +4,5 @@
   "streaming-api": "Streaming API",
   "graphql": "GraphQL",
   "sdk": "SDKs & Swagger",
-  "recipes": "Recipes",
-  "api-v2": {
-    "display": "hidden"
-  }
+  "cookbook": "Cookbook"
 }
