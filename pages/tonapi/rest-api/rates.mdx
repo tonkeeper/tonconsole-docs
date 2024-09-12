@@ -1,18 +1,49 @@
 import { Callout } from "nextra-theme-docs";
-import { SwaggerLink, SchemaLoader } from "@/components";
-import { SWAGGER_TAGS } from "@/constants";
+import { SwaggerLink, SchemaLoader, ExternalLink } from "@/components";
+import { SWAGGER_TAGS, GITHUB_LINKS, LINKS } from "@/constants";
 import { loadStatic } from "@/utils";
 
 export const getStaticProps = loadStatic;
 
 # Rates<SwaggerLink tag={SWAGGER_TAGS.RATES} />
 
-**Rates** service provides access to exchange rates for various tokens on the TON blockchain.
+**Rates service** provides access to exchange rates for various tokens on the TON blockchain. This service calculates token prices using data from our indexer and liquidity pools such as Stonfi and Dedust, offering a comprehensive view of verified tokens, their reserves, and holder counts.
 
 <Callout type="warning" emoji="⚠️">
-  Don’t use this for financial transactions.
+  The rates provided are for informational purposes only. Do not use this data for financial transactions.
 </Callout>
+
+## Logic of Token Price Calculation
+
+Our Rates service utilizes a systematic approach to gather and process data:
+
+
+#### Data Sources:
+   - By leveraging the [analytics service](/tonconsole/analytics) in tonconsole, we obtain data on pools from Stonfi and Dedust.
+   - The collected information includes token **_addresses_**, **_reserves_**, and the **_number of holders_** for verified tokens.
+
+#### Price Calculation:
+   - For standard pools: We apply the formula $xy = k$, where $x$ and $y$ are volumes of two assets in the pool, and $k$ is a constant.
+   - For Dedust stable pools: We use a modified formula $x^3y + y^3x = k$ to account for the specifics of these pools.
+
+   You can view the implementation of these calculations <ExternalLink href={GITHUB_LINKS.RATES_PRICE_CALCULATION_CODE}>here</ExternalLink> .
+
+#### Data Analysis:
+   - We evaluate minimum holder counts to ensure token relevance.
+   - Pool reserves are analyzed and equated to TON for consistency.
+
+## Troubleshooting
+
+If your token has over 100 TON in liquidity but doesn't receive a price from the API, please contact us with the following information:
+
+1. Token address
+2. Liquidity amount
+3. Number of holders
+
+Send this information to <ExternalLink href={LINKS.ZAKHAR_TG}>@zakhar_petukhov</ExternalLink> for assistance.
 
 ## Operations
 
 <SchemaLoader tag={SWAGGER_TAGS.RATES} />
+
+Remember, while this service provides valuable insights into token rates on the TON blockchain, it should not be used as the sole basis for financial decisions or transactions.
