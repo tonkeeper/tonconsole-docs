@@ -2,6 +2,7 @@
   "index": "Introduction",
   "rest-api": "REST API",
   "streaming-api": "Streaming API",
+  "webhooks-api": "Webhooks API",
   "graphql": "GraphQL",
   "sdk": "SDKs & Swagger",
   "cookbook": "Cookbook"
