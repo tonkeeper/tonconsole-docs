@@ -113,3 +113,21 @@ A response example:
   ]
 }
 ```
+
+## Subscribe to events about new contract deployments
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-new-contracts - when a new contract is deployed to the blockchain,
+TONAPI sends a POST request to the webhook URL.
+
+## Unsubscribe from events about new contract deployments
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-new-contracts - stop receiving a webhook notification when a new contract is deployed to the blockchain.
+
+## Subscribe to messages with a specific opcode in a message body
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-msg-opcode/0x{opcode} - when a new transaction is happening with a message that contains a specific opcode in its body,
+TONAPI sends a POST request to the webhook URL.
+
+## Unsubscribe from messages with a specific opcode in a message body
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-msg-opcode/0x{opcode} - stop receiving a webhook notification when a new transaction is happening with a message that contains a specific opcode in its body.
