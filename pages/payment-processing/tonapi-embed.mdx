@@ -15,7 +15,7 @@ The service requires a connection to one or more nodes of the TON network.
 5. ***Deposit smart contract*** - a smart contract on the TON blockchain that can hold the balance of some asset (TON or Jetton). It is usually (but not always) a ***Wallet smart contract.*** The address of the recipient is not always the same as the address of the smart contract where the asset is actually stored. For example, for Jettons, the recipient address is the smart contract address of the Jetton wallet owner.
 6. ***Transaction*** - low-level entity in the TON network. A transaction is an operation that processes inbound and can create outbound messages related to a specific account, altering its state and potentially generating fees for validators. https://docs.ton.org/develop/data-formats/transaction-layout
 7. ***Transfer*** - abstract entity describing the movement of funds between ***Deposit smart contracts.*** Contains information about the sender, recipient, amount, etc. This information can be derived from several low-level entities in the TON blockchain, such as ***Messages*** and ***Transactions***.
-8. ***Сentralized deposit address*** - a ***Deposit address*** to receive funds from many users. Usually requires the use of a memo to accept payments to this address.
+8. ***Centralized deposit address*** - a ***Deposit address*** to receive funds from many users. Usually requires the use of a memo to accept payments to this address.
 9. ***Individual deposit address*** - a ***Deposit address*** to receive funds from one user. The use of a memo is not required.
 10. ***Withdrawal*** - the action of sending funds from one ***Deposit smart contract*** to another by sending a ***Message*** to the TON blockchain.
 11. ***Liteserver Node*** - a node in the TON network that provides an API for external services to interact with TON.
@@ -40,7 +40,10 @@ The service requires a connection to one or more nodes of the TON network.
 
 ## API methods
 
-### Methods `GET /account/{address}/history` and `GET /jetton/{jetton}/{address}/history`
+### Transfer history
+
+`GET /account/{address}/history` <br />
+`GET /jetton/{jetton}/{address}/history`
 
 Methods for obtaining the ***Transfer*** history (with pagination) for a specific ***Deposit address***.
 
@@ -55,11 +58,15 @@ Returns the following data:
 7. Text comment from the ***Message*** (if any)
 8. ***Fee***
 
-### Methods `GET /account/{address}/history/{hash}` and `GET /jetton/{jetton}/{address}/history/{hash}`
+### Hash
+`GET /account/{address}/history/{hash}` <br />
+`GET /jetton/{jetton}/{address}/history/{hash}`
 
 Methods for obtaining a specific ***Transfer*** by ***Transaction*** hash.
 
-### Methods `GET /account/{address}` and `GET /jetton/{jetton}/{address}`
+### Balance
+`GET /account/{address}` <br />
+`GET /jetton/{jetton}/{address}`
 
 Methods for obtaining the ***Deposit smart contract*** balance (TON or Jetton) for the last ***Masterchain block*** known to the service.
 
@@ -72,15 +79,19 @@ Returns the following data:
 3. Last ***LT*** - identifies the last known ***Transaction*** on the ***Deposit smart contract***
 4. Last processed transaction ***LT*** - identifies the last processed ***Transaction*** on the ***Deposit smart contract***, which is included in the ***Transfer*** history
 
-### Method `POST /account/{address}` and `POST /jetton/{jetton}/{address}`
+### Trak address
+`POST /account/{address}` <br />
+`POST /jetton/{jetton}/{address}`
 
 Methods to add a new ***Deposit address*** for tracking. Since a Jetton ***Wallet*** in the TON blockchain is a separate smart contract, when adding a Jetton ***Deposit smart contract*** to tracking, the owner of this wallet (also a smart contract) is added to the tracking as a TON ***Deposit smart contract***. The owner of the Jetton wallet pays fees for Jetton withdrawals.
 
-### Method `GET /resolve/{domain}`
+### Resolve domain
+`GET /resolve/{domain}`
 
 Method for resolving domain names on the TON blockchain (presented as NFT), such as `wallet.ton`. Does not work for any domain name, but for a name that has a corresponding DNS record. Returns the address of the contract specified in the DNS record.
 
-### Method `GET  /status`
+### Status
+`GET  /status`
 
 A method for obtaining the current service health and lag when indexing data from the chain.
 
