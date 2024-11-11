@@ -103,6 +103,11 @@ const config: DocsThemeConfig = {
             href="/disclaimer">
             Disclaimer
           </a>
+          <a
+            className="nx-text-gray-500 hover:nx-text-gray-900 dark:nx-text-gray-400 dark:hover:nx-text-gray-100 contrast-more:nx-text-gray-800 contrast-more:dark:nx-text-gray-50"
+            href="/terms-of-use">
+            Terms
+          </a>
           {/* <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink> */}
           {/* <ExternalLink variant="secondary" href={LINKS.PRIVACY}>Privacy</ExternalLink> */}
           <ExternalLink variant="secondary" href={LINKS.SUPPORT}>
