@@ -1,0 +1,64 @@
+import { ExternalLink } from '@/components';
+import { LINKS } from '@/constants';
+
+# Payment Processing
+
+We offer a variety of payment processing solutions for the TON network and can provide one tailored to your specific needs.
+Additionally, solutions can be customized to meet specific requirements.
+
+These solutions are capable of handling a large volume of payments and are suitable for integration into CEX-scale products.
+Our solutions are already in use by CEXes and other clients.
+
+## What key features can be provided depending on the processing approach
+
+### Asset types
+
+1. TON
+2. Jettons
+
+### Deployment and maintenance
+
+1. Self-hosted solutions are available, providing full control over all sensitive information and reducing risks.
+2. Access to auxiliary services, such as liteservers, can be provided for reliable and stable operation.
+
+### Level of interaction with blockchain
+
+1. Only blockchain monitoring and indexing of payment-related transactions without storing private keys.
+2. Upon request, functionality for message assembly and signing by a trusted party can be added.
+3. A solution with a full-fledged payment processor that both monitors and performs transfers.
+
+### By method of payment acceptance
+
+1. Acceptance of payments to one or a few contracts (wallets) with a text comment (memo).
+2. Acceptance of payments to individual deposit addresses for each user (no comment required).
+
+### Interfaces for interaction with services
+
+1. REST API
+2. Existing interfaces can be modified, or new ones developed, according to the customer's requirements.
+
+### Source code
+
+1. Closed-source solution.
+2. Open-source solution with our support.
+
+### Level of trust when interacting with blockchain
+
+The liteapi interface, provided by liteservers, is used for the interaction of offchain services with the TON blockchain.
+To ensure trust in the data received through this interface and to exclude the possibility of data falsification by a liteserver, a proof-check mechanism is used.
+Our solutions are based on libraries that support proof checks and provide secure and trustless communication with liteservers (including public ones).
+This allows you to use not only trusted personal liteservers but also solutions that involve purchasing access to liteservers.
+
+## TonAPI Embed solution
+
+[Demo API in testnet](https://demo-embed.tonapi.io/) <br />
+[Documentation page](https://docs.tonconsole.com/payment-processing/tonapi-embed)
+
+## A form to collect feedback and customer needs
+
+[Google forms](https://forms.gle/NTx1w1ksU5V7fzFB7)
+
+## You can contact us
+
+Mail to: <ExternalLink href={'mailto:' + LINKS.CONTACT_EMAIL}> {LINKS.CONTACT_EMAIL} </ExternalLink> <br />
+Telegram: [Rostislav Rudakov](https://t.me/tonrostislav)

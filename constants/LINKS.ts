@@ -5,6 +5,7 @@ export const LINKS = {
   // PRIVACY: "#", // TODO: Add link
   SUPPORT: 'https://t.me/tonrostislav',
   CONTACT: 'https://t.me/tonrostislav',
+  CONTACT_EMAIL: 'rostislav.r@tonkeeper.com',
   ZAKHAR_TG: 'https://t.me/zakhar_petukhov',
   CONSOLE: 'https://tonconsole.com',
 } as const;
