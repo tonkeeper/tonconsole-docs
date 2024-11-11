@@ -4,8 +4,8 @@ A service for indexing blockchain data related to the transfers of funds (TON an
 Designed for self-hosted use and integration into the infrastructure of CEX and services that process deposits and withdrawals on the TON blockchain.
 The service requires a connection to one or more nodes of the TON network.
 
-## Demo API
-[Demo API in testnet](https://demo-embed.tonapi.io/)
+## Testnet Demo instance
+https://demo-embed.tonapi.io/
 
 ## Glossary 
 1. ***Message*** - A message is a packet of data sent between actors (users, applications, smart contracts) on TON blockchain. https://docs.ton.org/develop/smart-contracts/guidelines/message-delivery-guarantees
@@ -40,7 +40,11 @@ The service requires a connection to one or more nodes of the TON network.
 
 ## API methods
 
-### Transfer history
+You can get Swagger file here: **[Swagger file](https://demo-embed.tonapi.io/openapi.yaml)** <br />
+You can use Swagger UI to explore the API methods: **[Swagger UI](https://demo-embed.tonapi.io/swagger-ui/)**
+
+
+### GET Transfers history
 
 `GET /account/{address}/history` <br />
 `GET /jetton/{jetton}/{address}/history`
@@ -58,13 +62,13 @@ Returns the following data:
 7. Text comment from the ***Message*** (if any)
 8. ***Fee***
 
-### Hash
+### GET Transfer by Hash
 `GET /account/{address}/history/{hash}` <br />
 `GET /jetton/{jetton}/{address}/history/{hash}`
 
 Methods for obtaining a specific ***Transfer*** by ***Transaction*** hash.
 
-### Balance
+### GET Balance
 `GET /account/{address}` <br />
 `GET /jetton/{jetton}/{address}`
 
@@ -79,7 +83,7 @@ Returns the following data:
 3. Last ***LT*** - identifies the last known ***Transaction*** on the ***Deposit smart contract***
 4. Last processed transaction ***LT*** - identifies the last processed ***Transaction*** on the ***Deposit smart contract***, which is included in the ***Transfer*** history
 
-### Trak address
+### Add tracking Address
 `POST /account/{address}` <br />
 `POST /jetton/{jetton}/{address}`
 
