@@ -40,7 +40,7 @@ The service requires a connection to one or more nodes of the TON network.
 
 ## API methods
 
-### Methods **`getJettonTransfers` and `getTonTransfers`**
+### Methods `GET /account/{address}/history` and `GET /jetton/{jetton}/{address}/history`
 
 Methods for obtaining the ***Transfer*** history (with pagination) for a specific ***Deposit address***.
 
@@ -55,11 +55,11 @@ Returns the following data:
 7. Text comment from the ***Message*** (if any)
 8. ***Fee***
 
-### Methods **`getTonTransfer` and `getJettonTransfer`**
+### Methods `GET /account/{address}/history/{hash}` and `GET /jetton/{jetton}/{address}/history/{hash}`
 
 Methods for obtaining a specific ***Transfer*** by ***Transaction*** hash.
 
-### Methods **`getBalance` and `getJettonBalance`**
+### Methods `GET /account/{address}` and `GET /jetton/{jetton}/{address}`
 
 Methods for obtaining the ***Deposit smart contract*** balance (TON or Jetton) for the last ***Masterchain block*** known to the service.
 
@@ -72,15 +72,15 @@ Returns the following data:
 3. Last ***LT*** - identifies the last known ***Transaction*** on the ***Deposit smart contract***
 4. Last processed transaction ***LT*** - identifies the last processed ***Transaction*** on the ***Deposit smart contract***, which is included in the ***Transfer*** history
 
-### Method `addAccount` and **`addJettonAccount`**
+### Method `POST /account/{address}` and `POST /jetton/{jetton}/{address}`
 
-Method to add a new ***Deposit address*** for tracking. Since a Jetton ***Wallet*** in the TON blockchain is a separate smart contract, when adding a Jetton ***Deposit smart contract*** to tracking, the owner of this wallet (also a smart contract) is added to the tracking as a TON ***Deposit smart contract***. The owner of the Jetton wallet pays fees for Jetton withdrawals.
+Methods to add a new ***Deposit address*** for tracking. Since a Jetton ***Wallet*** in the TON blockchain is a separate smart contract, when adding a Jetton ***Deposit smart contract*** to tracking, the owner of this wallet (also a smart contract) is added to the tracking as a TON ***Deposit smart contract***. The owner of the Jetton wallet pays fees for Jetton withdrawals.
 
-### Method `resolve`
+### Method `GET /resolve/{domain}`
 
 Method for resolving domain names on the TON blockchain (presented as NFT), such as `wallet.ton`. Does not work for any domain name, but for a name that has a corresponding DNS record. Returns the address of the contract specified in the DNS record.
 
-### Method `status`
+### Method `GET  /status`
 
 A method for obtaining the current service health and lag when indexing data from the chain.
 
