@@ -6,5 +6,12 @@
   "graphql": "GraphQL",
   "sdk": "SDKs & Swagger",
   "cookbook": "Cookbook",
-  "dapp": "Make dApp"
+  "dapp": "Make dApp",
+
+  "api-v2": {
+    "display": "hidden"
+  },
+  "recipes": {
+    "display": "hidden"
+  }
 }
