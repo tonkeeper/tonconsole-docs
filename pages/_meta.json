@@ -3,11 +3,5 @@
   "tonapi": "Ton API",
   "tonconsole": "TON Console",
   "tonkeeper": "Tonkeeper",
-  "payment-processing": "Payment Processing",
-  "disclaimer": {
-    "display": "hidden"
-  },
-  "terms-of-use": {
-    "display": "hidden"
-  }
+  "payment-processing": "Payment Processing"
 }
