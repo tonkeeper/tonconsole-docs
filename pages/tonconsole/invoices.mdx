@@ -1,17 +1,233 @@
 import { Card, Cards } from 'nextra-theme-docs';
-import { LINKS } from "../../constants";
+import { Steps } from 'nextra/components';
+import { LINKS } from '../../constants';
 
-# TON payments processing
+# TON Payment tracker
 
-> With TON transactions you can set up your own crypto payment flow within just few days. And no tedious, time-consuming development needed. The decentralized approach of Invoices is really unique and exclusive to the partners of Ton Apps.
+The service provides tools for tracking specific transactions in the blockchain. It supports TON and USDT, allowing users to monitor the status of payments and receive updates about transaction changes through webhooks.
 
-### Looking for a TON payment solution?
+## Getting Started
 
-- Easy integration for your online market, service or app
-- Fastest payments
-- Access to the payments management panel
-- Smooth integration with Tonkeeper Dapp browser
+To start using the TON Invoicing Service, follow these steps:
 
-<Cards style={{marginTop: '30px'}}>
-    <Card title="Contact us and try it" target="_blank" rel="noopener" href={LINKS.CONTACT} />
-</Cards>
+<Steps>
+### Step 1: Register on Tonconsole
+Visit [TON Cconsole](https://tonconsole.com/) and create an account.
+
+### Step 2: Send Project ID
+
+Find your `Project ID` on the [project settings](https://tonconsole.com/settings/edit-project) page and <br/> share it with Rostislav on Telegram: [t.me/tonrostislav](https://t.me/tonrostislav).
+
+### Step 3: Verification
+
+Once your Project ID is verified, you will gain access to the invoicing service.
+
+### Step 4: Register Your Application
+
+Register your application in the invoicing service via Tonconsole. <br /> Specify the payment recipient's address during registration.
+
+</Steps>
+
+### Managing Applications
+
+Once access is granted:
+
+1. An `API token` will be created automatically.
+2. Use the [TON Console](https://tonconsole.com/) for UI or API to manage invoices (create, delete, view).
+3. Register a webhook on the [Overview page](https://tonconsole.com/invoices/dashboard) to handle invoice status changes.
+
+---
+
+### Payment Creation
+
+<Steps>
+### Step 1: User Initiates Payment
+A user starts the payment process on your website. The frontend sends a request to your backend to create an invoice.
+
+### Step 2: Create an Invoice
+Your backend makes an API request to Tonconsole using the API token.  
+
+```bash
+curl -X POST https://tonconsole.com/api/v1/services/invoices/invoice \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <YOUR_API_TOKEN>' \
+  -d '{"amount": "1000000", "life_time": 1800, "currency": "USDT", "description": "Example description"}'
+```
+
+**Parameters:**
+- `amount`: Amount in nanotons.
+- `life_time`: Invoice lifetime in seconds.
+- `currency`: Currency code (TON or USDT).
+- `description` (optional): Service-specific description visible only to you in the Tonconsole interface.
+
+### Step 3: Handle API Response
+Tonconsole returns a response with the invoice details, including a `payment_link`. Send this link to your frontend, where it can be used in a "Pay with Tonkeeper" button or as a QR code.
+
+**Response Example:**
+```json
+{
+  "id": "string",
+  "status": "pending",
+  "amount": "string",
+  "description": "string",
+  "date_create": 1234567890,
+  "date_expire": 1234567890,
+  "payment_link": "string",
+  "pay_to_address": "0:<hash>"
+}
+```
+
+### Step 4: Monitor Invoice Status
+Register a webhook to receive updates about invoice status changes. Tonconsole will send a POST request to your webhook whenever the status updates (e.g., from "pending" to "paid"). This ensures real-time tracking of payments.
+</Steps>
+
+---
+
+### Webhook for Updates
+
+Use a webhook to monitor changes in invoice status. A webhook is a mechanism where Tonconsole sends a POST request to your server whenever an invoice status changes (e.g., from "pending" to "paid").
+
+Here’s how you can handle webhooks on your server:
+
+#### Example of Webhook Handling (Node.js with Express):
+
+```javascript filename="server.js"
+const express = require('express');
+const app = express();
+
+// Define the webhook endpoint
+app.post('/tonconsole-webhooks', (req, res) => {
+  try {
+    // Parse and log the incoming webhook payload
+    const webhookPayload = JSON.parse(req.body);
+    console.log('Webhook received:', webhookPayload);
+
+    // Respond with a success status to acknowledge the webhook
+    res.status(200).send('Webhook received');
+  } catch (error) {
+    console.error('Error processing webhook:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Webhook server is running on port 3000');
+});
+```
+
+#### Webhook Payload:
+
+**Payload type**
+
+```typescript
+interface Invoice {
+    id: string;
+    status: 'pending' | 'paid' | 'cancelled' | 'expired';
+    amount: string;
+    description?: string;
+    date_create: number;
+    date_expire: number;
+    date_change: number;
+    payment_link: string;
+    pay_to_address: string;
+    paid_by_address?: string;
+    overpayment?: string;
+}
+```
+
+**Payload example**
+
+```json
+{
+  "id": "string",
+  "status": "pending | paid | cancelled | expired",
+  "amount": "string",
+  "description": "string",
+  "date_create": 1234567890,
+  "date_expire": 1234567890,
+  "date_change": 1234567890,
+  "payment_link": "string",
+  "pay_to_address": "0:<hash>",
+  "paid_by_address": "0:<hash>",
+  "overpayment": "string"
+}
+```
+
+---
+
+#### Explanation:
+
+1. **`/tonconsole-webhooks`:** Replace this path with your desired endpoint URL.
+3. **Webhook Payload:** This is the structure of the data Tonconsole will send to your endpoint whenever an invoice's status changes.
+4. **Logging and Acknowledgement:** Always log the payload and respond with a `200` status to indicate successful receipt.
+
+Here is an example of how this can be implemented on your side.
+
+---
+
+## Invoice Management
+
+### Fetching Invoice by ID
+
+**Request:**
+
+```bash
+GET https://tonconsole.com/api/v1/services/invoices/<invoice_id>?api_key=<API_KEY>
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "status": "pending | paid | cancelled | expired",
+  "amount": "string",
+  "description": "string",
+  "date_create": 1234567890,
+  "date_expire": 1234567890,
+  "date_change": 1234567890,
+  "payment_link": "string",
+  "pay_to_address": "0:<hash>",
+  "paid_by_address": "0:<hash>",
+  "overpayment": "string"
+}
+```
+
+### Authentication
+
+Authenticate using either:
+
+- Query parameter: `api_key=<API_KEY>`.
+- Header: `Authorization: Bearer <API_KEY>`.
+
+---
+
+## Important Details
+
+### Invoice Lifetime
+
+- Ensure the invoice `life_time` is appropriately set.
+- Warn users about expiration and block expired payments in your interface.
+
+### Overpayment
+
+Overpayment, while uncommon, can occur in specific scenarios. When it happens, Tonconsole will notify you about the overpayment through webhooks or the user interface. The `overpayment` field in the invoice data reflects the following cases:
+
+- **Payments to expired or canceled invoices**  
+  The `overpayment` field will equal the full amount paid by the user.
+
+- **Payments exceeding the required amount**  
+  The `overpayment` field will represent the difference between the amount paid and the invoice's required amount.
+
+Since Tonconsole focuses solely on tracking transactions and does not process payments directly, handling refunds or adjustments for overpayments will need to be managed on your side. To address such cases, you can use the access credentials to your account holding the funds to implement the necessary refund mechanisms.
+
+This approach ensures you retain full control over your funds while Tonconsole provides reliable real-time monitoring and reporting capabilities.
+
+## Tonconsole UI Features
+
+- **Manual Invoice Creation** *(Use the form to create invoices manually)*
+
+- **Invoice Management** *(View and manage invoices in the table)*
+
+- **Statistics** *(Analyze invoice data using built-in statistics tools)*
