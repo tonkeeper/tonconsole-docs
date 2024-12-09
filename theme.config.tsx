@@ -6,13 +6,18 @@ import { useRouter } from 'next/router';
 const config: DocsThemeConfig = {
   logo: (
     <div className="nx-flex nx-items-center max-[500px]:gap-2 min-[500px]:gap-3">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14 14L4 14L14 4L14 14Z" fill="currentColor"/>
-        <path opacity="0.8" d="M14 14L4 28L4 14L14 14Z" fill="currentColor"/>
-        <path opacity="0.8" d="M28 4L14 4L14 14L28 4Z" fill="currentColor"/>
-        <path opacity="0.4" d="M14 14L28 28L4 28L14 14Z" fill="currentColor"/>
-        <path opacity="0.6" d="M28 28L28 4L14 14L28 28Z" fill="currentColor"/>
-    </svg>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 14L4 14L14 4L14 14Z" fill="currentColor" />
+        <path opacity="0.8" d="M14 14L4 28L4 14L14 14Z" fill="currentColor" />
+        <path opacity="0.8" d="M28 4L14 4L14 14L28 4Z" fill="currentColor" />
+        <path opacity="0.4" d="M14 14L28 28L4 28L14 14Z" fill="currentColor" />
+        <path opacity="0.6" d="M28 28L28 4L14 14L28 28Z" fill="currentColor" />
+      </svg>
       <span className="nx-font-bold max-[500px]:text-lg min-[500px]:text-2xl">Documentation</span>
     </div>
   ),
@@ -103,12 +108,7 @@ const config: DocsThemeConfig = {
             href="/disclaimer">
             Disclaimer
           </a>
-          <a
-            className="nx-text-gray-500 hover:nx-text-gray-900 dark:nx-text-gray-400 dark:hover:nx-text-gray-100 contrast-more:nx-text-gray-800 contrast-more:dark:nx-text-gray-50"
-            href="/terms-of-use">
-            Terms
-          </a>
-          {/* <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink> */}
+          <ExternalLink variant="secondary" href={LINKS.TERMS}>Terms</ExternalLink>
           {/* <ExternalLink variant="secondary" href={LINKS.PRIVACY}>Privacy</ExternalLink> */}
           <ExternalLink variant="secondary" href={LINKS.SUPPORT}>
             Support
