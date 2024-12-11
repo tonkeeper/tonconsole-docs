@@ -1,11 +1,4 @@
-import { Callout } from "nextra-theme-docs";
-
 # Deep Linking into Tonkeeper
-
-<Callout type="warning" emoji="🚨">
-  This page is a draft, and not verified by the Tonkeeper team.
-</Callout>
-
 Your application might operate outside of Tonkeeper, like a website or a mobile app. Deep links allow you to seamlessly direct users back to a meaningful location within the Tonkeeper app.
 
 ## Deep linking with `tonkeeper://`
@@ -30,9 +23,9 @@ All three schemes are interchangeable and serve similar purposes, directing user
 
 For each supported action, the structure of the URI is the same across all three schemes. Replace `{PREFIX}` with the desired scheme (`ton://`, `tonkeeper://`, or `https://app.tonkeeper.com/`).
 
-#### **Transfer**
+#### **Transfer**<!-- {"fold":true} -->
 
-**1. Open Transfer Screen**
+##### **1. Open Transfer Screen**<!-- {"fold":true} -->
 
 **Description:** Opens the pre-filled Send screen and prompts the user to enter the missing data.
 
@@ -66,14 +59,14 @@ For each supported action, the structure of the URI is the same across all three
   {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
   ```
 
-##### **2. Address with Encrypted Comment**
+##### **2. Address with Encrypted Comment**<!-- {"fold":true} -->
 
 **Description:** Opens the Send screen with a pre-filled encrypted comment. This can be done using either `https://app.tonkeeper.com/` or `tonkeeper://` schemes.
 
-{/* TODO: no support for `ton://` scheme??? */}
-
 - **Format:**
   ```
+  ton://transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
+    
   tonkeeper://transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
   ```
   ```
@@ -87,19 +80,8 @@ For each supported action, the structure of the URI is the same across all three
 
 ---
 
-### Standard Reference
 
-The `ton://` scheme is part of the broader TON blockchain standard, which defines how TON-based applications and services should implement deep linking. You can learn more about the TON standard and its URI scheme by visiting the official documentation [here](https://docs.ton.org/).
-
----
-
-### Example Workflows
-
-- **Quick Payments:** Integrate payment requests directly from your website, allowing users to complete transactions with a single tap using any of the supported URI schemes.
-- **In-app Transactions:** Use deep links to facilitate seamless transfers between users within your application.
-- **Cross-Wallet Compatibility:** Utilize the `ton://` scheme to ensure compatibility with other TON-based wallets and services.
-
-##### **3. Expiry Timestamp**
+#####  **3. Expiry Timestamp**<!-- {"fold":true} -->
 
 **Description:** Opens the Send screen with an expiry timestamp for the transaction.
 
@@ -119,6 +101,114 @@ https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG
 ```
 
 ---
+
+#### **Buy Ton**<!-- {"fold":true} -->
+
+**Description**: Directs the user to a screen where they can purchase TON tokens.
+
+**Format**:
+```
+{PREFIX}buy-ton
+```
+
+---
+#### **Staking**<!-- {"fold":true} -->
+
+**Description**: Navigates to the staking screen, where users can stake/unstake their TON.
+
+**Format**:
+```
+{PREFIX}staking
+```
+
+---
+#### **Pool**
+
+**Description**: Opens a specific liquidity pool within Tonkeeper using the given address.
+
+**Format**:
+```
+{PREFIX}pool/{ADDRESS}
+```
+- **Parameters:**
+  - **`{ADDRESS}`** (required) — liquidity address in any form
+#### **Exchange**
+**Description**: Directs the user to an exchange provider
+
+- **Format**:
+  ```
+  {PREFIX}exchange?provider={PROVIDER}
+  ```
+- **Parameters:**
+  - **`provider`** (required) — exchange provider ID. For example, `mercurio`
+  - **`toToken`** (optional) — token to take
+
+---
+
+#### **Swap**
+
+**Description**: Opens a swap interface where users can exchange tokens.
+
+- **Format**:
+  ```
+  {PREFIX}swap?fromToken={FROM_TOKEN}&toToken={TO_TOKEN}
+  ```
+- **Parameters:**
+  - **`fromToken`** (optional) — token to give
+  - **`toToken`** (optional) — token to take
+
+---
+#### **Battery screen**
+
+**Description**: Opens battery screen
+
+- **Format**:
+  ```
+  {PREFIX}battery?promocode={PROMOCODE}
+  ```
+- **Parameters:**
+  - **`promocode`** (optional) — promocode for revenue share
+#### Action
+**Description**: Opens transaction bottomsheet with provided eventId
+
+- **Format**:
+  ```
+  {PREFIX}action?eventId={EVENT_ID}
+  ```
+- **Parameters:**
+  - **`eventId`** (required) — event ID (hash)
+
+---
+
+#### DApp
+
+**Description**: Opens in-app browser with DApp. Works only for DApps which provided in browser catalog
+
+- **Format**:
+  ```
+  {PREFIX}dapp/{DAPP_URL}
+  ```
+- **Parameters:**
+  - **`{DAPP_URL}`**  (required) — DApp URL. Supports only **https** protocol
+
+---
+
+#### TON Connect
+
+[ton-connect/bridge.md at main · ton-blockchain/ton-connect](https://github.com/ton-blockchain/ton-connect/blob/main/bridge.md#universal-link)
+
+---
+### Standard Reference
+
+The `ton://` scheme is part of the broader TON blockchain standard, which defines how TON-based applications and services should implement deep linking. You can learn more about the TON standard and its URI scheme by visiting the official documentation [here](https://docs.ton.org/).
+
+---
+
+### Example Workflows
+
+- **Quick Payments:** Integrate payment requests directly from your website, allowing users to complete transactions with a single tap using any of the supported URI schemes.
+- **In-app Transactions:** Use deep links to facilitate seamless transfers between users within your application.
+- **Cross-Wallet Compatibility:** Utilize the `ton://` scheme to ensure compatibility with other TON-based wallets and services.
 
 ### External Deep Links
 
