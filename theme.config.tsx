@@ -79,6 +79,37 @@ const config: DocsThemeConfig = {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         {/*favicon*/}
+
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-4WLHEM257G"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          {/* @ts-ignore */}
+          function gtag(){dataLayer.push(arguments)}
+          gtag('js', new Date());
+
+          gtag('config', 'G-4WLHEM257G');
+        </script>
+        {/* Google Analytics */}
+
+        {/* Yandex.Metrika */}
+        <script type="text/javascript" >
+          (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+          (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+          ym(99489400, "init", {
+                clickmap:true,
+                trackLinks:true,
+                accurateTrackBounce:true,
+                webvisor:true
+          });
+        </script>
+        <noscript><div><img src="https://mc.yandex.ru/watch/99489400" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        {/* Yandex.Metrika */}
+
       </>
     );
   },
