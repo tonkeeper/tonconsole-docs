@@ -7,7 +7,17 @@ export const getStaticProps = loadStatic;
 
 # Emulation<SwaggerLink tag={SWAGGER_TAGS.EMULATION} />
 
-The Emulation methods offers tools for simulating the behavior of messages within the blockchain before they are actually sent. This service is particularly useful for developers and users who wish to test and verify the potential outcomes of their actions without committing them to the blockchain.
+The Emulation methods provide tools for predicting the outcomes of blockchain transactions before they are executed. These tools allow for simulating transactions, offering insights into their results, including an almost precise estimate of network fees (with a small margin of error due to limitations in fully emulating a contract’s internal state).
+
+<Callout type="info" emoji="ℹ️">
+  The fee estimate may be slightly lower than the actual amount, approximately up to 0.05 TON.
+</Callout>
+
+### Possible use cases
+- Predicting transaction outcomes to verify correctness before execution.
+- Estimating network fees for accurate cost calculation.
+- Enabling services to display transaction results to end users in advance.
+
 
 ## Operations
 

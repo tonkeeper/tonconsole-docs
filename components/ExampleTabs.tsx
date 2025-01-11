@@ -11,11 +11,12 @@ interface ExampleTabsProps {
 
 export function ExampleTabs({ children }: ExampleTabsProps) {
   const [activeTab, setActiveTab] = useState(0);
+  const childrens = Array.isArray(children) ? children : [children];
 
   return (
     <div>
       <div style={{ display: 'flex', cursor: 'pointer' }}>
-        {children.map((tab, index) => (
+        {childrens.map((tab, index) => (
           <div
             key={index}
             onClick={() => setActiveTab(index)}
@@ -27,7 +28,7 @@ export function ExampleTabs({ children }: ExampleTabsProps) {
           </div>
         ))}
       </div>
-      <div>{children[activeTab]}</div>
+      <div>{childrens[activeTab]}</div>
     </div>
   );
 }
