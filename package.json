@@ -8,6 +8,7 @@
     "format": "prettier --write \"**/*.{js,ts,tsx,json}\""
   },
   "dependencies": {
+    "@next/third-parties": "^15.1.4",
     "classnames": "^2.3.2",
     "next": "^13.5.6",
     "nextra": "^2.13.4",

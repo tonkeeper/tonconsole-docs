@@ -80,16 +80,6 @@ const config: DocsThemeConfig = {
         <link rel="manifest" href="/manifest.json" />
         {/*favicon*/}
 
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-4WLHEM257G"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          {/* @ts-ignore */}
-          function gtag(){dataLayer.push(arguments)}
-          gtag('js', new Date()); gtag('config', 'G-4WLHEM257G');
-        </script>
-        {/* Google Analytics */}
-
         {/* Yandex.Metrika */}
         <>
           {/* @ts-ignore */}
