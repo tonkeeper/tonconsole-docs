@@ -33,7 +33,7 @@ export const SWAGGER_SCHEMA_JSON_URL =
   'https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.json';
 export const SWAGGER_SCHEMA_YAML_URL =
   process.env.NEXT_PUBLIC_TONAPI_OPENAPI_YAML_URL ??
-  'https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yaml';
+  'https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml';
 export const TONAPI_LANDING_PAGE_URL =
   process.env.NEXT_PUBLIC_TONAPI_LANDING_PAGE_URL ?? 'https://tonapi.io/';
 
