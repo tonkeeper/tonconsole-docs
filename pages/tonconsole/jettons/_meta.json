@@ -1,3 +1,6 @@
 {
-  "mass-sending": "Mass Jetton Sending"
+  "mass-sending": "Mass Jetton Sending",
+  "airdrop": {
+    "display": "hidden"
+  }
 }
