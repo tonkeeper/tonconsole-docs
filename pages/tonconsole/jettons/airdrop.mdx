@@ -9,14 +9,19 @@ The distribution is carried out to a fixed list of recipients. In the following,
 1. The Airdrop organizer (**Airdrop admin**) prepares a file with a fixed list of Jetton recipients
 2. The Airdrop admin creates a new project in Ton Console and fills in the airdrop data
 3. The Airdrop admin connects his wallet via TON Connect (in Ton Console) and deploys the Airdrop smart contracts
-4. The Airdrop admin on his hosting raises a dapp that allows the recipient to connect his wallet and receive Jettons by paying a commission
+4. The Airdrop admin on his hosting raises a dApp that allows the recipient to connect his wallet and receive Jettons by paying a Claim Fee
 
 ## Airdrop file preparation
+
+<Callout type="warning" emoji="🚨">
+    Only the account specified in the Airdrop file can claim.
+    The Airdrop file must include addresses that are wallets in the TON blockchain supported by the Ton Connect protocol.
+</Callout>
 
 ### File format requirements
 1. CSV format with a comma delimiter
 2. Contain a header in the format: `recipients, amount`
-3. Token amount in minimal indivisible units (example: `1000000` for 1 USDT where decimals=6). The value must be positive, and decimal points are not allowed
+3. Jetton amount in minimal indivisible units (example: `1000000` for 1 USDT where decimals=6). The value must be positive, and decimal points are not allowed
 4. Recipient wallet addresses in user-friendly or raw format ([Address formats](https://docs.ton.org/v3/documentation/smart-contracts/addresses#raw-and-user-friendly-addresses)) with no duplicates
 5. File size no more than 500 MB (~ 6,400,000 records). More upon individual request
 
@@ -27,6 +32,16 @@ recipient,amount
 0:199b41bcda2472b057d72f80e2e8ba5e15dcb776e68c9eeea393dad668248068,3127429615
 0:aa1e7af003374652e13f705b8c7010b3cf8708f5f98f43c999b8ec4e2c0e0cdf,562536354
 ```
+
+## Airdrop Admin
+
+When creating a new airdrop in Tonconsole, you will need to connect your wallet via Ton Connect.
+The address of this wallet will be recorded as the Airdrop Admin address for the contracts.
+
+<Callout type="warning" emoji="🚨">
+    Only Admin will be able to manage the distribution (such as completing the distribution and withdrawing accumulated profit).
+    To send messages in batches, a wallet capable of sending 255 messages is required. Ton Console requires connecting only a W5 wallet.
+</Callout>
 
 ## Jetton for distribution
 
@@ -73,14 +88,54 @@ Check with the [t.me/tonrostislav](https://t.me/tonrostislav)([rostislav.r@tonke
   Therefore, the provided values are approximate. For more accurate estimates, you can conduct test Airdrop.
 </Callout>
 
-## Deploying a dApp for users to claim tokens
+## dApp for users to claim Jettons
 
 Airdrop organizers should deploy a dApp on their side (website, landing page) where the claim recipient can connect their wallet via Ton Connect and sign a claim message.
 
-<Callout type="warning" emoji="🚨">
-  Only the account specified in the initial Airdrop CSV file can claim. 
-  The Airdrop CSV file must include addresses that are wallets in the TON blockchain supported by the Ton Connect protocol.
-</Callout>
+You can find the reference application here: [GitHub](TODO: add).
+
+### API for dApp interaction
+
+The TonAPI backend has a method for interacting with the claim dApp. Through it, the dApp receives the necessary data for the recipient.
+
+When you click the `Enable claim` button in the Ton Console dashboard, you grant users access to this method; when you click `Disable claim`, you close it.
+
+`GET {host}/v1/airdrop/claim/{address}?id={airdrop_id}`
+
+Returns:
+```json
+{
+  "claim_message": {
+    "mode": 3,
+    "address": "EQDkQoYBAf4ibjg7xbwitIuXSOyLii-BG6X4Rv-ZePzL3Kfq",
+    "state_init": "base64string",
+    "payload": "base64string",
+    "amount": "150000000"
+  },
+  "amount": "616161783"
+}
+```
+
+Where request parameters:
+1. `host` - address of claim API: `https://mainnet-airdrop.tonapi.io`
+2. `address` - recipient address in raw form. Example: `0:585eacf04d4df6c8a2e4f1ed1008e1ac3e36e14cbc37cddaf1f329a50ad43853`
+3. `airdrop_id` - unique Airdrop identifier from the Airdrop dashboard in Ton Console. Example: `fa541433-ceef-4286-a76c-1be7c6198632`
+
+The dApp takes the `address` from the wallet address connected via Ton Connect.
+
+Where response parameters:
+
+`claim_message` - contains the data necessary for forming a message via Ton Connect
+1. `mode` - message sending mode (Ton Connect always sends with mode 3)
+2. `address` - destination address of the message in user-friendly format containing the bounce flag
+3. `state_init` - serialized state init cell in base64 format
+4. `payload` - serialized body cell in base64 format
+5. `amount` ("150000000") - amount of TONs attached to the message (`Claim Fee`)
+
+`amount` ("616161783") - Jetton amount in minimal indivisible units (from the Airdrop file)
+
+To reduce API load, token data is not transmitted in this method.
+However, since a specific dApp is responsible for a specific Airdrop, the Jetton data can be hardcoded on the application's side or retrieved by the dApp via TonAPI.
 
 ### Test claim button
 
@@ -88,3 +143,11 @@ Airdrop organizers should deploy a dApp on their side (website, landing page) wh
   It is used for testing purposes and leads to a reference implementation of the application. 
   Do not use it for production distribution, as it is not intended for that and does not guarantee reliable operation.
 </Callout>
+
+## Distribution completion procedure
+
+Before withdrawing profit and remaining Jettons, you need to properly complete the distribution to prevent users from attempting to claim tokens after the distribution has ended.
+
+First, you need to click the `Disable claim` button to deactivate the API claim endpoint through the dApp.
+Second, click the `Complete airdrop` button to send special messages that lock the distribution contracts.
+After this, you can safely withdraw the remaining tokens and accumulated TONs from the distribution contracts to the Admin`s address.
