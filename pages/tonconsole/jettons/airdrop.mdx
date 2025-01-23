@@ -1,4 +1,5 @@
 import { Callout } from 'nextra-theme-docs';
+import { ExampleTabs, ExampleTab } from "@/components";
 
 # Jetton Airdrop
 
@@ -87,6 +88,7 @@ Check with the [t.me/tonrostislav](https://t.me/tonrostislav)([rostislav.r@tonke
   Keep in mind that blockchain fees may vary depending on the Jettons contracts and other factors (e.g., the presence of a deployed Jetton wallet for the recipient).
   Therefore, the provided values are approximate. For more accurate estimates, you can conduct test Airdrop.
 </Callout>
+
 ## dApp for users to claim Jettons
 
 Airdrop organizers should deploy a dApp on their side (website, landing page) where the claim recipient can connect their wallet via Ton Connect and sign a claim message.
@@ -101,7 +103,7 @@ https://tonkeeper.github.io/airdrop-reference-dapp/?claimId=<UUID>&claimJetton=<
 - Replace `<UUID>` with the claim's UUID from ton-console.
 - Replace `<JettonAddress>` with the address of the Jetton being claimed.
 
-You can find the source code here: [GitHub](TODO: add).
+You can find the source code here: [GitHub](https://github.com/tonkeeper/airdrop-reference-dapp).
 
 ### API for dApp interaction
 
@@ -145,6 +147,37 @@ Where response parameters:
 
 To reduce API load, token data is not transmitted in this method.
 However, since a specific dApp is responsible for a specific Airdrop, the Jetton data can be hardcoded on the application's side or retrieved by the dApp via TonAPI.
+
+#### Exapmle call claim function from dApp
+<ExampleTabs>
+  <ExampleTab label="JavaScript">
+```javascript
+import { tonConnectUI } from '@tonconnect/ui';
+
+function claimJetton(claimId, userAddress) {
+    const claimUrl = `https://mainnet-airdrop.tonapi.io/v1/airdrop/claim/${userAddress}?id=${claimId}`;
+    fetch(claimUrl)
+        .then((response) => response.json())
+        .then(({ claimMessage }) => {
+            tonConnectUI.sendTransaction({
+                validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+                messages: [
+                    {
+                        address: claimMessage.address,
+                        amount: claimMessage.amount,
+                        payload: claimMessage.payload,
+                        stateInit: claimMessage.state_init,
+                    },
+                ],
+            });
+        })
+        .catch((error) => console.error('Error:', error));
+}
+
+claimJetton('<UUID of airdrop from tonconsole>', '<User address from tonConnectUI>');
+```
+  </ExampleTab>
+</ExampleTabs>
 
 ### Test claim button
 
