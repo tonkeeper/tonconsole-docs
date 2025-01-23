@@ -87,12 +87,21 @@ Check with the [t.me/tonrostislav](https://t.me/tonrostislav)([rostislav.r@tonke
   Keep in mind that blockchain fees may vary depending on the Jettons contracts and other factors (e.g., the presence of a deployed Jetton wallet for the recipient).
   Therefore, the provided values are approximate. For more accurate estimates, you can conduct test Airdrop.
 </Callout>
-
 ## dApp for users to claim Jettons
 
 Airdrop organizers should deploy a dApp on their side (website, landing page) where the claim recipient can connect their wallet via Ton Connect and sign a claim message.
 
-You can find the reference application here: [GitHub](TODO: add).
+You can find the reference application [here](https://tonkeeper.github.io/airdrop-reference-dapp/).
+
+To configure the claim, use the following URL format:
+```
+https://tonkeeper.github.io/airdrop-reference-dapp/?claimId=<UUID>&claimJetton=<JettonAddress>
+```
+
+- Replace `<UUID>` with the claim's UUID from ton-console.
+- Replace `<JettonAddress>` with the address of the Jetton being claimed.
+
+You can find the source code here: [GitHub](TODO: add).
 
 ### API for dApp interaction
 
