@@ -6,6 +6,7 @@ export const SWAGGER_TAGS = {
   WALLET: 'Wallet',
   RATES: 'Rates',
   STAKING: 'Staking',
+  EXTRA_CURRENCY: 'ExtraCurrency',
   TRACES: 'Traces',
   EVENTS: 'Events',
   STORAGE: 'Storage',
