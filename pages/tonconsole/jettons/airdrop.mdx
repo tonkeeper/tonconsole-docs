@@ -3,7 +3,7 @@ import { ExampleTabs, ExampleTab } from "@/components";
 
 # Jetton Airdrop Technical and Commercial Terms (T&C Terms)
 
-These T&C Terms shall be read in conjunction with the [Airdrop Terms of Use](./terms.md)
+These T&C Terms shall be read in conjunction with the [Airdrop Terms of Use](./airdrop/terms)
 
 Service enables a mass token distribution model where the recipient (**Recipient**) pays a fixed fee in TONs and receives jettons (**Jettons**).
 The distribution is carried out to a fixed list of Recipients. In the following, we will refer to the Jetton distribution process as an **Airdrop**.
@@ -16,7 +16,7 @@ The distribution is carried out to a fixed list of Recipients. In the following,
 
 ## Airdrop file preparation
 
-<Callout type="warning" emoji="🚨">
+<Callout type="info" emoji="ℹ️">
     Only the account specified in the **Airdrop file** can claim Jettons.
     The Airdrop file must include addresses of the wallets in the TON blockchain supported by the Ton Connect protocol.
 </Callout>
@@ -57,7 +57,7 @@ For example: Notcoin address is `EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NO
 If you have created a Jetton not based on the standard smart contract or are sending a Jetton minted by someone else, be cautious.
 Custom smart contract logic may disrupt the distribution process (e.g. the transfer fees may be significantly higher). Use only trusted Jettons.
 
-<Callout type="warning" emoji="🚨">
+<Callout type="info" emoji="ℹ️">
   Before starting distributions of new Jettons, be sure to conduct a test run with a small number of Recipients.
 </Callout>
 
@@ -95,7 +95,7 @@ where the royalty receiver share is the fees of Scalable Data Solutions Inc and 
 
 The blockchain fees shall be paid are charged both at the time of receiving Excess and upon executing any subsequent transactions involving distribution contracts.
 
-<Callout type="warning" emoji="🚨">
+<Callout type="info" emoji="ℹ️">
   Keep in mind that blockchain fees may vary depending on the Jettons contracts and other factors (e.g. the presence of a deployed Jetton wallet for the Recipient).
   Therefore, the provided proportions of the Excess division is approximate. For more accurate estimates, you can conduct test Airdrop.
 </Callout>
@@ -229,7 +229,7 @@ claimJetton('<ID of Airdrop from tonconsole>', '<User address from tonConnectUI>
 
 ### Test Сlaim button
 
-<Callout type="warning" emoji="🚨">
+<Callout type="info" emoji="ℹ️">
   It is used for testing purposes and leads to a reference implementation of the application.
   Do not use it for production distribution, as it is not intended for that and does not guarantee reliable operation.
 </Callout>
