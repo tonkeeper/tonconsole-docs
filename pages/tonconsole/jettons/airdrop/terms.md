@@ -10,7 +10,7 @@ We may update these Airdrop Terms of Use, T&C Terms, Ton Console terms of use, o
 
 ## Airdrop Solution and how We work with Airdrop admins
 
-The Airdrop Solution allows the issuers / distributors (such issuer/distributer referred as **Airdrop admin**) to distribute their jettons (in these Airdrop Terms of Use and T&C Terms “jetton” refers to all types of tokens, irrespective of their nature) in accordance with the terms and conditions established by such Airdrop admins and regulating the participation of end users (**Recipients**) in the Airdrop admin’s airdrop program (**Airdrop**). The Airdrop Solution can be accessed at <https://tonconsole.com/>. The Airdrop Solution is intended to be used as an interface between: (a) our platform built on a blockchain system offered or operated by Us from time to time whether accessed via the internet, mobile device or other electronic device (Platform); and (b) the applications or services provided by You through Your software and cloud services (Application).
+The Airdrop Solution allows the issuers / distributors (such issuer/distributor referred as **Airdrop admin**) to distribute their jettons (in these Airdrop Terms of Use and T&C Terms “jetton” refers to all types of tokens, irrespective of their nature) in accordance with the terms and conditions established by such Airdrop admins and regulating the participation of end users (**Recipients**) in the Airdrop admin’s airdrop program (**Airdrop**). The Airdrop Solution can be accessed at <https://tonconsole.com/>. The Airdrop Solution is intended to be used as an interface between: (a) our platform built on a blockchain system offered or operated by Us from time to time whether accessed via the internet, mobile device or other electronic device (Platform); and (b) the applications or services provided by You through Your software and cloud services (Application).
 
 As part of use of the Airdrop Solution, You may access or otherwise use on Our Platform certain content, including software or other content, materials or data made available via Airdrop Solution  
 (**Airdrop Data**) and technical and commercial terms available at <https://docs.tonconsole.com/tonconsole/jettons/airdrop> (**T&C Terms**).
@@ -107,7 +107,7 @@ You and We shall at all times comply with our respective obligations in Our Priv
 
 ## The Airdrop Solution Licensor’s rights
 
-We have the right at any time to access Your Toncosole account and to monitor Your use of Your Ton Console account to ensure You are complying with these Airdrop Terms of Use and T&C Terms.
+We have the right at any time to access Your Ton Console account and to monitor Your use of Your Ton Console account to ensure You are complying with these Airdrop Terms of Use and T&C Terms.
 
 You grant Us a royalty-free, perpetual, irrevocable, non-exclusive, transferable licence to use, reproduce, copy, download, view modify, publish, edit, translate, distribute, perform, display and otherwise utilise any content or material that You provide to Us through the Airdrop Solution including the Recipient-related content or material and any data or analytics generated from the same, as set out in Our Privacy Policy.
 
