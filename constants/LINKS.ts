@@ -1,6 +1,6 @@
 export const LINKS = {
   GITHUB: 'https://github.com/tonkeeper',
-  TELEGRAM_CHANNEL: 'https://t.me/tonkeeper',
+  TELEGRAM_CHANNEL: 'https://t.me/tonconsole_com',
   TERMS: "https://tonapi.io/terms",
   // PRIVACY: "#", // TODO: Add link
   SUPPORT: 'https://t.me/tonrostislav',
