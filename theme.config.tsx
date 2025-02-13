@@ -128,9 +128,10 @@ const config: DocsThemeConfig = {
   feedback: {
     useLink: () => 'https://t.me/tonrostislav',
   },
-  editLink: {
-    component: () => 'https://github.com/tonkeeper/tonconsole-docs',
-  },
+  // editLink: {
+  //   component: () => null,
+  // },
+  docsRepositoryBase: 'https://github.com/tonkeeper/tonconsole-docs/tree/master',
   footer: {
     component: (
       <footer className="nx-bg-gray-100 nx-pb-[env(safe-area-inset-bottom)] dark:nx-bg-neutral-900 print:nx-bg-transparent">
