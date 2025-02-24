@@ -3,7 +3,7 @@ export const LINKS = {
   TELEGRAM_CHANNEL: 'https://t.me/tonconsole_com',
   TERMS: "https://tonapi.io/terms",
   // PRIVACY: "#", // TODO: Add link
-  SUPPORT: 'https://t.me/tonrostislav',
+  SUPPORT: 'https://t.me/ton_console_bot',
   CONTACT: 'https://t.me/tonrostislav',
   CONTACT_EMAIL: 'rostislav.r@tonkeeper.com',
   ZAKHAR_TG: 'https://t.me/zakhar_petukhov',
