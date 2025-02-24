@@ -126,11 +126,8 @@ const config: DocsThemeConfig = {
     float: true,
   },
   feedback: {
-    useLink: () => 'https://t.me/tonrostislav',
+    useLink: () => 'https://github.com/tonkeeper/tonconsole-docs/issues',
   },
-  // editLink: {
-  //   component: () => null,
-  // },
   docsRepositoryBase: 'https://github.com/tonkeeper/tonconsole-docs/tree/master',
   footer: {
     component: (
