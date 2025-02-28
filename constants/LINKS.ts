@@ -25,7 +25,7 @@ export const CONSOLE_LINKS = {
 export const GITHUB_LINKS = {
   CNFT_SMART_CONTRACT: 'https://github.com/ton-community/compressed-nft-contract',
   W5_SPECIFICATION: 'https://github.com/tonkeeper/w5/blob/main/Specification.md',
-  RATES_PRICE_CALCULATION_CODE: 'https://github.com/tonkeeper/opentonapi/blob/cace9c253b56eebb3f46134badb2d87138f01acd/pkg/rates/market.go#L623',
+  RATES_PRICE_CALCULATION_CODE: 'https://github.com/tonkeeper/opentonapi/blob/master/pkg/rates/market.go#L724',
 } as const;
 
 export const SWAGGER_SCHEMA_JSON_URL =
