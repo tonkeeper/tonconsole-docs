@@ -1,0 +1,295 @@
+import { Callout } from "nextra-theme-docs";
+
+# Guide to Building a dApp with TON API
+
+This guide provides detailed instructions for building a decentralized application (dApp) using **TON API** and **TonConnect**, including step-by-step explanations and code examples. The complete project is available on [GitHub](https://github.com/tonkeeper/tonapi-dapp-example.git).
+
+## Prerequisites
+
+Before you begin, ensure you have the following tools and accounts set up:
+
+- **Node.js** (version >= 20)
+- **Git** installed on your computer
+- **TON API Key** from [TonConsole](https://tonconsole.com/)
+- Basic knowledge of **React** and **TypeScript** (optional but recommended)
+
+---
+
+## Creating a Project
+
+We'll create a React project using Vite with the TypeScript template. This setup is optional—you can use a different stack if preferred.
+
+### Step 1: Initialize the Project
+
+Run the following commands to create a new project using the TypeScript template:
+
+```bash
+npm create vite@latest tonapi-dapp -- --template react-ts
+cd tonapi-dapp
+```
+
+---
+
+## Add TonConnect
+
+To integrate TonConnect, we need to install the **TonConnect UI React** library:
+
+```bash
+npm install @tonconnect/ui-react
+```
+
+Update the `src/main.tsx` file to include the `TonConnectUIProvider`:
+
+```tsx
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import App from './App.tsx';
+
+createRoot(document.getElementById('root')!).render(
+  <TonConnectUIProvider
+    manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json"
+  >
+    <App />
+  </TonConnectUIProvider>
+);
+```
+
+For correct operation, specify the correct `manifestUrl` in the `TonConnectUIProvider`.
+
+---
+
+## Integrating TON API
+
+To use TON API, install the necessary libraries:
+
+```bash
+npm install @ton-api/client @ton/core
+```
+
+<Callout type="info" emoji="🔵">
+  For using @ton/core in a browser environment, you need to include the Buffer polyfill.
+</Callout>
+
+### Add Buffer Polyfill
+
+To ensure `@ton/core` works correctly in the browser, install the `vite-plugin-node-polyfills`:
+
+```bash
+npm install vite-plugin-node-polyfills
+```
+
+Then configure Vite by updating `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
+export default defineConfig({
+  plugins: [nodePolyfills(), react()],
+  base: '/tonapi-dapp-example/',
+});
+```
+
+---
+
+## Create the TON API Client
+
+Next, set up a client to interact with the TON API. Create a new file `src/tonapi.ts` with the following content:
+
+```ts
+import { TonApiClient } from '@ton-api/client';
+
+const ta = new TonApiClient({
+  baseUrl: 'https://tonapi.io',
+  apiKey: import.meta.env.VITE_TONAPI_KEY || undefined,
+});
+
+export default ta;
+```
+
+> **Note:** Ensure you add your TON API key to the `.env` file:
+
+```plaintext
+VITE_TONAPI_KEY=your-api-key
+```
+
+---
+
+## Fetching Jetton Balances
+
+Now, we’ll fetch and display the user’s jetton balances. Update the `src/App.tsx` file:
+
+```tsx
+import { useEffect, useState } from "react";
+import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
+import { JettonBalance } from "@ton-api/client";
+import ta from "./tonapi";
+
+function App() {
+  const [jettons, setJettons] = useState<JettonBalance[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const connectedAddressString = useTonAddress();
+
+  useEffect(() => {
+    if (!connectedAddressString) {
+      setJettons(null);
+      return;
+    }
+
+    ta.accounts
+      .getAccountJettonsBalances(connectedAddressString)
+      .then(res => setJettons(res.balances))
+      .catch(err => setError(err.message || "Failed to fetch jettons"));
+  }, [connectedAddressString]);
+
+  return (
+    <div>
+      <TonConnectButton />
+
+      <h1>Jetton Balances</h1>
+      {jettons ? (
+        jettons.map(j => (
+          <div key={j.jetton.id}>
+            {j.jetton.name}: {j.balance}
+          </div>
+        ))
+      ) : (
+        <p>No jettons found</p>
+      )}
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+
+export default App;
+```
+
+---
+
+## Implementing Jetton Transfer
+
+Now that we have jetton balances displayed, let's add a transfer functionality. We’ll implement a modal to send jettons.
+
+### Step 1: Create `SendJettonModal`
+
+Create a new file `src/components/SendJettonModal.tsx` with the following code:
+
+```tsx
+import { useState } from "react";
+import { JettonBalance } from "@ton-api/client";
+import { useTonConnectUI } from "@tonconnect/ui-react";
+import { getJettonSendTransactionRequest } from "../utils/jetton-transfer";
+
+export const SendJettonModal = ({ jetton, senderAddress, onClose }) => {
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState(null);
+
+  const [tonConnectUI] = useTonConnectUI();
+
+  const handleSubmit = () => {
+    try {
+      const transaction = getJettonSendTransactionRequest(
+        jetton, amount, recipientAddress, senderAddress
+      );
+      
+      tonConnectUI.sendTransaction(transaction)
+        .then(() => {
+          setError(null);
+          onClose();
+        })
+        .catch(e => setError(e.message || "Transaction failed"));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unexpected error occurred");
+    }
+  };
+
+  return (
+    <div className="modal">
+      <div className="modal-content">
+        <h2>Send {jetton.jetton.name}</h2>
+        {error && <p>{error}</p>}
+        <label>
+          Recipient Address:
+          <input value={recipientAddress} onChange={e => setRecipientAddress(e.target.value)} />
+        </label>
+        <label>
+          Amount:
+          <input value={amount} onChange={e => setAmount(e.target.value)} />
+        </label>
+        <button onClick={handleSubmit}>Send</button>
+        <button onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  );
+};
+```
+
+### Step 2: Utility for Transactions
+
+Create `src/utils/jetton-transfer.ts` to handle transaction creation:
+
+```ts
+import { JettonBalance } from '@ton-api/client';
+import { beginCell, Address, toNano } from '@ton/core';
+import { SendTransactionRequest } from '@tonconnect/ui-react';
+import { fromDecimals } from './decimals';
+
+export const getJettonSendTransactionRequest = (
+  jetton: JettonBalance, amountStr: string, recipientAddressStr: string, senderAddress: Address
+): SendTransactionRequest => {
+  const amount = fromDecimals(amountStr, jetton.jetton.decimals);
+
+  const recipient = Address.parse(recipientAddressStr);
+
+  const body = beginCell()
+    .storeUint(0xf8a7ea5, 32) // jetton transfer operation
+    .storeUint(0, 64) // query ID
+    .storeCoins(amount) // jetton amount
+    .storeAddress(recipient)
+    .storeAddress(senderAddress)
+    .storeUint(0, 1) // empty payload
+    .storeCoins(1n) // forward TON amount
+    .endCell();
+
+  return {
+    validUntil: Math.floor(Date.now() / 1000) + 360,
+    messages: [{
+      address: jetton.walletAddress.address.toRawString(),
+      amount: toNano('0.05').toString(), // estimated fee
+      payload: body.toBoc().toString('base64'),
+    }]
+  };
+};
+```
+
+---
+
+## Final Steps
+
+### Launch the Development Server
+
+Run the following command to start the development server:
+
+```bash
+npm run dev
+```
+
+Your dApp will be accessible at [http://localhost:3000](http://localhost:3000).
+
+### Complete Source Code
+
+The full source code for this project is available on [GitHub](https://github.com/tonkeeper/tonapi-dapp-example.git). You can also view the working example on [GitHub Pages](https://tonkeeper.github.io/tonapi-dapp-example/).
+
+---
+
+## Additional Resources
+
+- **TON API Documentation:** [docs.tonconsole.com](https://docs.tonconsole.com/tonapi)
+- **TonConnect Documentation:** [tonconnect.me](https://docs.ton.org/develop/dapps/ton-connect/developers)
+- **`@ton/core` Library:** [@ton/core on npm](https://www.npmjs.com/package/@ton/core)
+
+---
+
+Happy building your dApp!
