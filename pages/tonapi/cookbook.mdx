@@ -1,36 +1,77 @@
-import { Callout } from "nextra-theme-docs";
-import { ExampleTabs, ExampleTab, ExternalLink } from "@/components";
-import { SWAGGER_TAGS } from "@/constants";
-import { getLinkToSwaggerTag } from "@/utils";
-import GaslessGo from "./cookbook/gasless.go.mdx";
-import GaslessTs from "./cookbook/gasless.ts.mdx";
-import GaslessJs from "./cookbook/gasless.js.mdx";
-import GaslessPy from "./cookbook/gasless.py.mdx";
-import EmulationTs from "./cookbook/emulation.ts.mdx";
-import SendTonTs from "./cookbook/send-ton.ts.mdx";
-import SendJettonTs from "./cookbook/send-jetton.ts.mdx";
+import { Callout } from 'nextra-theme-docs';
+import { ExampleTabs, ExampleTab, ExternalLink } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { getLinkToSwaggerTag } from '@/utils';
+import GaslessGo from './cookbook/gasless.go.mdx';
+import GaslessTs from './cookbook/gasless.ts.mdx';
+import GaslessJs from './cookbook/gasless.js.mdx';
+import GaslessPy from './cookbook/gasless.py.mdx';
+import EmulationTs from './cookbook/emulation.ts.mdx';
+import SendTonTs from './cookbook/send-ton.ts.mdx';
+import SendJettonTs from './cookbook/send-jetton.ts.mdx';
+import TrackingTransactionHashTs from './cookbook/tracking-transaction-hash.ts.mdx';
+import TrackingTransactionMessageBocTs from './cookbook/tracking-transaction-message-boc.ts.mdx';
+import TrackingTransactionMessageManualTs from './cookbook/tracking-transaction-message-manual.ts.mdx';
 
 # Cookbook
 
-## TON Transfer  
+## TON Transfer
 
 This recipe provides an example of sending TON using a mnemonic for signing. It covers deriving a wallet key, constructing a transaction, signing it, and broadcasting it to the blockchain.
 
-<ExampleTabs>  
-  <ExampleTab label="TypeScript">  
-    <SendTonTs />  
-  </ExampleTab>  
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <SendTonTs />
+  </ExampleTab>
 </ExampleTabs>
 
-## Jetton Transfer  
+## Jetton Transfer
 
 This recipe provides an example of sending Jettons using a mnemonic for signing. It covers deriving a wallet key, constructing a Jetton transfer transaction, signing it, and broadcasting it to the blockchain.
 
-<ExampleTabs>  
-  <ExampleTab label="TypeScript">  
-    <SendJettonTs />  
-  </ExampleTab>  
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <SendJettonTs />
+  </ExampleTab>
 </ExampleTabs>
+
+## Transaction Tracking
+
+To reliably find a transaction from an external message (external-in) in the TON blockchain, use a normalized hash instead of a regular hash. External messages may slightly alter metadata when included in the blockchain, causing regular hashes to fail in locating the transaction.
+
+Swagger documentation for Blockchain operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.BLOCKCHAIN)}>here</ExternalLink>.
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionHashTs />
+  </ExampleTab>
+</ExampleTabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.
+
+### Getting the `Message` object
+
+#### From a BOC
+
+You may encounter BOC strings from various sources, for example, TonConnect (specifically after methods like `sendTransaction` or `send`), or from your own transaction logs. Here's how to parse a BOC string into a `Message` object:
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionMessageBocTs />
+  </ExampleTab>
+</ExampleTabs>
+
+#### Manual creation with ton/core
+
+To manually create a `Message`, follow these steps:
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionMessageManualTs />
+  </ExampleTab>
+</ExampleTabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.
 
 ## Emmulation
 
@@ -71,3 +112,4 @@ Swagger documentation for Gasless operations can be found <ExternalLink href={ge
     <GaslessPy />
   </ExampleTab>
 </ExampleTabs>
+```
