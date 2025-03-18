@@ -28,7 +28,20 @@ Gasless transactions leverage **Signed Internal Messages**. These messages are s
 3. **Sign Payload:** Sign the received payload with your private key.
 4. **Send Transaction:** Submit the signed message via POST to `/v2/gasless/send`.
 
-### Implementation Example  
+### Gasless transactions
+
+**TONAPI** supports several gasless transaction types referred to as gasless protocols:
+
+| Gasless protocol         | Description                                                                                                                                                                                                                                                                                                                                                               |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| gasless                  | Gasless Transfer involves two transactions: the primary Jetton transfer and a secondary transfer that covers the gas fees. The secondary transfer (commission) must be paid using a limited set of Jettons (refer to the gaslessConfig method for the complete list), while the primary transfer can use any Jetton.                                                      |
+| gasless-swap             | Gasless Swap consists of two transactions: the swap itself and an additional Jetton transfer that covers gas fees. Currently, the protocol supports only Stonfi swaps. Ensure that any excess funds from the swap are directed to the TONAPI relayer, as this will reduce the overall commission.                                                                         |                                                                                                                                                                                                                                                                                                               |
+| gasless-generic-transfer | Gasless Generic Transfer consists of a primary Jetton transfer that can include any payload, along with a separate transaction to cover the commission. Gasless Swap differs from Gasless Generic Transfer in that our swap emulation is highly reliable. This accuracy allows us to optimize commission fees by adjusting for any excess funds returned to our relayers. |                                                                                                                                                                                                                                                                                                               |
+
+The commission is always processed as a separate transfer and must be paid using one of the supported Jettons.
+Both the gaslessSend and gaslessEstimate methods include the protocol used in their responses.
+
+### Implementation Example
 
 A detailed example of gasless transaction implementation is available in the [Cookbook](/tonapi/cookbook#gasless-transfer), showcasing the approach across multiple programming languages.
 
