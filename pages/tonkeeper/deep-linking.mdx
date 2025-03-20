@@ -65,12 +65,7 @@ For each supported action, the structure of the URI is the same across all three
 
 - **Format:**
   ```
-  ton://transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
-    
-  tonkeeper://transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
-  ```
-  ```
-  https://app.tonkeeper.com/transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
+  {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&bin={BINARY_DATA}
   ```
 
 - **Parameters:**
@@ -81,13 +76,13 @@ For each supported action, the structure of the URI is the same across all three
 ---
 
 
-#####  **3. Expiry Timestamp**
+##### **3. Expiry Timestamp**
 
 **Description:** Opens the Send screen with an expiry timestamp for the transaction.
 
 - **Format:**
   ```
-  https://app.tonkeeper.com/transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}&exp={EXPIRY_TIMESTAMP}
+  {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}&exp={EXPIRY_TIMESTAMP}
   ```
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
@@ -99,6 +94,21 @@ For each supported action, the structure of the URI is the same across all three
 ```
 https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG21n?amount=100000&text=test&exp=500
 ```
+
+##### **4. Transfer Jetton**
+
+**Description:** Opens the Send screen with a jetton transfer.
+
+- **Format:**
+  ```
+  https://app.tonkeeper.com/transfer/{ADDRESS}?jetton={JETTON_ADDRESS}&amount={AMOUNT}&text={TEXT}
+  ```
+
+- **Parameters:**
+  - `{ADDRESS}` (required): The recipient's TON address.
+  - `jetton` (required): The jetton master address.
+  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
 
 ---
 
