@@ -59,9 +59,9 @@ For each supported action, the structure of the URI is the same across all three
   {PREFIX}transfer/{ADDRESS}?amount={AMOUNT}&text={TEXT}
   ```
 
-##### **2. Address with Encrypted Comment**
+##### **2. Address with binary payload**
 
-**Description:** Opens the Send screen with a pre-filled encrypted comment. This can be done using either `https://app.tonkeeper.com/` or `tonkeeper://` schemes.
+**Description:** Opens the emulation screen or screen with alert about blind signing transactions with amount and destionation. This can be done using either `https://app.tonkeeper.com/` or `tonkeeper://` schemes.
 
 - **Format:**
   ```
@@ -75,8 +75,8 @@ For each supported action, the structure of the URI is the same across all three
 
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
-  - `amount` (optional): The amount of TON to send, in nanocoins.
-  - `bin` (optional): Encrypted binary data to include in the transaction.
+  - `bin` (optional): url-encoded base64 BoC which will be attached as a body to internal message.
+  - `amount` (requered if bin is presented): The amount of TON to send, in nanocoins.
 
 ---
 
