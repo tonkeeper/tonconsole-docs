@@ -5,31 +5,42 @@
 ### accounts  
 
 ```sql
-create table blockchain.accounts (
-	id text NOT NULL,
-	address bytea NOT NULL,
-	workchain smallint NOT NULL,
-	storage_used_cells numeric DEFAULT 0 NOT NULL,
-	storage_used_bits numeric DEFAULT 0 NOT NULL,
-	storage_used_public_cells numeric DEFAULT 0 NOT NULL,
-	last_paid bigint DEFAULT 0 NOT NULL,
-	due_payment bigint,
-	storage_last_transaction_lt bigint DEFAULT 0 NOT NULL,
-	ton_balance bigint DEFAULT 0 NOT NULL,
-	extra_balances jsonb,
-	frozen_hash bytea,
-	status USER-DEFINED DEFAULT 'unknown'::account_status NOT NULL,
-	account_code_id uuid,
-	data bytea,
-	library jsonb,
-	last_transaction_hash bytea DEFAULT '\x'::bytea NOT NULL,
-	last_transaction_lt bigint DEFAULT 0 NOT NULL,
-	first_transaction_lt bigint DEFAULT 0 NOT NULL,
-	last_mentioned_lt bigint DEFAULT 0 NOT NULL,
-	last_state_update_lt bigint DEFAULT 0 NOT NULL,
-	human_readable text NOT NULL,
-	interfaces ARRAY,
-	get_method_tables ARRAY
+CREATE TABLE blockchain.accounts (
+    id TEXT NOT NULL, -- Уникальный идентификатор аккаунта (адрес)
+    
+    address BYTEA NOT NULL, -- Адрес аккаунта в байтовом формате (часть id)
+    workchain SMALLINT NOT NULL, -- Воркчейн, к которому относится аккаунт (0 - основной, -1 - мастерчейн) (часть id)
+    
+    -- Данные о хранилище
+    storage_used_cells NUMERIC DEFAULT 0 NOT NULL, -- Количество ячеек, используемых для хранения данных аккаунта
+    storage_used_bits NUMERIC DEFAULT 0 NOT NULL, -- Количество битов, занятых в ячейках
+    storage_used_public_cells NUMERIC DEFAULT 0 NOT NULL, -- Количество публичных ячеек
+    
+    -- Финансовые данные
+    last_paid BIGINT DEFAULT 0 NOT NULL, -- Время последнего платежа за хранение (Unix timestamp) (списывается не каждую транзакцию, а только в ту когда накапало достаточно большой storage fee, около последней траезакции )
+    due_payment BIGINT, -- Задолдженность по storage fee (по достежению 0.1 TON контракт заморозится)
+    ton_balance BIGINT DEFAULT 0 NOT NULL, -- Баланс аккаунта в нанотонах
+    
+    -- Данные о транзакциях
+    storage_last_transaction_lt BIGINT DEFAULT 0 NOT NULL, -- LT последнего изменения состояния контракта
+    last_transaction_hash BYTEA DEFAULT '\x'::bytea NOT NULL, -- Хэш последней транзакции
+    last_transaction_lt BIGINT DEFAULT 0 NOT NULL, -- LT последней транзакции
+    first_transaction_lt BIGINT DEFAULT 0 NOT NULL, -- LT первой транзакции аккаунта
+    last_mentioned_lt BIGINT DEFAULT 0 NOT NULL, -- LT последнего упоминания аккаунта в блокчейне
+    last_state_update_lt BIGINT DEFAULT 0 NOT NULL, -- последнее LT блокчейна для которого мы получили информацию
+    
+    -- Дополнительные данные
+    extra_balances JSONB, -- JSON с extraCurrency
+    frozen_hash BYTEA, -- Хэш замороженных данных аккаунта
+    status USER-DEFINED DEFAULT 'unknown'::account_status NOT NULL, -- Текущий статус аккаунта (active, frozen, nonexist) (TODO: дописать)
+    account_code_id UUID, -- первая половина хеша кода аккаунта в виде UUID
+    data BYTEA, -- BOC с данными аккаунта (тут его нет)
+    library JSONB, -- JSON с данными о библиотеке, используемой контрактом (тут его нет)
+    
+    -- Метаданные
+    human_readable TEXT NOT NULL, -- base64 человекочитаемая информация address bouncable (для воллетов возможно будет non)
+    interfaces TEXT[], -- Список интерфейсов, поддерживаемых аккаунтом
+    get_method_tables TEXT[] -- Список get-методов, которые индексируются TON API
 );
 ```
 
