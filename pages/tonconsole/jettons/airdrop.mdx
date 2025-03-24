@@ -144,7 +144,7 @@ When you click the `Enable claim` button in the Ton Console dashboard, you grant
 `GET {host}/v2/airdrop/claim/{address}?id={airdrop_id}`
 
 Where request parameters:
-1. `host` - address of Claim API: `https://mainnet-airdrop-v2.tonapi.io`
+1. `host` - address of Claim API: `https://mainnet-airdrop-v2.tonapi.io` // TODO: remove -v2 fuffix from subdomain later
 2. `address` - Recipient address in raw form. Example: `0:585eacf04d4df6c8a2e4f1ed1008e1ac3e36e14cbc37cddaf1f329a50ad43853`
 3. `airdrop_id` - unique Airdrop ID from the Airdrop dashboard in Ton Console. Example: `fa541433-ceef-4286-a76c-1be7c6198632`
 
@@ -309,14 +309,15 @@ as their Claims will still be delayed.
 import { tonConnectUI } from '@tonconnect/ui';
 
 function claimJetton(claimId, userAddress) {
-    const claimUrl = `https://mainnet-airdrop-v2.tonapi.io/v2/airdrop/claim/${userAddress}?id=${airdropId}`;
+    const claimUrl = `https://mainnet-airdrop-v2.tonapi.io/v2/airdrop/claim/${userAddress}?id=${airdropId}`; // TODO: remove -v2 fuffix from subdomain later
     fetch(claimUrl)
         .then((response) => response.json())
-        .then(({ claimMessage }) => {
+        .then(({ claim_message  }) => {
             tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
                 messages: [
                     {
+                        mode: claim_message.mode,
                         address: claimMessage.address,
                         amount: claimMessage.amount,
                         payload: claimMessage.payload,
