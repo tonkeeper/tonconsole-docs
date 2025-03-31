@@ -1,15 +1,19 @@
-name: Build and Deploy to GitHub Pages
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+
+permissions:
+  contents: write  # нужно для записи в ветку gh-pages
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -20,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
+      - name: Build
         run: npm run build
 
       - name: Deploy to GitHub Pages
