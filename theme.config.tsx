@@ -125,6 +125,9 @@ const config: DocsThemeConfig = {
   toc: {
     float: true,
   },
+  editLink: {
+    text: 'Edit this page on GitHub →',
+  },
   feedback: {
     useLink: () => 'https://github.com/tonkeeper/tonconsole-docs/issues',
   },
