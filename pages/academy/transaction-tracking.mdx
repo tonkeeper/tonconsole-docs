@@ -1,92 +1,141 @@
-import { Spoiler } from '@/components';
+import { Spoiler, ExampleTabs, ExampleTab } from '@/components';
+import TrackingTransactionHashGo from '@/pages/tonapi/cookbook/tracking-transaction-hash.go.mdx';
+import TrackingTransactionHashTs from '@/pages/tonapi/cookbook/tracking-transaction-hash.ts.mdx';
 
-# Verifying TON Transactions: From Message to Trace
+# Tracking TON Transactions: From Message to Trace
 
-## Introduction
+{/* Alright, let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: "Yeah, I just grab the hash of the transaction and I’m good." Well, surprise – TON doesn’t work that way. Not even close. */}
+Alright — let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: *“Yeah, I just grab the hash of the transaction and I’m good.”*<br /> Well, surprise: TON doesn’t work that way. Not even close.
 
-Hello! Let's discuss transaction identifiers in TON and how to track them.
+If you don’t clearly get what an **account**, **transaction**, **message**, **trace**, **cell**, or **cell-hash** is — or what the wallet actually signs — buckle up and read the glossary.
 
-If you're coming from Ethereum or Bitcoin, you're probably accustomed to transactions being signed, then hashed, with that hash becoming a unique identifier used to track transactions in the blockchain. However, in TON, this approach doesn't work.
+<Spoiler title="Glossary (quick refresher)">
+**Account** – Basic unit of information storage in the blockchain; a record in the workchain state containing metadata, balance, and possibly code and data. <br />
+**Messages** – Data packets exchanged between accounts (internal) or between accounts and entities outside the blockchain (external-in or external-out). <br />
+**Transactions** – Atomic changes to an account’s state. Typically (excluding system transactions), they're reactions to incoming messages. The exact validator processing time can't be predetermined, thus neither the timestamp nor hash can be known in advance. <br />
+*(Transactions can shoot out internal messages, which go to other accounts, triggering more transactions, and so on – it’s like digital dominoes.)*<br />
+**Trace** – It’s a tree. Nodes = transactions. Edges = messages. The root? Usually a response to an external-in. Want examples? Go check [tonviewer.com](https://tonviewer.com) — some are [simple](https://tonviewer.com/transaction/6c38b3e3460d6076ae388f6b4ccaaf5cd23587137f171447693d3f5148777513), others [branch out beautifully](https://tonviewer.com/transaction/9804e0cfdfe50987e1d24c7c8ec4c9a2d4361e79e3e949ca36cf8d4aa313d990), and some are just [degenerate one-offs](https://tonviewer.com/transaction/ba9202b8d389def350a56f296812b90e8d0222a49be29a6fdce756ef65e11ed5).<br /> 
+![Example of trace in TON blockchain](/assets/transaction-tracking-trace.png)
+**Cell** – The atomic unit in TON. Up to 1023 bits and up to 4 refs to other cells. Everything lives in cells – accounts, messages, transactions, even blocks. And each cell has its own hash. That hash is how you track stuff.<br />
+**Hash** – Anytime you see *"hash"* here, it means the hash of the cell. Don't try to hash the raw bytes like a savage. It won’t work.<br />
 
-If you're unclear about **account, transaction, message, trace, cell, cell-hash**, or exactly what a user's wallet signs, read the glossary first.
+#### Simple Example
 
-<Spoiler title="Glossary">
-  Simplified, omitting non-essential details:
+You send your buddy 5 TON using Tonkeeper.<br />
+Behind the scenes, your wallet puts together an instruction for your account contract, which then runs something like this:
 
-**Account** – Basic unit of information storage in the blockchain; a record in the workchain state containing metadata, balance, and possibly code and data.
+- Make sure the instruction isn't too old (check the TTL).
+- Check that the sequence number (`seqno`) is one higher than the last one.
+- Verify the signature against the public key stored in the account.
+- Take the draft of the outgoing internal message (the 5 TON transfer) from the external message body, fill in the actual sender info, and send it out.
 
-**Messages** – Data packets exchanged between accounts (internal) or between accounts and entities outside the blockchain (external-in or external-out).
+This whole thing — the instruction and signature — goes into the **body** of the external-in message. But here’s the weird part: the message **headers** (like the recipient address) aren’t signed at all. They just specify which account should receive the message, and off it goes to the blockchain.
 
-**Transactions** – Atomic changes to an account’s state. Typically (excluding system transactions), they're reactions to incoming messages. The exact validator processing time can't be predetermined, thus neither the timestamp nor hash can be known in advance.
-
-Transactions may generate internal messages passed to other accounts with information and attached TONs. Receiving an internal message prompts another account to create a new transaction, potentially spawning further messages.
-
-**Trace** – Graph (tree) of transactions (nodes) connected by messages (edges). The root transaction usually responds to an external-in message. Examples can range from simple to extensively branched or degenerate. TON traces closely resemble Ethereum transactions.
-
-{/* ![image.png](#1%20%5Beng%5D%2019a4714a32a680c2b10ad2a3b135ff82/image.png) */}
-
-**Cell** – Fundamental storage unit in TON blockchain. It contains 0-1023 bits and 0-4 links to other cells. Each transaction, account, message, and even blocks reside in a cell, which has a built-in hashing mechanism, granting every message and transaction a unique cell hash.
-
-**Hash** **– Wherever you see "hash," it refers to the hash of the cell containing the object. Please don’t try to hash serialized Bag-of-Cell as bytes.**
+In decoded form, it looks something like this:
+![Example decoded external message](/assets/transaction-tracking-external-in.png)
+Once it lands, two transactions and two messages are recorded on-chain. The external-in message from the wallet triggers the sender’s transaction, which emits an internal message. That internal message reaches the recipient and triggers their transaction.
 
 </Spoiler>
 
-## Example
+---
 
-A user sends 5 TON to a friend via Tonkeeper. The user forms an instruction for the sender’s account, executed as follows:
+### What Has a Unique ID and What Doesn’t?
 
-- Check instruction timeliness.
-- Confirm sequence number increment.
-- Verify signature.
-- Extract internal message (sending 5 TON), add sender's data, and send.
+- **Account** – It’s globally unique. Workchain + 256-bit address. Easy.
+- **Transaction** – Unique per account and `lt`. So `AccountID + lt` = unique. And that’s in the body, so the hash is globally unique too.
+- **Messages (internal + external-out)** – Even in the same transaction, they'll have different `lt`. That plus source account = unique hash.<br />
+  _(Tiny exception: some weird old system messages might break this. Don’t worry about it unless you’re working at the protocol level.)_
+- **External-in** – This one's a bit tricky. A single external-in message can end up creating multiple transactions — for example, if the wallet didn't set the +2 flag and the account doesn't have enough funds. In such cases, the message will keep being retried until the TTL expires or the account runs out of money. So by default, external-in messages are **not** globally unique.<br />
+  BUT — if you’re using a standard wallet contract (like v3r1–v5r1) and sets the correct flags (which most popular wallets do), then the **message body + sender address** combination becomes unique. That means the message hash is globally unique and can be used as an ID right after signing — even before the blockchain sees it.
+- **Trace** – Usually tracked by the root transaction hash. Explorers like [tonviewer.com](https://tonviewer.com) will let you find a trace from any globally unique message or transaction hash.
 
-This instruction, along with the signature, is placed in the external-in message body. Message headers indicate the recipient but aren't signed.
+---
 
-In decoded form it looks something like this:
+### The TL;DR
 
-{/* ![image.png](#1%20%5Beng%5D%2019a4714a32a680c2b10ad2a3b135ff82/image%201.png) */}
+Only one identifier exists **before** the validator touches anything: the hash of the **external-in message**.<br />
+But it only works if **all of the following** conditions are met:
 
-The blockchain records two transactions (sender and receiver) and two messages: the wallet's external-in message initiates the sender's transaction, while the internal message links transactions for both parties.
+1. The wallet contract that sends the transaction must behave correctly.
+2. This only works for wallets that support `seqno` and `ttl` — older or non-standard contracts won't do.
+3. Only the message body is signed — the rest (headers like destination) is not. So relayers or other middleware might change those parts before the message gets into the blockchain, changing the final hash. That’s why normalization is needed.
+4. You can’t query a message by its hash using a light server — they don’t index that. You’ll need a full blockchain index (like tonapi.io, toncenter.com, or dton.io), or some duct-tape hacks.
 
-## Unique IDs for Entities
+---
 
-**Account** – Identified by workchain and a 256-bit internal address, e.g., `0:157f8bfea0b1d74416fbc9a9444b109c91d3fff50d30e375116c86ebf2668368`.
+### How External-in Normalization Works
 
-**Transaction** – Unique per account logical time (`lt`). Thus, **AccountID + lt** uniquely identifies a transaction, making the transaction hash globally unique because transaction contains lt and AccountID.
+Because relayers can modify parts of a message before it hits the chain, we normalize the message to get a stable, predictable hash. Here's how it works:
 
-**Internal and external-out messages** – Messages generated by an account during even in one transaction have unique sequential `lt`. Thus, **source AccountID + lt** are unique, as are their hashes.
+1. Extract the original message from the cell.
+2. Keep only two things: the destination address and the message body.
+3. Repack the message with the body stored as a reference — this guarantees a consistent structure.
+4. Store it in a new, empty cell and compute the hash.
 
-(Note: Very rare exceptions exist in system accounts with identical `lt` but distinct hashes.)
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    ```typescript
+    function normalizeHash(message: Message): Buffer {
+        if (message.info.type !== 'external-in') {
+            return message.body.hash();
+        }
+    
+        const cell = beginCell()
+            .storeUint(2, 2)    // external-in
+            .storeUint(0, 2)    // addr_none
+            .storeAddress(message.info.dest)
+            .storeUint(0, 4)    // import_fee = 0
+            .storeBit(false)    // no StateInit
+            .storeBit(true)     // store body as reference
+            .storeRef(message.body)
+            .endCell();
+    
+        return cell.hash();
+    }
 
-**External-in messages** – A single external-in message can generate multiple transactions under certain conditions (e.g., insufficient balance without the +2 flag set). Thus, external-in messages aren't globally unique unless combined with specific wallet conditions (standard wallet v3r1-v5r1, correctly set flags). In such scenarios, message body and address uniqueness result in a globally unique hash, usable immediately after signing and before blockchain inclusion.
+    // Original code: https://github.com/tonkeeper/tonapi-js/blob/4786b2e6bd42c8a3b116e6d234dde7c16cb8426b/examples/track-transaction.ts#L15
+    ```
+  </ExampleTab>
+  <ExampleTab label="Go">
+    ```go
+    // Hash returns a hash of this Message.
+    // it's strongly recommended to normalize hash
+    func (m *Message) Hash(normalizeExternal bool) Bits256 {
+        if !normalizeExternal || m.Info.SumType != "ExtInMsgInfo" {
+            return m.hash
+        }
+        // normalize ExtIn message
+        c := boc.NewCell()
+        _ = c.WriteUint(2, 2) // message$_ -> info:CommonMsgInfo -> ext_in_msg_info$10
+        _ = c.WriteUint(0, 2) // message$_ -> info:CommonMsgInfo -> src:MsgAddressExt -> addr_none$00
+        m.Info.ExtInMsgInfo.Dest.AddrStd.Anycast.Exists = false
+        _ = m.Info.ExtInMsgInfo.Dest.MarshalTLB(c, nil) // message$_ -> info:CommonMsgInfo -> dest:MsgAddressInt
+        _ = c.WriteUint(0, 4)                           // message$_ -> info:CommonMsgInfo -> import_fee:Grams -> 0
+        _ = c.WriteBit(false)                           // message$_ -> init:(Maybe (Either StateInit ^StateInit)) -> nothing$0
+        _ = c.WriteBit(true)                            // message$_ -> body:(Either X ^X) -> right$1
+        body := boc.Cell(m.Body.Value)
+        _ = c.AddRef(body.CopyRemaining())
+        hash, _ := c.Hash256()
+        return hash
+    }
+    
+    // Original code:  https://github.com/tonkeeper/tongo/blob/5c0ce694d72b7024bcb62b3d0dcd008940a75419/tlb/messages.go#L27
+    ```
+  </ExampleTab>
+</ExampleTabs>
 
-**Trace** — In principle, a trace can be referenced by any unique entity within its composition. However, typically, a `trace_id` is the identifier of the root transaction in the tree (for instance, its hash). Explorers such as tonviewer.com locate a transaction by the hash of any globally unique message or directly by the transaction hash itself.
+For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook#transaction-tracking).
 
-## Summary
+---
 
-The only blockchain identifier existing before validator processing is the external-in message hash.
+### If You’re Building a dApp
 
-**Important caveats:**
+When the user sends a message through TonConnect, you receive a **BOC** (Bag of Cells) — an encoded copy of the sent message. Normalize it, calculate the hash, and boom – you can show an explorer link right away or track what happens next.
 
-1. Wallet contracts and user application must behave correctly.
-2. Proper functionality requires wallets with `seqno` and `ttl`.
-3. Only message body is signed; thus, relayers might alter messages, affecting hashes. A "normalization" method addresses this.
-4. Light servers can't provide information by message hash; this requires full blockchain indexes (e.g., tonapi.io, toncenter.com, dton.io).
+This BOC contains everything you need to get the exact same normalized hash, even before the message appears on-chain. See how to decode and handle BOC strings in the [Cookbook](../tonapi/cookbook#from-a-boc).
 
-## External Message Normalization
+---
 
-Briefly:
+### If You’re Building Something Else
 
-1. Extract the message from the cell.
-2. Keep only the recipient’s address and message body, repacking the body by new ref in cell.
-3. Store in an empty cell and compute its hash.
-
-Golang code example available [here](https://github.com/tonkeeper/tongo/blob/5c0ce694d72b7024bcb62b3d0dcd008940a75419/tlb/messages.go#L27).
-
-## Developing dApps
-
-After users send blockchain messages via Tonconnect, you receive and normalize the message, compute the hash, then reliably display links or track message status independently.
-
-## Developing Other Tools
-
-For deeper insights, see the original detailed version [here](https://gist.github.com/mr-tron/a4b3e8eff3a982e3426f6397eb9a2450).
+You should probably go read the full article: [original here [ru]](https://gist.github.com/mr-tron/a4b3e8eff3a982e3426f6397eb9a2450). It’s got all the gritty, boring details we skipped here.
