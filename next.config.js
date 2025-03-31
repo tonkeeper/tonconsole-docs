@@ -4,11 +4,15 @@ const withNextra = require('nextra')({
   latex: true,
 });
 
+const repo = 'tonconsole-docs';
+
 module.exports = withNextra({
   images: {
     unoptimized: true,
   },
   output: 'export',
+  basePath: `/${repo}`,
+  assetPrefix: `/${repo}/`,
   experimental: {
     largePageDataBytes: 161 * 1000,
   },
