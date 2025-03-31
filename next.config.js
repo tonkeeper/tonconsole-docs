@@ -8,6 +8,7 @@ module.exports = withNextra({
   images: {
     unoptimized: true,
   },
+  output: 'export',
   experimental: {
     largePageDataBytes: 161 * 1000,
   },
