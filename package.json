@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export -o dist/",
+    "gh-deploy": "GHPAGES=1 next build && next export -o dist/ && npx gh-pages -d dist",
     "start": "next start",
     "format": "prettier --write \"**/*.{js,ts,tsx,json}\""
   },
