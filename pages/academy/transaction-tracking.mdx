@@ -126,6 +126,46 @@ Because relayers can modify parts of a message before it hits the chain, we norm
 
 For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook#transaction-tracking).
 
+#### Library Usage Examples
+
+<ExampleTabs>
+  <ExampleTab label="Go (tongo)">
+    ```go
+    import (
+        "github.com/tonkeeper/tongo/tlb"
+        "github.com/tonkeeper/tongo/boc"
+        "fmt"
+    )
+
+    // msg is *tlb.Message constructed manually or parsed from BOC
+    hash := msg.Hash(true)
+    fmt.Printf("%x\n", hash)
+    ```
+  </ExampleTab>
+  <ExampleTab label="Go (tonutils)">
+    ```go
+    import (
+        "github.com/xssnick/tonutils-go/tlb"
+        "github.com/xssnick/tonutils-go/boc"
+        "fmt"
+    )
+
+    // msg is *tlb.ExternalMessage loaded from BOC or constructed manually
+    normalizedHash := msg.NormalizedHash()
+    fmt.Printf("%x\n", normalizedHash)
+    ```
+  </ExampleTab>
+  <ExampleTab label="Python (tonutils)">
+    ```python
+    from tonutils.message import message_to_boc_hex
+
+    # message: MessageAny instance (already parsed or constructed)
+    boc_hex, normalized_hash_hex = message_to_boc_hex(message, normalize_hash=True)
+    print(normalized_hash_hex)
+    ```
+  </ExampleTab>
+</ExampleTabs>
+
 ---
 
 ### If You’re Building a dApp
