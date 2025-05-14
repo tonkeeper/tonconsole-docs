@@ -59,7 +59,7 @@ But there are a **few things** you need to understand and account for:
 1. The wallet contract that sends the transaction must behave correctly.
 2. This only works for wallets that support `seqno` and `ttl` – older or non-standard contracts won't do.
 3. Only the message body is signed – the rest (headers like destination) is not. So relayers or other middleware might change those parts before the message gets into the blockchain, changing the final hash. That’s why normalization is needed.
-4. You can’t query a message by its hash using a light server – they don’t index that. You’ll need a full blockchain index (like tonapi.io, toncenter.com, or dton.io), or some duct-tape hacks.
+4. You can’t query a message by its hash using a light server – they don’t index that. You’ll need a full blockchain index (like tonapi.io, toncenter.com, or dton.io).
 
 ---
 
@@ -165,6 +165,52 @@ For a more detailed, step-by-step example of tracking a transaction using normal
     ```
   </ExampleTab>
 </ExampleTabs>
+
+---
+
+### Tracking a Transaction by Normalized Hash
+
+A **normalized external‑in message hash** can be resolved **only** by full blockchain indexers  
+(such as **tonapi.io**, toncenter, or dton). Lite servers and archive nodes do not understand it.  
+The examples below use **tonapi.io**.
+
+#### Key REST Endpoints
+
+| Goal | Endpoint |
+|------|----------|
+| Raw message (cell + metadata) |  [`getBlockchainMessage`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainMessage) |
+| Transaction that consumed the message | [`getBlockchainTransactionByMessageHash`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransactionByMessageHash) |
+| Full trace (transaction tree) |  [`getTrace`](https://tonapi.io/api-v2#operations-getTrace) |
+| Root transaction directly (if you already know its hash) |  [`getBlockchainTransaction`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransaction) |
+
+#### Polling Strategy
+
+Polling interval: `1s → 2s → 4s → 8s → …` (exponential backoff)
+
+1. If the external message includes an `expire_time` field — use it as a hard cutoff. Once the current time exceeds `expire_time`, the message will never be accepted by the network. Stop polling and mark the attempt as failed.
+2. If the message has no `expire_time`, use a custom upper limit (e.g. 60–120 seconds) depending on your UX needs.
+
+
+#### Lifecycle States
+
+| Stage | What the API returns | What it means | Recommended UX |
+|-------|----------------------|---------------|----------------|
+| **Pending** | `traces/{hash}` exists, `"status": "pending"` | Message is in mempool, not yet in a block | Show a tracking link such as `https://tonviewer.com/transaction/{hash}` so the user can watch progress |
+| **Finalized** | `"status"` field disappears and trace now contains execution data | Full transaction chain executed | Inspect trace: if all nodes are `success` → show *Success*; otherwise show a specific failure (e.g. *TTL expired*, *bounce*, *insufficient funds*) |
+
+> **Tip:** cache `{hash, expiresAt}` locally. If the trace is still `pending` after `expiresAt` (TTL), mark it as failed automatically.
+
+#### Minimal Integration Flow
+
+1. **After signing** — compute the normalized hash from the BOC the wallet returns.  
+2. **Start polling** `traces/{hash}` with the back‑off scheme above.  
+3. **When “pending” appears** — present the Tonviewer link or custom “Pending” badge.  
+4. **When finalized** — parse the trace:  
+   - All transactions `success` → show confirmation & optional explorer link.  
+   - Any error → show failure reason (bounce, low balance, etc.).  
+5. **Stop** once success or definitive failure is recorded.
+
+This keeps the user informed from the moment a message leaves the wallet until the entire domino chain of transactions is settled on‑chain.
 
 ---
 
