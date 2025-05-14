@@ -4,7 +4,7 @@ import TrackingTransactionHashTs from '@/pages/tonapi/cookbook/tracking-transact
 
 # Tracking TON Transactions: From Message to Trace
 
-Alright — let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: *“Yeah, I just grab the hash of the transaction and I’m good.”*<br /> Well, surprise: TON doesn’t work that way. Not even close.
+Alright — let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: _“Yeah, I just grab the hash of the transaction and I’m good.”_<br /> Well, surprise: TON doesn’t work that way. Not even close.
 
 If you don’t clearly get what an **account**, **transaction**, **message**, **trace**, **cell**, or **cell-hash** is — or what the wallet actually signs — buckle up and read the glossary.
 
@@ -95,8 +95,9 @@ Because relayers can modify parts of a message before it hits the chain, we norm
 
     // Original code: https://github.com/tonkeeper/tonapi-js/blob/4786b2e6bd42c8a3b116e6d234dde7c16cb8426b/examples/track-transaction.ts#L15
     ```
+
   </ExampleTab>
-  <ExampleTab label="Go">
+  <ExampleTab label="Go (tongo)">
     ```go
     // Hash returns a hash of this Message.
     // it's strongly recommended to normalize hash
@@ -131,31 +132,63 @@ For a more detailed, step-by-step example of tracking a transaction using normal
 <ExampleTabs>
   <ExampleTab label="Go (tongo)">
     ```go
+    package main
+
     import (
-        "github.com/tonkeeper/tongo/tlb"
-        "github.com/tonkeeper/tongo/boc"
-        "fmt"
+      "fmt"
+      "github.com/tonkeeper/tongo/boc"
+      "github.com/tonkeeper/tongo/tlb"
+      "os"
     )
 
-    // msg is *tlb.Message constructed manually or parsed from BOC
-    hash := msg.Hash(true)
-    fmt.Printf("%x\n", hash)
+    func main() {
+      var bocString = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
+      cell, err := boc.DeserializeSinglRootBase64(bocString)
+      
+      if err != nil {
+        os.Exit(1)
+      }
+      
+      var msg tlb.Message
+      err = tlb.Unmarshal(cell, &msg)
+      if err != nil {
+        os.Exit(1)
+      }
+
+      hash := msg.Hash(true)
+      fmt.Println( hash.Hex())
+    }
     ```
+
   </ExampleTab>
-  <ExampleTab label="Go (tonutils)">
+  <ExampleTab label="Go (tonutils-go)">
     ```go
+    package main
+
     import (
-        "github.com/xssnick/tonutils-go/tlb"
-        "github.com/xssnick/tonutils-go/boc"
-        "fmt"
+      "encoding/base64"
+      "fmt"
+      "github.com/xssnick/tonutils-go/tlb"
+      "github.com/xssnick/tonutils-go/tvm/cell"
+      "os"
     )
 
-    // msg is *tlb.ExternalMessage loaded from BOC or constructed manually
-    normalizedHash := msg.NormalizedHash()
-    fmt.Printf("%x\n", normalizedHash)
+    func main() {
+      var bocString = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
+      b, _ := base64.StdEncoding.DecodeString(bocString)
+      c, _ := cell.FromBOC(b)
+
+      var msg tlb.Message
+      err := msg.LoadFromCell(c.BeginParse())
+      if err != nil {
+        os.Exit(1)
+      }
+      hash := msg.AsExternalIn().NormalizedHash()
+      fmt.Printf("Hash: %x\n", hash)
+    }
     ```
   </ExampleTab>
-  <ExampleTab label="Python (tonutils)">
+  {/* <ExampleTab label="Python (tonutils)">
     ```python
     from tonutils.message import message_to_boc_hex
 
@@ -163,7 +196,7 @@ For a more detailed, step-by-step example of tracking a transaction using normal
     boc_hex, normalized_hash_hex = message_to_boc_hex(message, normalize_hash=True)
     print(normalized_hash_hex)
     ```
-  </ExampleTab>
+  </ExampleTab> */}
 </ExampleTabs>
 
 ---
@@ -176,12 +209,12 @@ The examples below use **tonapi.io**.
 
 #### Key REST Endpoints
 
-| Goal | Endpoint |
-|------|----------|
-| Raw message (cell + metadata) |  [`getBlockchainMessage`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainMessage) |
-| Transaction that consumed the message | [`getBlockchainTransactionByMessageHash`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransactionByMessageHash) |
-| Full trace (transaction tree) |  [`getTrace`](https://tonapi.io/api-v2#operations-getTrace) |
-| Root transaction directly (if you already know its hash) |  [`getBlockchainTransaction`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransaction) |
+| Goal                                                     | Endpoint                                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Raw message (cell + metadata)                            | [`getBlockchainMessage`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainMessage)                                   |
+| Transaction that consumed the message                    | [`getBlockchainTransactionByMessageHash`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransactionByMessageHash) |
+| Full trace (transaction tree)                            | [`getTrace`](https://tonapi.io/api-v2#operations-getTrace)                                                                      |
+| Root transaction directly (if you already know its hash) | [`getBlockchainTransaction`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransaction)                           |
 
 #### Polling Strategy
 
@@ -190,24 +223,23 @@ Polling interval: `1s → 2s → 4s → 8s → …` (exponential backoff)
 1. If the external message includes an `expire_time` field — use it as a hard cutoff. Once the current time exceeds `expire_time`, the message will never be accepted by the network. Stop polling and mark the attempt as failed.
 2. If the message has no `expire_time`, use a custom upper limit (e.g. 60–120 seconds) depending on your UX needs.
 
-
 #### Lifecycle States
 
-| Stage | What the API returns | What it means | Recommended UX |
-|-------|----------------------|---------------|----------------|
-| **Pending** | `traces/{hash}` exists, `"status": "pending"` | Message is in mempool, not yet in a block | Show a tracking link such as `https://tonviewer.com/transaction/{hash}` so the user can watch progress |
-| **Finalized** | `"status"` field disappears and trace now contains execution data | Full transaction chain executed | Inspect trace: if all nodes are `success` → show *Success*; otherwise show a specific failure (e.g. *TTL expired*, *bounce*, *insufficient funds*) |
+| Stage         | What the API returns                                              | What it means                             | Recommended UX                                                                                                                                     |
+| ------------- | ----------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pending**   | `traces/{hash}` exists, `"status": "pending"`                     | Message is in mempool, not yet in a block | Show a tracking link such as `https://tonviewer.com/transaction/{hash}` so the user can watch progress                                             |
+| **Finalized** | `"status"` field disappears and trace now contains execution data | Full transaction chain executed           | Inspect trace: if all nodes are `success` → show _Success_; otherwise show a specific failure (e.g. _TTL expired_, _bounce_, _insufficient funds_) |
 
 > **Tip:** cache `{hash, expiresAt}` locally. If the trace is still `pending` after `expiresAt` (TTL), mark it as failed automatically.
 
 #### Minimal Integration Flow
 
-1. **After signing** — compute the normalized hash from the BOC the wallet returns.  
-2. **Start polling** `traces/{hash}` with the back‑off scheme above.  
-3. **When “pending” appears** — present the Tonviewer link or custom “Pending” badge.  
-4. **When finalized** — parse the trace:  
-   - All transactions `success` → show confirmation & optional explorer link.  
-   - Any error → show failure reason (bounce, low balance, etc.).  
+1. **After signing** — compute the normalized hash from the BOC the wallet returns.
+2. **Start polling** `traces/{hash}` with the back‑off scheme above.
+3. **When “pending” appears** — present the Tonviewer link or custom “Pending” badge.
+4. **When finalized** — parse the trace:
+   - All transactions `success` → show confirmation & optional explorer link.
+   - Any error → show failure reason (bounce, low balance, etc.).
 5. **Stop** once success or definitive failure is recorded.
 
 This keeps the user informed from the moment a message leaves the wallet until the entire domino chain of transactions is settled on‑chain.
