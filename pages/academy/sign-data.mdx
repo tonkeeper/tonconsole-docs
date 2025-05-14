@@ -172,15 +172,13 @@ Ed25519.sign(payload.hash(), privateKey)
 
 For `text` and `binary`, you can reconstruct the message:
 
-```ts
-import nacl from 'tweetnacl';
-```
-
 1. Rebuild the byte array exactly as described above.
 2. Retrieve the public key (from TonConnect or known in advance).
 3. Verify:
 
 ```ts
+import nacl from 'tweetnacl';
+
 const isValid = await nacl.sign.detached.verify(hash, signature, publicKey);
 ```
 
