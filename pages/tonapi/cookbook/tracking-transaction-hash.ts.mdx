@@ -26,7 +26,7 @@ function normalizeHash(message: Message): Buffer {
 }
 
 async function trackTransaction(message: Message) {
-    const msgHashHex = normalizeHash(message, true).toString('hex');
+    const msgHashHex = normalizeHash(message).toString('hex');
     const transaction = await ta.blockchain.getBlockchainTransactionByMessageHash(msgHashHex);
 
     console.log('Transaction:', transaction);
