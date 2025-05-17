@@ -1,10 +1,11 @@
+import { Callout } from 'nextra-theme-docs';
 import { Spoiler, ExampleTabs, ExampleTab } from '@/components';
 import TrackingTransactionHashGo from '@/pages/tonapi/cookbook/tracking-transaction-hash.go.mdx';
 import TrackingTransactionHashTs from '@/pages/tonapi/cookbook/tracking-transaction-hash.ts.mdx';
 
 # Tracking TON Transactions: From Message to Trace
 
-Alright — let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: *“Yeah, I just grab the hash of the transaction and I’m good.”*<br /> Well, surprise: TON doesn’t work that way. Not even close.
+Alright — let’s break down how the hell you’re supposed to track a transaction in TON. If you’ve ever used Ethereum or Bitcoin, you might think: _“Yeah, I just grab the hash of the transaction and I’m good.”_<br /> Well, surprise: TON doesn’t work that way. Not even close.
 
 If you don’t clearly get what an **account**, **transaction**, **message**, **trace**, **cell**, or **cell-hash** is — or what the wallet actually signs — buckle up and read the glossary.
 
@@ -59,7 +60,7 @@ But there are a **few things** you need to understand and account for:
 1. The wallet contract that sends the transaction must behave correctly.
 2. This only works for wallets that support `seqno` and `ttl` – older or non-standard contracts won't do.
 3. Only the message body is signed – the rest (headers like destination) is not. So relayers or other middleware might change those parts before the message gets into the blockchain, changing the final hash. That’s why normalization is needed.
-4. You can’t query a message by its hash using a light server – they don’t index that. You’ll need a full blockchain index (like tonapi.io, toncenter.com, or dton.io), or some duct-tape hacks.
+4. You can’t query a message by its hash using a light server – they don’t index that. You’ll need a full blockchain index (like tonapi.io).
 
 ---
 
@@ -95,8 +96,9 @@ Because relayers can modify parts of a message before it hits the chain, we norm
 
     // Original code: https://github.com/tonkeeper/tonapi-js/blob/4786b2e6bd42c8a3b116e6d234dde7c16cb8426b/examples/track-transaction.ts#L15
     ```
+
   </ExampleTab>
-  <ExampleTab label="Go">
+  <ExampleTab label="Go (tongo)">
     ```go
     // Hash returns a hash of this Message.
     // it's strongly recommended to normalize hash
@@ -125,6 +127,185 @@ Because relayers can modify parts of a message before it hits the chain, we norm
 </ExampleTabs>
 
 For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook#transaction-tracking).
+
+#### Library Usage Examples
+
+<ExampleTabs>
+  <ExampleTab label="Go (tongo)">
+    ```go
+    package main
+
+    import (
+      "fmt"
+      "github.com/tonkeeper/tongo/boc"
+      "github.com/tonkeeper/tongo/tlb"
+      "os"
+    )
+
+    func main() {
+      var bocString = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
+      cell, err := boc.DeserializeSinglRootBase64(bocString)
+
+      if err != nil {
+        os.Exit(1)
+      }
+
+      var msg tlb.Message
+      err = tlb.Unmarshal(cell, &msg)
+      if err != nil {
+        os.Exit(1)
+      }
+
+      hash := msg.Hash(true)
+      fmt.Println( hash.Hex())
+    }
+    ```
+
+  </ExampleTab>
+  <ExampleTab label="Go (tonutils-go)">
+    ```go
+    package main
+
+    import (
+      "encoding/base64"
+      "fmt"
+      "github.com/xssnick/tonutils-go/tlb"
+      "github.com/xssnick/tonutils-go/tvm/cell"
+      "os"
+    )
+
+    func main() {
+      var bocString = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
+      b, _ := base64.StdEncoding.DecodeString(bocString)
+      c, _ := cell.FromBOC(b)
+
+      var msg tlb.Message
+      err := msg.LoadFromCell(c.BeginParse())
+      if err != nil {
+        os.Exit(1)
+      }
+      hash := msg.AsExternalIn().NormalizedHash()
+      fmt.Printf("Hash: %x\n", hash)
+    }
+    ```
+
+  </ExampleTab>
+  {/* <ExampleTab label="Python (tonutils)">
+    ```python
+    from tonutils.message import message_to_boc_hex
+
+    # message: MessageAny instance (already parsed or constructed)
+    boc_hex, normalized_hash_hex = message_to_boc_hex(message, normalize_hash=True)
+    print(normalized_hash_hex)
+    ```
+
+  </ExampleTab> */}
+</ExampleTabs>
+
+---
+
+### Tracking a Transaction by Normalized Hash
+
+A **normalized hash** can be resolved **only** by full blockchain indexers (such as tonapi, toncenter, or dton). Lite servers and archive nodes do not understand it. <br />
+
+<Callout type="info" emoji="ℹ️">
+  The examples below use **TONAPI**
+</Callout>
+
+#### Key REST Endpoints
+
+These are the main endpoints that accept a normalized message hash and allow you to determine whether the operation was accepted on-chain, as well as retrieve related data such as the transaction, execution trace, or event.
+
+| Goal                                             | Endpoint                                                                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Get the full trace (transaction execution tree)  | [`getTrace`](https://tonapi.io/api-v2#operations-Traces-getTrace)                                                               |
+| Get a high-level event aggregating               | [`getEvent`](https://tonapi.io/api-v2#operations-Events-getEvent)                                                               |
+| Get Jetton-related transfers from an event       | [`getJettonsEvents`](https://tonapi.io/api-v2#operations-Jettons-getJettonsEvents)                                              |
+| Get a root transaction by its hash               | [`getBlockchainTransaction`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransaction)                           |
+| Get the transaction that consumed a specific msg | [`getBlockchainTransactionByMessageHash`](https://tonapi.io/api-v2#operations-Blockchain-getBlockchainTransactionByMessageHash) |
+
+For the purposes of this guide we will focus on **getTrace**, because it captures the status of the entire transaction chain and therefore lets us determine whether the operation succeeded.
+
+#### Polling Strategy
+
+Polling interval: `1s → 2s → 4s → 8s → …` (exponential backoff)
+
+1. If the external message includes an `expire_time` field — use it as a hard cutoff. Once the current time exceeds `expire_time`, the message will never be accepted by the network. Stop polling and mark the attempt as failed.
+2. If the message has no `expire_time`, use a custom upper limit (e.g. 60–120 seconds) depending on your UX needs.
+
+#### Trace Lifecycle States
+
+| Stage         | API response                                                                           | Meaning                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Not found** | `GET /v2/traces/{trace_id}` → **404**                                                  | The message has not yet reached any validator (it is not even in the mempool).                       |
+| **Pending**   | **200 OK** with a Trace object, but `isFinalized(trace) == false` (see function below) | The message is in the mempool or partially executed, but the full transaction chain is not complete. |
+| **Finalized** | **200 OK** and `isFinalized(trace) == true`                                            | The entire transaction chain has finished; the result is immutable.                                  |
+
+> **Tip:** cache `{trace_id, expiresAt}` locally.
+> If the trace is still _Not found_ or _Pending_ after `expiresAt`, mark the operation as failed and prompt the user to retry.
+
+##### Example of `isFinalized` function
+
+A trace is finalized when:
+
+- it is not emulated
+- it contains no outgoing internal messages
+- all child traces are finalized as well
+
+<ExampleTabs>
+  <ExampleTab label="Typescript">
+```typescript
+function isFinalized(trace): Boolean {
+    if (trace.emulated) {
+        return false;
+    }
+    for (const msg of trace.out_msgs) {
+        if (msg.msg_type === "int_msg") {
+            return false;
+        }
+    }
+    for (const child of trace.children) {
+        if (!isFinalized(child)) {
+            return false;
+        }
+    }
+    return true;
+}
+```
+  </ExampleTab>
+  <ExampleTab label="Go">
+```go
+func isFinalized(trace *core.Trace) bool {
+    if trace.Emulated {
+        return false
+    }
+    for _, msg := range trace.OutMsgs {
+        if msg.MsgType == "int_msg" {
+            return false
+        }
+    }
+    for _, child := range trace.Children {
+        if !isFinalized(child) {
+            return false
+        }
+    }
+    return true
+}
+```
+  </ExampleTab>
+</ExampleTabs>
+
+#### Minimal Integration Flow
+
+1. **After signing** — compute the normalized hash from the BOC the wallet returns.
+2. **Start polling** `traces/{hash}` with the back‑off scheme above.
+3. **When “pending” appears** — present the explorer link or custom “Pending” badge.
+4. **When finalized** — parse the trace:
+   - All transactions `success` → show confirmation.
+   - Any error → show failure reason (bounce, low balance, etc.).
+5. **Stop** once success or definitive failure is recorded.
+
+This keeps the user informed from the moment a message leaves the wallet until the entire domino chain of transactions is settled on‑chain.
 
 ---
 
