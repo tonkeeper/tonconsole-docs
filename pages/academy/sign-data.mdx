@@ -91,6 +91,7 @@ Use this if the signed data should be **verifiable and restorable inside a smart
   cell: 'te6ccgEBAQEAVwAAqg+KfqVUbeTvKqB4h0AcnDgIAZucsOi6TLrf...'
 }
 ```
+**Clarification on Root Type**: If the TL-B schema provided in SignData.cell.schema defines multiple types (for example, one primary type along with auxiliary helper types), the last type definition in the schema is treated as the root type for serialization and deserialization. In practice, this means the cell’s content is parsed as an instance of the final type declared in the schema.
 
 
 ## How to Request a Signature via TonConnect
