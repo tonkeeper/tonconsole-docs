@@ -123,7 +123,7 @@ Airdrop admin should deploy a dApp on their side (website, landing page) where t
 
 ### Reference application
 
-You can find the reference application [here](https://tonkeeper.github.io/airdrop-reference-dapp/).
+You can find the reference application [here](https://tonkeeper.github.io/airdrop-reference-dapp).
 You can find the source code here: [GitHub](https://github.com/tonkeeper/airdrop-reference-dapp).
 
 To configure the reference application, use the following URL format:
@@ -144,7 +144,7 @@ When you click the `Enable claim` button in the Ton Console dashboard, you grant
 `GET {host}/v2/airdrop/claim/{address}?id={airdrop_id}`
 
 Where request parameters:
-1. `host` - address of Claim API: `https://mainnet-airdrop-v2.tonapi.io` // TODO: remove -v2 fuffix from subdomain later
+1. `host` - address of Claim API: `https://mainnet-airdrop.tonapi.io`
 2. `address` - Recipient address in raw form. Example: `0:585eacf04d4df6c8a2e4f1ed1008e1ac3e36e14cbc37cddaf1f329a50ad43853`
 3. `airdrop_id` - unique Airdrop ID from the Airdrop dashboard in Ton Console. Example: `fa541433-ceef-4286-a76c-1be7c6198632`
 
@@ -309,7 +309,7 @@ as their Claims will still be delayed.
 import { tonConnectUI } from '@tonconnect/ui';
 
 function claimJetton(claimId, userAddress) {
-    const claimUrl = `https://mainnet-airdrop-v2.tonapi.io/v2/airdrop/claim/${userAddress}?id=${airdropId}`; // TODO: remove -v2 fuffix from subdomain later
+    const claimUrl = `https://mainnet-airdrop.tonapi.io/v2/airdrop/claim/${userAddress}?id=${airdropId}`;
     fetch(claimUrl)
         .then((response) => response.json())
         .then(({ claim_message  }) => {
@@ -336,7 +336,7 @@ claimJetton('<ID of Airdrop from tonconsole>', '<User address from tonConnectUI>
 
 </ExampleTabs>
 
-### Test Сlaim button
+### Test Claim button
 
 <Callout type="info" emoji="ℹ️">
   It is used for testing purposes and leads to a reference implementation of the application.
@@ -350,3 +350,6 @@ Before withdrawing profit and remaining Jettons, you need to properly complete t
 First, you need to click the `Disable claim` button to deactivate the API Claim endpoint through the dApp.
 Second, click the `Complete airdrop` button to send special messages that lock the distribution contracts.
 After this, you can safely withdraw the remaining Jettons and accumulated TONs from the distribution contracts to the Airdrop admin`s address.
+
+## If you still have questions
+If you have any questions or need assistance, please write to Mois Ilya at [@moisle](https://t.me/moisle) or [@tonconsole](https://t.me/tonconsole).
