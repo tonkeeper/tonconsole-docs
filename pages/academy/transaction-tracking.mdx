@@ -218,16 +218,20 @@ For a more detailed, step-by-step example of tracking a transaction using normal
   </ExampleTab>
   <ExampleTab label="Python (tonutils)">
     ```python
+    from pytoniq_core import MessageAny, Slice
     from tonutils.utils import normalize_hash
-
-
+    
+    
     def main() -> None:
         boc_string = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
-        normalized_hash = normalize_hash(boc_string)
-
+    
+        message = MessageAny.deserialize(Slice.one_from_boc(boc_string))
+    
+        normalized_hash = normalize_hash(message)
+    
         print(f"Hash: {normalized_hash.hex()}")
-
-
+    
+    
     if __name__ == "__main__":
         main()
     ```
