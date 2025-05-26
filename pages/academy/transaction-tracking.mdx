@@ -124,6 +124,32 @@ Because relayers can modify parts of a message before it hits the chain, we norm
     // Original code:  https://github.com/tonkeeper/tongo/blob/5c0ce694d72b7024bcb62b3d0dcd008940a75419/tlb/messages.go#L27
     ```
   </ExampleTab>
+  <ExampleTab label="Python (tonutils)">
+    ```python
+    def normalize_hash(message: Union[MessageAny, str]) -> bytes:
+        if isinstance(message, str):
+            message = MessageAny.deserialize(Slice.one_from_boc(message))
+
+        if not message.is_external:
+            return message.serialize().hash
+
+        cell = (
+            begin_cell()
+            .store_uint(2, 2)     # external-in
+            .store_address(None)  # addr_none
+            .store_address(message.info.dest)
+            .store_coins(0)       # import_fee = 0
+            .store_bool(False)    # no StateInit
+            .store_bool(True)     # store body as reference
+            .store_ref(message.body)
+            .end_cell()
+        )
+        return cell.hash
+
+    # Original code: https://github.com/nessshon/tonutils/blob/b4aa075c37c56b4442c7d7def71dc6a26ee59e69/tonutils/utils.py#L15
+    ```
+
+  </ExampleTab>
 </ExampleTabs>
 
 For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook#transaction-tracking).
@@ -190,16 +216,27 @@ For a more detailed, step-by-step example of tracking a transaction using normal
     ```
 
   </ExampleTab>
-  {/* <ExampleTab label="Python (tonutils)">
+  <ExampleTab label="Python (tonutils)">
     ```python
-    from tonutils.message import message_to_boc_hex
-
-    # message: MessageAny instance (already parsed or constructed)
-    boc_hex, normalized_hash_hex = message_to_boc_hex(message, normalize_hash=True)
-    print(normalized_hash_hex)
+    from pytoniq_core import MessageAny, Slice
+    from tonutils.utils import normalize_hash
+    
+    
+    def main() -> None:
+        boc_string = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."
+    
+        message = MessageAny.deserialize(Slice.one_from_boc(boc_string))
+    
+        normalized_hash = normalize_hash(message)
+    
+        print(f"Hash: {normalized_hash.hex()}")
+    
+    
+    if __name__ == "__main__":
+        main()
     ```
 
-  </ExampleTab> */}
+  </ExampleTab>
 </ExampleTabs>
 
 ---
@@ -254,44 +291,58 @@ A trace is finalized when:
 
 <ExampleTabs>
   <ExampleTab label="Typescript">
-```typescript
-function isFinalized(trace): Boolean {
-    if (trace.emulated) {
-        return false;
-    }
-    for (const msg of trace.out_msgs) {
-        if (msg.msg_type === "int_msg") {
+    ```typescript
+    function isFinalized(trace): Boolean {
+        if (trace.emulated) {
             return false;
         }
-    }
-    for (const child of trace.children) {
-        if (!isFinalized(child)) {
-            return false;
+        for (const msg of trace.out_msgs) {
+            if (msg.msg_type === "int_msg") {
+                return false;
+            }
         }
+        for (const child of trace.children) {
+            if (!isFinalized(child)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
-}
-```
+    ```
   </ExampleTab>
   <ExampleTab label="Go">
-```go
-func isFinalized(trace *core.Trace) bool {
-    if trace.Emulated {
-        return false
-    }
-    for _, msg := range trace.OutMsgs {
-        if msg.MsgType == "int_msg" {
+    ```go
+    func isFinalized(trace *core.Trace) bool {
+        if trace.Emulated {
             return false
         }
-    }
-    for _, child := range trace.Children {
-        if !isFinalized(child) {
-            return false
+        for _, msg := range trace.OutMsgs {
+            if msg.MsgType == "int_msg" {
+                return false
+            }
         }
+        for _, child := range trace.Children {
+            if !isFinalized(child) {
+                return false
+            }
+        }
+        return true
     }
-    return true
-}
-```
+    ```
+  </ExampleTab>
+  <ExampleTab label="Python">
+    ```python
+    def is_finalized(trace: Trace) -> bool:
+        if trace.emulated:
+            return False
+        for msg in trace.transaction.out_msgs:
+            if msg.msg_type == "int_msg":
+                return False
+        for child in trace.children or []:
+            if not is_finalized(child):
+                return False
+        return True
+    ```
   </ExampleTab>
 </ExampleTabs>
 
