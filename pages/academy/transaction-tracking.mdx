@@ -1,7 +1,7 @@
 import { Callout } from 'nextra-theme-docs';
 import { Spoiler, ExampleTabs, ExampleTab } from '@/components';
-import TrackingTransactionHashGo from '@/pages/tonapi/cookbook/tracking-transaction-hash.go.mdx';
-import TrackingTransactionHashTs from '@/pages/tonapi/cookbook/tracking-transaction-hash.ts.mdx';
+import TrackingTransactionHashGo from '@/examples/tracking-transaction-hash.go.mdx';
+import TrackingTransactionHashTs from '@/examples/tracking-transaction-hash.ts.mdx';
 
 # Tracking TON Transactions: From Message to Trace
 
@@ -152,7 +152,7 @@ Because relayers can modify parts of a message before it hits the chain, we norm
   </ExampleTab>
 </ExampleTabs>
 
-For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook#transaction-tracking).
+For a more detailed, step-by-step example of tracking a transaction using normalized hashes, check out the [Cookbook](../tonapi/cookbook/transaction-tracking).
 
 #### Library Usage Examples
 
@@ -364,7 +364,7 @@ This keeps the user informed from the moment a message leaves the wallet until t
 
 When the user sends a message through TonConnect, you receive a **BOC** (Bag of Cells) — an encoded copy of the sent message. Normalize it, calculate the hash, and boom – you can show an explorer link right away or track what happens next.
 
-This BOC contains everything you need to get the exact same normalized hash, even before the message appears on-chain. See how to decode and handle BOC strings in the [Cookbook](../tonapi/cookbook#from-a-boc).
+This BOC contains everything you need to get the exact same normalized hash, even before the message appears on-chain. See how to decode and handle BOC strings in the [Cookbook](../tonapi/cookbook/transaction-tracking#from-a-boc).
 
 ---
 

@@ -1,0 +1,36 @@
+import { Callout } from 'nextra-theme-docs';
+import { ExampleTabs, ExampleTab, ExternalLink } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { getLinkToSwaggerTag } from '@/utils';
+import GaslessTs from '@/examples/gasless.ts.mdx';
+import GaslessJs from '@/examples/gasless.js.mdx';
+import GaslessGo from '@/examples/gasless.go.mdx';
+import GaslessPy from '@/examples/gasless.py.mdx';
+
+# Gasless Transfer
+
+Originating from the [Gasless](/tonapi/rest-api/gasless) section of the REST API documentation, this recipe provides implementation examples for gasless transactions in TypeScript, Go and Python. Developers can use these examples to integrate gasless transactions into their applications.
+
+<Callout type="warning" emoji="ℹ️">
+  Gasless transactions are currently not supported through TonConnect.
+</Callout>
+
+Swagger documentation for Gasless operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.GASLESS)}>here</ExternalLink>.
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <GaslessTs />
+  </ExampleTab>
+
+  <ExampleTab label="JS (with fetch)">
+    <GaslessJs />
+  </ExampleTab>
+
+  <ExampleTab label="Go">
+    <GaslessGo />
+  </ExampleTab>
+
+  <ExampleTab label="Python">
+    <GaslessPy />
+  </ExampleTab>
+</ExampleTabs>

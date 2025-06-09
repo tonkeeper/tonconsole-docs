@@ -1,0 +1,11 @@
+{
+  "ton-transfer": "TON Transfer",
+  "jetton-transfer": "Jetton Transfer",
+  "transaction-tracking": "Transaction tracking",
+  "emulation": "Emulation",
+  "gasless-transfer": "Gasless Transfer",
+
+  "examples": {
+    "display": "hidden"
+  }
+}

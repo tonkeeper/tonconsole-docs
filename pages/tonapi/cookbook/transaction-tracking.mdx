@@ -1,0 +1,48 @@
+import { ExampleTabs, ExampleTab, ExternalLink } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { getLinkToSwaggerTag } from '@/utils';
+import TrackingTransactionHashGo from '@/examples/tracking-transaction-hash.go.mdx';
+import TrackingTransactionHashTs from '@/examples/tracking-transaction-hash.ts.mdx';
+import TrackingTransactionMessageBocTs from '@/examples/tracking-transaction-message-boc.ts.mdx';
+import TrackingTransactionMessageManualTs from '@/examples/tracking-transaction-message-manual.ts.mdx';
+
+# Transaction Tracking
+
+To reliably find a transaction from an external message (external-in) in the TON blockchain, use a normalized hash instead of a regular hash. External messages may slightly alter metadata when included in the blockchain, causing regular hashes to fail in locating the transaction.
+
+Swagger documentation for Blockchain operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.BLOCKCHAIN)}>here</ExternalLink>.
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionHashTs />
+  </ExampleTab>
+  <ExampleTab label="Go">
+    <TrackingTransactionHashGo />
+  </ExampleTab>
+</ExampleTabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.
+
+## Getting the `Message` object
+
+## From a BOC
+
+You may encounter BOC strings from various sources, for example, TonConnect (specifically after methods like `sendTransaction` or `send`), or from your own transaction logs. Here's how to parse a BOC string into a `Message` object:
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionMessageBocTs />
+  </ExampleTab>
+</ExampleTabs>
+
+## Manual creation with ton/core
+
+To manually create a `Message`, follow these steps:
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <TrackingTransactionMessageManualTs />
+  </ExampleTab>
+</ExampleTabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.

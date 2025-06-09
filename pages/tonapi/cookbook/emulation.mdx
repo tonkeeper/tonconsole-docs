@@ -1,0 +1,16 @@
+import { ExampleTabs, ExampleTab, ExternalLink } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { getLinkToSwaggerTag } from '@/utils';
+import EmulationTs from '@/examples/emulation.ts.mdx';
+
+# Emulation
+
+Originating from the [Emulation](/tonapi/rest-api/emulation) section of the REST API documentation, this recipe provides implementation examples for emulating transactions in TypeScript. Developers can use these examples to integrate emulation into their applications.
+
+Swagger documentation for Emulation operations can be found <ExternalLink href={getLinkToSwaggerTag(SWAGGER_TAGS.EMULATION)}>here</ExternalLink>.
+
+<ExampleTabs>
+  <ExampleTab label="TypeScript">
+    <EmulationTs />
+  </ExampleTab>
+</ExampleTabs>
