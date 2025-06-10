@@ -1,0 +1,32 @@
+```typescript
+import { TonApiClient, NftCollection } from '@ton-api/client';
+import { Address } from '@ton/core';
+
+// if you need to send lots of requests in parallel,
+// make sure you use a tonapi token.
+const ta = new TonApiClient({
+  baseUrl: 'https://tonapi.io',
+  // apiKey: 'YOUR_API_KEY',
+});
+
+const getNftCollection = async (address: Address): Promise<NftCollection | null> => {
+  const nftCollection = await ta.nft.getNftCollection(address);
+
+  // The preview field typically contains an array of image URLs, each representing the same image at a different resolution. For example, you might find resolutions like:
+  //
+  // 5x5 pixels (very small thumbnail)
+  // 100x100 pixels (small thumbnail)
+  // 500x500 pixels (medium resolution)
+  // 1500x1500 pixels (high resolution)
+  // These different sizes allow applications to load the most appropriate image based on the display context, optimizing performance and user experience.
+
+  const largePreview = nftCollection.previews?.find((i) => i.resolution === '1500x1500')?.url;
+
+  // https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md
+  const name = nftCollection.metadata?.name || nftItem.address.toString();;
+
+  return nftCollection;
+};
+
+getNftCollection(Address.parse('EQC3dNlesgVD8YbAazcauIrXBPfiVhMMr5YYk2in0Mtsz0Bz'));
+```

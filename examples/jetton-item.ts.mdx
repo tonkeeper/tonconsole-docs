@@ -1,0 +1,27 @@
+```typescript
+import { JettonInfo, JettonVerificationType, TonApiClient } from '@ton-api/client';
+import { Address } from '@ton/core';
+
+// if you need to send lots of requests in parallel,
+// make sure you use a tonapi token.
+const ta = new TonApiClient({
+    baseUrl: 'https://tonapi.io'
+    // apiKey: 'YOUR_API_KEY',
+});
+
+const getJettonItem = async (address: Address): Promise<JettonInfo | null> => {
+    const jetton = await ta.jettons.getJettonInfo(address);
+
+    // To get the image for a jetton, use the `preview` field.
+    const icon = jetton.preview;
+
+    const isScam = jetton.verification === JettonVerificationType.Blacklist;
+
+    // https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md
+    const name = jetton.metadata.name;
+
+    return jetton
+}
+
+getJettonItem(Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs'));
+```
