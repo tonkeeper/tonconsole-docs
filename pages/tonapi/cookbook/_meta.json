@@ -4,10 +4,7 @@
   "transaction-tracking": "Transaction tracking",
   "emulation": "Emulation",
   "gasless-transfer": "Gasless Transfer",
-  "nft-item": "NFT Item",
-  "nft-collection": "NFT Collection",
-  "account-nfts": "Account NFT's",
-  "jetton-item": "Jetton Item",
+  "working-with-nfts": "Working with NFTs",
 
   "examples": {
     "display": "hidden"
