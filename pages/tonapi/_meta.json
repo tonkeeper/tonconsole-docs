@@ -3,12 +3,14 @@
   "rest-api": "REST API",
   "streaming-api": "Streaming API",
   "webhooks-api": "Webhooks API",
-  "graphql": "GraphQL",
   "sdk": "SDKs & Swagger",
   "cookbook": "Cookbook",
   "dapp": "dApp",
   "liteservers": "Liteservers",
 
+  "graphql": {
+    "display": "hidden"
+  },
   "api-v2": {
     "display": "hidden"
   },
