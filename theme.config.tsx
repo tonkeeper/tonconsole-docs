@@ -124,6 +124,34 @@ const config: DocsThemeConfig = {
   },
   toc: {
     float: true,
+    extraContent: (
+      <a
+        href={LINKS.TONAPI_TECH_CHAT}
+        target="_blank"
+        className="flex items-center gap-3 bg-gray-100 hover:bg-gray-200 transition-colors px-4 py-3 rounded-xl shadow-sm w-full max-w-md"
+      >
+        <img
+          src="https://ton.org/icons/tonapi.png"
+          alt="TonAPI icon"
+          className="w-10 h-10 rounded-md"
+        />
+        <div className="flex flex-col text-left">
+          <span className="text-base font-semibold text-gray-900">
+            Join the TonAPI Tech chat
+          </span>
+          <span className="text-sm text-gray-500">Get help and answers here</span>
+        </div>
+        <svg
+          className="ml-auto w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    ),
   },
   editLink: {
     text: 'Edit this page on GitHub →',
