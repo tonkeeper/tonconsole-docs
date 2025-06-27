@@ -133,7 +133,7 @@ const config: DocsThemeConfig = {
           target="_blank"
           className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 transition-colors px-3 py-[10px] rounded-xl shadow-sm w-full max-w-md">
           <div className="flex flex-col text-left">
-            <span className="text-base font-semibold text-gray-900">TonAPI Tech chat</span>
+            <span className="nx-font-semibold nx-tracking-tight">TonAPI Tech chat</span>
             <span className="text-sm text-gray-500">Get help and answers here</span>
           </div>
           <svg
