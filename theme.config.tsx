@@ -2,6 +2,7 @@ import { DocsThemeConfig, useConfig } from 'nextra-theme-docs';
 import { TelegramIcon, ExternalLink } from './components';
 import { LINKS } from './constants';
 import { useRouter } from 'next/router';
+import { TonApiIcon } from './components/TonApiIcon';
 
 const config: DocsThemeConfig = {
   logo: (
@@ -124,6 +125,28 @@ const config: DocsThemeConfig = {
   },
   toc: {
     float: true,
+    extraContent: (
+      <div>
+        <hr className='my-6 dark:nx-border-neutral-800' />
+        <a
+          href={LINKS.TONAPI_TECH_CHAT}
+          target="_blank"
+          className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 transition-colors px-3 py-[10px] rounded-xl shadow-sm w-full max-w-md">
+          <div className="flex flex-col text-left">
+            <span className="text-base font-semibold text-gray-900">TonAPI Tech chat</span>
+            <span className="text-sm text-gray-500">Get help and answers here</span>
+          </div>
+          <svg
+            className="ml-auto w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    ),
   },
   editLink: {
     text: 'Edit this page on GitHub →',

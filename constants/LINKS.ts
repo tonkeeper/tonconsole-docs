@@ -8,6 +8,7 @@ export const LINKS = {
   CONTACT_EMAIL: 'rostislav.r@tonkeeper.com',
   ZAKHAR_TG: 'https://t.me/zakhar_petukhov',
   CONSOLE: 'https://tonconsole.com',
+  TONAPI_TECH_CHAT: 'https://t.me/tonapi_chat',
 } as const;
 
 export const TONORG_LINKS = {
