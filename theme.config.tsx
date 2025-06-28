@@ -1,10 +1,10 @@
-import { DocsThemeConfig, useConfig } from 'nextra-theme-docs';
+import { useConfig } from 'nextra-theme-docs';
 import { TelegramIcon, ExternalLink } from './components';
 import { LINKS } from './constants';
 import { useRouter } from 'next/router';
 import { TonApiIcon } from './components/TonApiIcon';
 
-const config: DocsThemeConfig = {
+const config = {
   logo: (
     <div className="nx-flex nx-items-center max-[500px]:gap-2 min-[500px]:gap-3">
       <svg
@@ -23,6 +23,7 @@ const config: DocsThemeConfig = {
     </div>
   ),
   head: () => {
+    // @ts-ignore next-line - useConfig shape is not exported
     const { title } = useConfig();
     const { route } = useRouter();
 
