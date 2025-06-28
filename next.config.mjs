@@ -1,13 +1,11 @@
-const withNextra = require('nextra')({
-  theme: 'nextra-theme-docs',
-  themeConfig: './theme.config.tsx',
-  latex: true,
-});
+import nextra from 'nextra';
+
+const withNextra = nextra({});
 
 const isGhPages = process.env.GHPAGES === '1';
 const repoName = 'tonconsole-docs';
 
-module.exports = withNextra({
+const nextConfig = {
   images: {
     unoptimized: true,
   },
@@ -19,4 +17,7 @@ module.exports = withNextra({
     assetPrefix: `/${repoName}/`,
     trailingSlash: true,
   }),
-});
+  output: 'export',
+};
+
+export default withNextra(nextConfig);
