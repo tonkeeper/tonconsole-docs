@@ -1,4 +1,4 @@
-import { Steps } from 'nextra/components'
+import { Steps } from 'nextra/components';
 
 # TonAPI SDK Guide
 
@@ -30,21 +30,40 @@ If you prefer to generate an SDK yourself, you can do so using the TonAPI OpenAP
 
 ### Install the OpenAPI Generator CLI Tool:
 
-   Install the OpenAPI generator globally using `npm`:
-   ```bash
-   npm install @openapitools/openapi-generator-cli -g
-   ```
+Install the OpenAPI generator globally using `npm`:
+
+```bash
+npm install @openapitools/openapi-generator-cli -g
+```
 
 ### Generate the SDK:
 
-   Use the command below to generate the SDK. The example is for Ruby, but you can specify a different language by changing the `-g` (generator) parameter. If your Swagger file has multiple tags per operation and your language struggles with this, you can add the `--openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true` option.
-   ```bash
-   npx openapi-generator-cli generate -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -g ruby -o /path/to/output
-   ```
+Use the command below to generate the SDK. The example is for Ruby, but you can specify a different language by changing the `-g` (generator) parameter.
 
-   - **Note:** Replace `/path/to/output` with the actual directory path where you want to generate the SDK.
+```bash
+npx openapi-generator-cli generate -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml -g ruby -o /path/to/output
+```
 
-   If you encounter issues during client generation for certain languages due to multiple tags being present on a single operation in the Swagger file (which is the case for our Swagger file), you can resolve this by adding the option `--openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true`. This option helps handle such cases by keeping only the first tag in operations.
+- **Note:** Replace `/path/to/output` with the actual directory path where you want to generate the SDK.
+
+If you encounter issues during client generation for certain languages (for example, due to multiple tags per operation or possible future enum value additions), consider using the following options:
+
+- `--openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true`  
+  This flag helps if the Swagger file contains multiple tags for a single operation and your SDK generator/language has trouble with that (it keeps only the first tag).
+
+- `--additional-properties=enumUnknownDefaultCase=true`  
+  This flag ensures your generated SDKs will gracefully handle new/unknown enum values in the future by mapping them to a default enum case such as `UNKNOWN_DEFAULT` (supported in Java, Kotlin, TypeScript, Swift, etc).
+
+You can combine these options in a single command, for example:
+
+```bash
+npx openapi-generator-cli generate \
+  --openapi-normalizer KEEP_ONLY_FIRST_TAG_IN_OPERATION=true \
+  -i https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml \
+  -g ruby \
+  -o /path/to/output \
+  --additional-properties=enumUnknownDefaultCase=true
+```
 
 </Steps>
 
