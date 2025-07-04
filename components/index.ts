@@ -1,3 +1,4 @@
+"use client";
 export { TonkeeperLogoIcon } from './TonkeeperLogoIcon';
 export { TelegramIcon } from './TelegramIcon';
 export { ExternalLink } from './ExternalLink';

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from 'react';
 import { getLinkToSwaggerOperation } from '../utils/links';
 import { SWAGGER_SCHEMA_JSON_URL } from '../constants/LINKS';

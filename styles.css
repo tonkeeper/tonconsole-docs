@@ -1,16 +1,17 @@
-@tailwind base;
-@tailwind utilities;
-@tailwind typography;
+@import 'tailwindcss';
+@import 'nextra-theme-docs/style.css';
+
+@variant dark (&:where(.dark *));
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, Tahoma, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, Tahoma, Verdana, sans-serif;
 }
 
 h1, h2, h3 {
-    display: flex;
-    gap: 0.25rem;
+  display: flex;
+  gap: 0.25rem;
 }
 
 .nx-mt-6 {
-    margin-top: 0.5rem;
+  margin-top: 0.5rem;
 }

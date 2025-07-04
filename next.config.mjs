@@ -1,6 +1,8 @@
 import nextra from 'nextra';
 
-const withNextra = nextra({});
+const withNextra = nextra({
+  contentDirBasePath: '/',
+});
 
 const isGhPages = process.env.GHPAGES === '1';
 const repoName = 'tonconsole-docs';
