@@ -1,4 +1,4 @@
-import { Card, Cards } from 'nextra-theme-docs';
+import { Cards } from 'nextra/components';
 import { LINKS } from "../constants";
 
 # Welcome to Documentation
@@ -15,7 +15,7 @@ Find the technical documentation and guides for Ton API, Ton Console, Tonkeeper 
 
 
 <Cards style={{marginTop: '30px'}}>
-    <Card title="Read docs" href="/tonapi" />
-    <Card title="Open TonConsole" target="_blank" rel="noopener" href="https://tonconsole.com/" />
-    <Card title="Chat with team" target="_blank" rel="noopener" href={LINKS.CONTACT} />
+    <Cards.Card title="Read docs" href="/tonapi" />
+    <Cards.Card title="Open TonConsole" target="_blank" rel="noopener" href="https://tonconsole.com/" />
+    <Cards.Card title="Chat with team" target="_blank" rel="noopener" href={LINKS.CONTACT} />
 </Cards>
