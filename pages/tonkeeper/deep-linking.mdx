@@ -116,8 +116,6 @@ ton://transfer/UQCae11h9N5znylEPRjmuLYGvIwnxkcCw4zVW4BJjVASi5eL?amount=1&text=te
 
 ### 3) Expiry Timestamp (`exp`)
 
-Ensures the transaction is only valid until a given time.
-
 **Rules**
 
 - `amount` is **required** when `exp` is present.
@@ -125,6 +123,16 @@ Ensures the transaction is only valid until a given time.
 - Clients must **reject** expired transactions.
 - Can be combined with any valid combination (e.g., `text`, `bin`, `init`).
 - Links with `exp` are **non-editable** (confirmation screen only).
+
+
+**How `exp` works**
+
+- Defines the latest moment a transaction can be signed.
+- Already expired → signing is blocked.
+- Expires during signing → signature must fail.
+- Very distant in the future → wallet should replace with a short validity window at signing (e.g. current time + N seconds).
+
+Ensures the transaction is only valid until a given time. When using `exp`, certain behaviors and restrictions apply to guarantee the security and timeliness of the transaction:
 
 **Format**
 
