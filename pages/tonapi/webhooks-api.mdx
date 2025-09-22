@@ -1,34 +1,41 @@
-import { Callout } from "nextra-theme-docs";
-import { ExternalLink } from "@/components";
-import { SWAGGER_TAGS } from "@/constants";
-import { loadWebhooksStatic } from "@/utils";
-import { WebhooksSchemaLoader } from "./webhooks-api/utils";
+import { Callout } from 'nextra-theme-docs';
+import { ExternalLink, WebhooksSchemaLoader } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { loadWebhooksStatic } from '@/utils';
 
 export const getStaticProps = loadWebhooksStatic;
 
 # Webhooks API
 
-Human‑friendly guide to using TONAPI Webhooks. Full schemas and exhaustive field lists live in Swagger (rt.yml). This page focuses on what matters in practice: how delivery works, how to authenticate, and how to operate reliably.
+Webhooks give you a direct line from the TON blockchain into your system. Instead of polling the API, you set up a subscription once and receive POST requests whenever the events you care about actually happen. This makes integrations both faster and more reliable, since your product can react instantly to new activity.
 
 ## What it is and why
 
-- **Webhooks** let you subscribe to on‑chain events and receive POST notifications to your endpoint. The most common case is inbound transactions for specific accounts. The payload includes `account_id`, `lt` and `tx_hash`.
-- **Base URLs**: mainnet `rt.tonapi.io`, testnet `rt-testnet.tonapi.io` (same paths as mainnet).
-- **API Key**: management methods require a private API key via `Authorization: Bearer …` or `?token=…`. Your key must have Webhooks management enabled in TonConsole (webhooks are billed separately).
+* **Event payload:** `account_id` (account address), `lt` (logical time), `tx_hash` (transaction hash).
+* **Base URLs:** mainnet `rt.tonapi.io`, testnet `rt-testnet.tonapi.io` (same paths).
+* **API key:** management endpoints require a private API key via `Authorization: Bearer …` or `?token=…`. Your key must have **Webhooks management** enabled in TonConsole; webhooks are billed separately.
+* **Playground:** TonConsole (`tonconsole.com/tonapi/webhooks`) lets you create webhooks, see status, and test deliveries on mainnet/testnet. Advanced subscriptions (opcode, mempool, new contracts) are API-only.
+* **Delivery guarantee:** at-least-once delivery. Duplicates and out-of-order messages are possible — make handlers idempotent and deduplicate using `account_id`, `lt`, and `tx_hash`.
 
-## Event payload (account transactions)
+## Event payload
 
-Readable “web schema” for account transaction notifications:
+Each notification is a compact JSON object with three fields that uniquely identify the transaction and its position on-chain (this same structure is used for all webhooks):
+
+* **`account_id`** — the account the event relates to (the address you subscribed to)
+* **`lt`** — the “logical time” that places the transaction at an exact point in the chain
+* **`tx_hash`** — the unique fingerprint of the transaction (useful for lookups and deduplication)
+
+**JSON structure**
 
 ```ts
-type AccountTransactionEvent = {
-  account_id: string; // raw address, e.g. "0:8f2d84…"
-  lt: number;        // logical time
-  tx_hash: string;   // transaction hash
+type WebhookEvent = {
+  account_id: string; // account address, e.g. "0:8f2d84…"
+  lt: number;         // logical time (position in chain)
+  tx_hash: string;    // transaction hash (unique ID)
 };
 ```
 
-Production example:
+**Example**
 
 ```json
 {
@@ -38,40 +45,49 @@ Production example:
 }
 ```
 
-Refer to the Webhooks API page for other subscription payloads and details.
-
 ## Delivery and retries
 
+We guarantee delivery using an **at-least-once** scheme with automatic retries and exponential backoff. Your endpoint is treated as successfully delivered when it returns an HTTP `2xx` within a reasonable timeout; non-`2xx` responses (or timeouts) trigger retries according to the rules below. This approach removes the need for polling and ensures events keep attempting delivery until your service acknowledges them.
+
 <Callout type="warning" emoji="⚠️">
-  Delivery is <strong>at‑least‑once</strong>. Duplicates and out‑of‑order delivery are possible. Implement idempotency.
+Heads-up: “at-least-once” means duplicates and out-of-order messages are possible.
 </Callout>
 
-- **Ack protocol**
-  - Any HTTP **2xx** within a reasonable timeout → treated as delivered.
-  - **5xx** or timeout → retried with exponential backoff.
-  - **4xx** (except `408`/`429`) → not retried. `408`/`429` are treated as temporary and retried.
-- **Idempotency key**: use the tuple `(account_id, lt, tx_hash)` to deduplicate.
-- **Operational tips**
-  - Return a “quick ACK” (e.g., `204`/`200`) and process asynchronously.
-  - Keep a per‑account checkpoint of the last processed `lt` to recover quickly.
-  - Monitor subscription counters: `last_delivered_lt`, `failed_at`, `failed_lt`, `failed_attempts`.
+* **Ack rules**
+
+  * Any HTTP **`2xx`** within a reasonable timeout → treated as delivered.
+  * **`5xx`** or timeout → retried with exponential backoff.
+  * **`4xx`** (except **`408`** / **`429`**) → not retried. **`408`** / **`429`** are considered temporary and retried.
+
+* **Idempotency**
+
+  * Use **`(account_id, lt)`** as the idempotency key.
+  * Optionally verify **`tx_hash`** for integrity/logging.
+
+* **Backoff template** *(fill in values for your environment)*
+
+  * `initial_delay = <…>` → `backoff_factor = <…>` (exponential)
+  * `jitter = full | equal | decorrelated`
+  * `max_backoff = <…>`
+  * `max_attempts = <…>` **or** `ttl_per_event = <…>`
+
+* **Operational tips**
+
+  * Return a quick ACK (`204`/`200`) and process asynchronously.
+  * Keep a per-account checkpoint of the last processed **`lt`** for fast recovery.
+  * Monitor subscription counters: **`last_delivered_lt`**, **`failed_at`**, **`failed_lt`**, **`failed_attempts`**.
 
 ## Authenticating incoming webhook requests
 
-Two complementary options:
+Use the webhook’s shared secret token.
 
-- **Secret token in headers**
-  When you create a webhook the API returns a `token`. TONAPI includes this token in headers for every notification. Compare it to your stored token to verify the sender. You can rotate the token via `POST /webhooks/{webhook_id}/generate-new-token` (the old token becomes invalid).
+* **Create:** when you create a webhook, the API returns a `token`. Store it securely.
+* **Deliveries:** each webhook request includes `Authorization: Bearer <token>`.
+* **Verify:** accept the request only if the header exactly matches your stored token.
+* **Rotate:** call <ExternalLink href="https://tonapi.io/webhooks-api#operations-default-webhookGenerateNewToken">webhookGenerateNewToken</ExternalLink> and update your stored value. The previous token becomes invalid.
+* **Security tip:** don’t log the token; compare it as-is (no trimming/normalization).
 
-- **Secret path segment**
-  Add a unique segment to your endpoint (e.g., `/webhooks/ab12cdef-…`) and accept notifications only at that URL.
-
-Recommendations:
-
-- Do not log the secret verbatim; have a rotation procedure.
-- Compare tokens exactly (no trimming/normalization).
-
-### Operations
+## API methods to manage webhooks
 
 <WebhooksSchemaLoader />
 
@@ -82,26 +98,39 @@ Use the same API on `rt-testnet.tonapi.io`.
 ## Recovery and self‑healing
 
 - On service startup, load current subscriptions via `GET /…/account-tx/subscriptions` and note `last_delivered_lt` per account.
+
 - If events were missed, backfill via REST (e.g., Traces) and process locally with the same idempotency `(account_id, lt, tx_hash)`.
+
 - When your receiver is back online, call `POST /webhooks/{id}/back-online` and review `GET /…/logs`.
 
 ## FAQ
 
 - **Do you guarantee ordering?** Not across different accounts. Rely on `lt` and deduplicate.
+
 - **What response should we send?** Any `2xx` is success. For heavy processing, return `204` and use an async pipeline.
+
 - **Where can we see delivery errors?** `GET /webhooks/{id}/logs` and the `failed_*` counters in subscriptions.
 
 ## Integrator checklist
 
 - API key with Webhooks permissions enabled in TonConsole.
+
 - Created webhook → stored `webhook_id` and secret `token`.
-- Receiver validates the header token and/or uses a secret path.
+
+- Receiver validates the header token.
+
 - Immediate `2xx` ACK; idempotency on `(account_id, lt, tx_hash)`.
+
 - Per‑account checkpoint on `lt`; backfill via REST if needed.
+
 - Monitoring: `failed_*`, `logs`, alerts on error growth.
 
 ## Links
 
 - <ExternalLink href="https://tonapi.io/webhooks-api">Webhooks API (tonapi.io)</ExternalLink>
-- <ExternalLink href="https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/rt.yml">Swagger rt.yml (raw)</ExternalLink>
+
+- <ExternalLink href="https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/rt.yml">
+    Swagger rt.yml (raw)
+  </ExternalLink>
+
 - <ExternalLink href="https://tonconsole.com/tonapi/webhooks">TonConsole Playground</ExternalLink>
