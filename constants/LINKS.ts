@@ -29,13 +29,17 @@ export const GITHUB_LINKS = {
   RATES_PRICE_CALCULATION_CODE: 'https://github.com/tonkeeper/opentonapi/blob/master/pkg/rates/market.go#L724',
 } as const;
 
-export const SWAGGER_SCHEMA_JSON_URL =
-  process.env.NEXT_PUBLIC_TONAPI_OPENAPI_JSON_URL ??
-  'https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.json';
-export const SWAGGER_SCHEMA_YAML_URL =
+export const SWAGGER_REST_SCHEMA_YAML_URL =
   process.env.NEXT_PUBLIC_TONAPI_OPENAPI_YAML_URL ??
-  'https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/openapi.yml';
+  'https://tonapi.io/v2/openapi.yml';
+
+export const SWAGGER_WEBHOOKS_SCHEMA_YAML_URL =
+  process.env.NEXT_PUBLIC_TONAPI_OPENAPI_WEBHOOKS_YAML_URL ??
+  'https://raw.githubusercontent.com/tonkeeper/opentonapi/refs/heads/master/api/rt.yml';
+
 export const TONAPI_LANDING_PAGE_URL =
   process.env.NEXT_PUBLIC_TONAPI_LANDING_PAGE_URL ?? 'https://tonapi.io/';
 
-export const TONAPI_LANDING_PAGE_SWAGGER_URL = `${TONAPI_LANDING_PAGE_URL}/api-v2`;
+
+export const TONAPI_LANDING_PAGE_REST_SWAGGER_URL = `${TONAPI_LANDING_PAGE_URL}/api-v2`;
+export const TONAPI_LANDING_PAGE_WEBHOOKS_SWAGGER_URL = `${TONAPI_LANDING_PAGE_URL}/webhooks-api`;

@@ -1,13 +1,13 @@
 import { ExternalLink, SchemaLoader, SwaggerLink } from "@/components";
 import {
-  SWAGGER_SCHEMA_YAML_URL,
-  TONAPI_LANDING_PAGE_SWAGGER_URL,
+  SWAGGER_REST_SCHEMA_YAML_URL,
+  TONAPI_LANDING_PAGE_REST_SWAGGER_URL,
   GITHUB_LINKS,
   SWAGGER_TAGS
 } from "@/constants";
-import { loadStatic } from "@/utils";
+import { loadRestStatic } from "@/utils";
 
-export const getStaticProps = loadStatic;
+export const getStaticProps = loadRestStatic;
 
 # Gasless<SwaggerLink tag={SWAGGER_TAGS.GASLESS} />
 

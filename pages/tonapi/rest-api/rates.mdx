@@ -1,9 +1,9 @@
 import { Callout } from "nextra-theme-docs";
 import { SwaggerLink, SchemaLoader, ExternalLink } from "@/components";
 import { SWAGGER_TAGS, GITHUB_LINKS, LINKS } from "@/constants";
-import { loadStatic } from "@/utils";
+import { loadRestStatic } from "@/utils";
 
-export const getStaticProps = loadStatic;
+export const getStaticProps = loadRestStatic;
 
 # Rates<SwaggerLink tag={SWAGGER_TAGS.RATES} />
 

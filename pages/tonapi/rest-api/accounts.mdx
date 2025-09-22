@@ -1,8 +1,8 @@
 import { SwaggerLink, SchemaLoader } from "@/components";
 import { SWAGGER_TAGS } from "@/constants";
-import { loadStatic } from "@/utils";
+import { loadRestStatic } from "@/utils";
 
-export const getStaticProps = loadStatic;
+export const getStaticProps = loadRestStatic;
 
 # Accounts<SwaggerLink tag={SWAGGER_TAGS.ACCOUNTS} />
 
