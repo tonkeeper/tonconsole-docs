@@ -45,5 +45,15 @@ liteProxy.getRequestRateLimit#f0f83e86 = liteProxy.RequestRateLimit;
 ```
 Where: `rate limit = limit / per_time[s]`
 
+## Error codes
+
+In addition to the standard liteserver error codes (such as 651, -400, etc.), there are two additional error codes:
+* 228 - rate limit exceeded (there used to be code 5556, but it was replaced with 228 for unification)
+* 5555 - internal server error
+
+It is important to correctly handle these error codes to ensure stable operation of the client application.
+To avoid the rate limit error, a rate limiter can be used on the client side and set to a value slightly below the maximum value of the plan.
+For error 5555, it is usually enough to retry the request.
+
 ## Archive node access
 By default, the service provides access to an archival node for obtaining historical data (i.e., data from the first blocks of the blockchain).
