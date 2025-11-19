@@ -7,7 +7,7 @@ export const getStaticProps = loadStatic;
 
 # Rates<SwaggerLink tag={SWAGGER_TAGS.RATES} />
 
-**Rates service** provides access to exchange rates for various tokens on the TON blockchain. This service calculates token prices using data from our indexer and liquidity pools such as Stonfi and Dedust, offering a comprehensive view of verified tokens, their reserves, and holder counts.
+**Rates service** provides access to exchange rates for various tokens on the TON blockchain. This service calculates token prices using data from our indexer and liquidity pools such as Stonfi, Dedust, SwapCoffee, Tonco, Bidask and Mooncx, offering a comprehensive view of verified tokens, their reserves, and holder counts.
 
 <Callout type="warning" emoji="⚠️">
   The rates provided are for informational purposes only. Do not use this data for financial transactions.
@@ -19,12 +19,16 @@ Our Rates service utilizes a systematic approach to gather and process data:
 
 
 #### Data Sources:
-   - By leveraging the [analytics service](/tonconsole/analytics) in tonconsole, we obtain data on pools from Stonfi and Dedust.
+   - By leveraging the [analytics service](/tonconsole/analytics) in tonconsole, we obtain data on pools from Stonfi, Dedust, SwapCoffee, Tonco, Bidask and Mooncx.
    - The collected information includes token **_addresses_**, **_reserves_**, and the **_number of holders_** for verified tokens.
 
 #### Price Calculation:
    - For standard pools: We apply the formula $xy = k$, where $x$ and $y$ are volumes of two assets in the pool, and $k$ is a constant.
    - For Dedust stable pools: We use a modified formula $x^3y + y^3x = k$ to account for the specifics of these pools.
+   - For Stonfi weighted constant product pool: We use standart formula ($xy = k$) with weight value $w0$ from the pool settings $x^{w_0}y^{1 - w_0} = k$.
+   - For Stonfi stable pools: We work with the following formula $4A(x + y) + D = 4AD + \frac{D^3}{4xy}$, where $A$ is amplifier from pool's settings and $D$ is a constant, so it much more complicated to calculate $D$ value, so we use iteratively, calculating $D$ more accurate each step.
+   - For Stonfi weighted stable pools: We use a bit simplified formula for stable pools with rate $r$ and weight $w0$ parameters from pool's settings $(x + ry)A + x^{w0}y \cdot (ry)^{1 - w0} = k$.
+   - For Bidask pools: We get already calculated price from the pool data, butwe need to proccess this value using this formula ${(\frac{P}{2^{128}})}^2 = price$, where $P$ is the value of price that need to be proccessed.
 
    You can view the implementation of these calculations <ExternalLink href={GITHUB_LINKS.RATES_PRICE_CALCULATION_CODE}>here</ExternalLink> .
 
