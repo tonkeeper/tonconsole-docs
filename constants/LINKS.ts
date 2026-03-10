@@ -4,9 +4,7 @@ export const LINKS = {
   TERMS: "https://tonapi.io/terms",
   // PRIVACY: "#", // TODO: Add link
   SUPPORT: 'https://t.me/ton_console_bot',
-  CONTACT: 'https://t.me/tonrostislav',
-  CONTACT_EMAIL: 'rostislav.r@tonkeeper.com',
-  ZAKHAR_TG: 'https://t.me/zakhar_petukhov',
+  CONTACT: 'https://t.me/ton_console_bot',
   CONSOLE: 'https://tonconsole.com',
   TONAPI_TECH_CHAT: 'https://t.me/tonapitech',
 } as const;
