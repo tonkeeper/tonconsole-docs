@@ -1,134 +1,136 @@
-import { Callout } from "nextra-theme-docs";
+import { Callout } from 'nextra-theme-docs';
+import { ExternalLink, WebhooksSchemaLoader } from '@/components';
+import { SWAGGER_TAGS } from '@/constants';
+import { loadWebhooksStatic } from '@/utils';
+
+export const getStaticProps = loadWebhooksStatic;
 
 # Webhooks API
 
-Webhooks API provides a way to subscribe to events that happen in the TON blockchain.
-This allows you to build applications that react to events in the blockchain.
+Webhooks give you a direct line from the TON blockchain into your system. Instead of polling the API, you set up a subscription once and receive POST requests whenever the events you care about actually happen. This makes integrations both faster and more reliable, since your product can react instantly to new activity.
 
+## What it is and why
 
-# Authentication
-All methods of Webhooks API require a private API key.
-You can get a personal API key at https://tonconsole.com/.
+* **Event payload:** `account_id` (account address), `lt` (logical time), `tx_hash` (transaction hash).
+* **Base URLs:** mainnet `rt.tonapi.io`, testnet `rt-testnet.tonapi.io` (same paths).
+* **API key:** management endpoints require a private API key via `Authorization: Bearer …` or `?token=…`. Your key must have **Webhooks management** enabled in TonConsole; webhooks are billed separately.
+* **Playground:** TonConsole (`tonconsole.com/tonapi/webhooks`) lets you create webhooks, see status, and test deliveries on mainnet/testnet. Advanced subscriptions (opcode, mempool, new contracts) are API-only.
+* **Delivery guarantee:** at-least-once delivery. Duplicates and out-of-order messages are possible — make handlers idempotent and deduplicate using `account_id`, `lt`, and `tx_hash`.
 
-Webhooks API looks for an API key in two places in the following order:
-1. In the Authorization header with the "Bearer scheme".
-For example:
+## Event payload
+
+Each notification is a compact JSON object with three fields that uniquely identify the transaction and its position on-chain (this same structure is used for all webhooks):
+
+* **`account_id`** — the account the event relates to (the address you subscribed to)
+* **`lt`** — the “logical time” that places the transaction at an exact point in the chain
+* **`tx_hash`** — the unique fingerprint of the transaction (useful for lookups and deduplication)
+
+**JSON structure**
+
+```ts
+type WebhookEvent = {
+  account_id: string; // account address, e.g. "0:8f2d84…"
+  lt: number;         // logical time (position in chain)
+  tx_hash: string;    // transaction hash (unique ID)
+};
 ```
-Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
-```
-2. In the "token" parameter of the query string.
-For example:
-```
-https://rt.tonapi.io/webhooks?token=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
-```
 
-# API methods to manage webhooks
+**Example**
 
-When a transaction happens on an account, TONAPI sends a POST request to a webhook URL.
-The request body contains the account's ID, the transaction's hash and LT.
-An example of a request body:
 ```json
 {
-  "account_id":"0:8f2d840ec05d118f98459a057b1fcab535c57b9371222be15667fee932ceaf53",
-  "lt":49739623000001,
-  "tx_hash":"653e593d581ad40d5d0868fe5d60008e1bfe9d2d4c4fa6b2ee5cd458741d7b59"
+  "account_id": "0:8f2d840ec05d118f98459a057b1fcab535c57b9371222be15667fee932ceaf53",
+  "lt": 49739623000001,
+  "tx_hash": "653e593d581ad40d5d0868fe5d60008e1bfe9d2d4c4fa6b2ee5cd458741d7b59"
 }
 ```
 
+## Delivery and retries
 
-## Create webhook
-
-POST https://rt.tonapi.io/webhooks - the method creates a new webhook, configures its endpoint and returns a webhook ID.
-A webhook ID is used to manage subscriptions to account transactions.
-
-A request body:
-```json
-{
-  "endpoint": "https://your-server.com/webhook"
-}
-```
-A response example:
-```json
-{
-  "webhook_id": 5
-}
-```
-
-## List webhooks
-
-GET https://rt.tonapi.io/webhooks - the method returns all available webhooks: their IDs and endpoints.
-A response example:
-```json
-{
-  "webhooks": [
-    { "id": 5, "endpoint": "https://your-server.com/webhook" },
-    { "id": 6, "endpoint": "https://your-server.com/another-webhook" }
-  ]
-}
-```
-
-## Delete a webhook
-DELETE https://rt.tonapi.io/webhooks/{webhook_id} - the method deletes a webhook and all its subscriptions.
-
-## Subscribe to account transactions
-
-POST https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/subscribe - the method takes in a list of account IDs to subscribe to. When a new transaction happens on any of the accounts,
-TONAPI sends a POST request to the webhook URL.
-
-A request body:
-```json
-  {"accounts": [{"account_id": "0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"}]}
-```
-
-## Unsubscribe from account transactions
-POST https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/unsubscribe - the method takes in a list of account IDs to unsubscribe from.
-
-A request body:
-```json
-  {"accounts": ["0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"]}
-```
-
-## Get a webhook's subscriptions
-GET https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/subscriptions?offset=0&limit=10
-
-A response example:
-```json
-{
-  "account_tx_subscriptions": [
-    {
-        "account_id": "0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220",
-        "last_delivered_lt": 2900000001,
-        "failed_at": "<time of failure>",
-        "failed_lt": 2900000000,
-        "failed_attempts": 4
-    }
-  ]
-}
-```
-
-## Subscribe to events about new contract deployments
-
-POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-new-contracts - when a new contract is deployed to the blockchain,
-TONAPI sends a POST request to the webhook URL.
-
-## Unsubscribe from events about new contract deployments
-
-POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-new-contracts - stop receiving a webhook notification when a new contract is deployed to the blockchain.
-
-## Subscribe to messages with a specific opcode in a message body
+We guarantee delivery using an **at-least-once** scheme with automatic retries and exponential backoff. Your endpoint is treated as successfully delivered when it returns an HTTP `2xx` within a reasonable timeout; non-`2xx` responses (or timeouts) trigger retries according to the rules below. This approach removes the need for polling and ensures events keep attempting delivery until your service acknowledges them.
 
 <Callout type="warning" emoji="⚠️">
-  This subscription will trigger webhooks for **every** message on the blockchain that contains the specified opcode — even if it's unrelated to your accounts.
+Heads-up: “at-least-once” means duplicates and out-of-order messages are possible.
 </Callout>
 
-POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-msg-opcode/0x{opcode} - when a new transaction is happening with a message that contains a specific opcode in its body,
-TONAPI sends a POST request to the webhook URL.
+* **Ack rules**
 
-## Unsubscribe from messages with a specific opcode in a message body
+  * Any HTTP **`2xx`** within a reasonable timeout → treated as delivered.
+  * **`5xx`** or timeout → retried with exponential backoff.
+  * **`4xx`** (except **`408`** / **`429`**) → not retried. **`408`** / **`429`** are considered temporary and retried.
 
-POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-msg-opcode/0x{opcode} - stop receiving a webhook notification when a new transaction is happening with a message that contains a specific opcode in its body.
+* **Idempotency**
 
+  * Use **`(account_id, lt)`** as the idempotency key.
+  * Optionally verify **`tx_hash`** for integrity/logging.
 
-# Testnet webhooks
+* **Backoff template** *(fill in values for your environment)*
 
-Available by domain https://rt-testnet.tonapi.io/{ur_as_in_mainnet}
+  * `initial_delay = <…>` → `backoff_factor = <…>` (exponential)
+  * `jitter = full | equal | decorrelated`
+  * `max_backoff = <…>`
+  * `max_attempts = <…>` **or** `ttl_per_event = <…>`
+
+* **Operational tips**
+
+  * Return a quick ACK (`204`/`200`) and process asynchronously.
+  * Keep a per-account checkpoint of the last processed **`lt`** for fast recovery.
+  * Monitor subscription counters: **`last_delivered_lt`**, **`failed_at`**, **`failed_lt`**, **`failed_attempts`**.
+
+## Authenticating incoming webhook requests
+
+Use the webhook’s shared secret token.
+
+* **Create:** when you create a webhook, the API returns a `token`. Store it securely.
+* **Deliveries:** each webhook request includes `Authorization: Bearer <token>`.
+* **Verify:** accept the request only if the header exactly matches your stored token.
+* **Rotate:** call <ExternalLink href="https://tonapi.io/webhooks-api#operations-default-webhookGenerateNewToken">webhookGenerateNewToken</ExternalLink> and update your stored value. The previous token becomes invalid.
+* **Security tip:** don’t log the token; compare it as-is (no trimming/normalization).
+
+## API methods to manage webhooks
+
+<WebhooksSchemaLoader />
+
+## Testnet
+
+Use the same API on `rt-testnet.tonapi.io`.
+
+## Recovery and self‑healing
+
+- On service startup, load current subscriptions via `GET /…/account-tx/subscriptions` and note `last_delivered_lt` per account.
+
+- If events were missed, backfill via REST (e.g., Traces) and process locally with the same idempotency `(account_id, lt, tx_hash)`.
+
+- When your receiver is back online, call `POST /webhooks/{id}/back-online` and review `GET /…/logs`.
+
+## FAQ
+
+- **Do you guarantee ordering?** Not across different accounts. Rely on `lt` and deduplicate.
+
+- **What response should we send?** Any `2xx` is success. For heavy processing, return `204` and use an async pipeline.
+
+- **Where can we see delivery errors?** `GET /webhooks/{id}/logs` and the `failed_*` counters in subscriptions.
+
+## Integrator checklist
+
+- API key with Webhooks permissions enabled in TonConsole.
+
+- Created webhook → stored `webhook_id` and secret `token`.
+
+- Receiver validates the header token.
+
+- Immediate `2xx` ACK; idempotency on `(account_id, lt, tx_hash)`.
+
+- Per‑account checkpoint on `lt`; backfill via REST if needed.
+
+- Monitoring: `failed_*`, `logs`, alerts on error growth.
+
+## Links
+
+- <ExternalLink href="https://tonapi.io/webhooks-api">Webhooks API (tonapi.io)</ExternalLink>
+
+- <ExternalLink href="https://raw.githubusercontent.com/tonkeeper/opentonapi/master/api/rt.yml">
+    Swagger rt.yml (raw)
+  </ExternalLink>
+
+- <ExternalLink href="https://tonconsole.com/tonapi/webhooks">TonConsole Playground</ExternalLink>

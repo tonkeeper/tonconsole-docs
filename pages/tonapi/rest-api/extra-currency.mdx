@@ -1,9 +1,9 @@
 import { Callout } from "nextra-theme-docs";
 import { SwaggerLink, SchemaLoader } from "@/components";
 import { SWAGGER_TAGS } from "@/constants";
-import { loadStatic } from "@/utils";
+import { loadRestStatic } from "@/utils";
 
-export const getStaticProps = loadStatic;
+export const getStaticProps = loadRestStatic;
 
 # Extra Currency<SwaggerLink tag={SWAGGER_TAGS.EXTRA_CURRENCY} />
 

@@ -1,8 +1,8 @@
 import { SwaggerLink, SchemaLoader, ExternalLink } from "@/components";
 import { SWAGGER_TAGS, TONORG_LINKS } from "@/constants";
-import { loadStatic } from "@/utils";
+import { loadRestStatic } from "@/utils";
 
-export const getStaticProps = loadStatic;
+export const getStaticProps = loadRestStatic;
 
 # DNS<SwaggerLink tag={SWAGGER_TAGS.DNS} />
 
