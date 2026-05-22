@@ -39,3 +39,24 @@ JOIN blockchain.transactions txs ON txs.in_msg = m.id
 WHERE utime > extract(EPOCH FROM now() - interval '1 day')::bigint
 GROUP BY op
 ```
+
+#### Jetton metadata
+
+Jetton metadata can be resolved from `url` in `getmethods.get_jetton_data` table using `nft.url_metadata`. See [Database scheme → Metadata](/tonconsole/analytics/scheme#metadata).
+
+```sql
+SELECT
+    jd.account_id,
+    m.metadata ->> 'name'                       AS name,
+    m.metadata ->> 'symbol'                     AS symbol,
+    COALESCE((m.metadata ->> 'decimals')::int, 9) AS decimals
+FROM getmethods.get_jetton_data jd
+LEFT JOIN nft.url_metadata m ON m.url = jd.url
+WHERE jd.account_id = '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe'
+```
+
+Result:
+
+| account_id | name | symbol | decimals |
+| --- | --- | --- | --- |
+| `0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe` | Tether USD | USD₮ | 6 |

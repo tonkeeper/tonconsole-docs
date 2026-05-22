@@ -374,6 +374,7 @@ create table getmethods.get_jetton_data (
 	content_layout bigint NOT NULL,
 	content bytea NOT NULL,
 	wallet_code bytea NOT NULL,
+	url text,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
@@ -614,7 +615,7 @@ create table getmethods.get_collection_data (
 	content_layout bigint NOT NULL,
 	collection_content bytea NOT NULL,
 	next_item_index bigint NOT NULL,
-	in_whitelist boolean NOT NULL,
+	url text,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
@@ -933,19 +934,372 @@ create table getmethods.get_domain (
 );
 ```
 
-## Metadata
-
-
-### jetton.masters_metadata
+### is_claimed
 
 ```sql
-create table jetton.masters_metadata (
-	jetton_account_id text NOT NULL,
-	metadata jsonb NOT NULL,
-	last_offchain_meta_refresh timestamp with time zone DEFAULT now(),
+create table getmethods.is_claimed (
+	account_id text NOT NULL,
+	claimed boolean NOT NULL,
 	indexer_last_update_lt bigint NOT NULL
 );
 ```
+
+### is_signature_allowed
+
+```sql
+create table getmethods.is_signature_allowed (
+	account_id text NOT NULL,
+	allowed boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_extensions
+
+```sql
+create table getmethods.get_extensions (
+	wallet_account_id text NOT NULL,
+	extension_account_id text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_cron_info
+
+```sql
+create table getmethods.get_cron_info (
+	account_id text NOT NULL,
+	next_call_time bigint NOT NULL,
+	reward bigint NOT NULL,
+	balance_minus_amounts bigint NOT NULL,
+	repeat_every bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_display_multiplier
+
+```sql
+create table getmethods.get_display_multiplier (
+	account_id text NOT NULL,
+	numerator numeric NOT NULL,
+	denominator numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_contract_data__airdrop_interlocker_v1
+
+```sql
+create table getmethods.get_contract_data__airdrop_interlocker_v1 (
+	account_id text NOT NULL,
+	is_claimed boolean NOT NULL,
+	merkle_root bytea NOT NULL,
+	receiver_account_id text NOT NULL,
+	distributor_account_id text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_fix_price_data_v4
+
+```sql
+create table getmethods.get_fix_price_data_v4 (
+	account_id text NOT NULL,
+	marketplace_account_id text NOT NULL,
+	nft_account_id text NOT NULL,
+	nft_owner_account_id text,
+	marketplace_fee_account_id text,
+	royalty_account_id text,
+	full_price numeric NOT NULL,
+	fee_percent bigint NOT NULL,
+	royalty_percent bigint NOT NULL,
+	sold_at bigint NOT NULL,
+	sold_query_id bigint NOT NULL,
+	is_complete boolean NOT NULL,
+	created_at bigint NOT NULL,
+	jetton_prices jsonb NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_payment_info__subscription_v2
+
+```sql
+create table getmethods.get_payment_info__subscription_v2 (
+	account_id text NOT NULL,
+	contract_state integer NOT NULL,
+	payment_per_period bigint NOT NULL,
+	period bigint NOT NULL,
+	charge_date bigint NOT NULL,
+	grace_period bigint NOT NULL,
+	last_request_time bigint NOT NULL,
+	caller_fee bigint NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_subscription_info__v2
+
+```sql
+create table getmethods.get_subscription_info__v2 (
+	account_id text NOT NULL,
+	wallet_account_id text NOT NULL,
+	wallet_version bigint NOT NULL,
+	admin_account_id text NOT NULL,
+	subscription_id bigint NOT NULL,
+	metadata bytea,
+	withdraw_msg_body bytea,
+	withdraw_account_id text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_assets__mooncx
+
+```sql
+create table getmethods.get_assets__mooncx (
+	account_id text NOT NULL,
+	asset1_native boolean NOT NULL,
+	asset_1_account_id text,
+	asset2_native boolean NOT NULL,
+	asset_2_account_id text,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_reserves__mooncx
+
+```sql
+create table getmethods.get_reserves__mooncx (
+	account_id text NOT NULL,
+	asset1_native boolean NOT NULL,
+	asset_1_account_id text,
+	asset1_reserves numeric NOT NULL,
+	asset2_native boolean NOT NULL,
+	asset_2_account_id text,
+	asset2_reserves numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### is_stable__dedust
+
+```sql
+create table getmethods.is_stable__dedust (
+	account_id text NOT NULL,
+	is_stable boolean NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__dedust_v2
+
+```sql
+create table getmethods.get_pool_data__dedust_v2 (
+	account_id text NOT NULL,
+	status smallint NOT NULL,
+	deposit_active boolean NOT NULL,
+	swap_active boolean NOT NULL,
+	asset_x_native boolean NOT NULL,
+	asset_x_account_id text,
+	asset_y_native boolean NOT NULL,
+	asset_y_account_id text,
+	wallets_by_assets bytea,
+	assets_by_wallets bytea,
+	wallets_by_resolutions bytea,
+	base_fee_bps smallint NOT NULL,
+	reserve_x numeric NOT NULL,
+	reserve_y numeric NOT NULL,
+	liquidity numeric NOT NULL,
+	protocol_fee_x numeric NOT NULL,
+	protocol_fee_y numeric NOT NULL,
+	creator_fee_x numeric NOT NULL,
+	creator_fee_y numeric NOT NULL,
+	x_lp_fee_per_token numeric NOT NULL,
+	y_lp_fee_per_token numeric NOT NULL,
+	rewards bytea,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__coffee
+
+```sql
+create table getmethods.get_pool_data__coffee (
+	account_id text NOT NULL,
+	pool_version integer NOT NULL,
+	asset1_native boolean NOT NULL,
+	asset_1_account_id text,
+	asset2_native boolean NOT NULL,
+	asset_2_account_id text,
+	amm_settings bytea,
+	active boolean NOT NULL,
+	amm numeric NOT NULL,
+	reserve1 numeric NOT NULL,
+	reserve2 numeric NOT NULL,
+	total_supply numeric NOT NULL,
+	protocol_fee numeric NOT NULL,
+	lp_fee numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__stonfi_v2
+
+```sql
+create table getmethods.get_pool_data__stonfi_v2 (
+	account_id text NOT NULL,
+	is_locked boolean,
+	router_account_id text NOT NULL,
+	total_supply numeric NOT NULL,
+	reserve0 numeric NOT NULL,
+	reserve1 numeric NOT NULL,
+	token_0_wallet_account_id text NOT NULL,
+	token_1_wallet_account_id text NOT NULL,
+	lp_fee smallint NOT NULL,
+	protocol_fee smallint NOT NULL,
+	protocol_fee_account_id text,
+	collected_token0_protocol_fee numeric NOT NULL,
+	collected_token1_protocol_fee numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__stonfi_v2_stableswap
+
+```sql
+create table getmethods.get_pool_data__stonfi_v2_stableswap (
+	account_id text NOT NULL,
+	is_locked boolean,
+	router_account_id text NOT NULL,
+	total_supply numeric NOT NULL,
+	reserve0 numeric NOT NULL,
+	reserve1 numeric NOT NULL,
+	token_0_wallet_account_id text NOT NULL,
+	token_1_wallet_account_id text NOT NULL,
+	lp_fee smallint NOT NULL,
+	protocol_fee smallint NOT NULL,
+	protocol_fee_account_id text,
+	collected_token0_protocol_fee numeric NOT NULL,
+	collected_token1_protocol_fee numeric NOT NULL,
+	additional numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_data__stonfi_v2_additional
+
+```sql
+create table getmethods.get_pool_data__stonfi_v2_additional (
+	account_id text NOT NULL,
+	is_locked boolean,
+	router_account_id text NOT NULL,
+	total_supply numeric NOT NULL,
+	reserve0 numeric NOT NULL,
+	reserve1 numeric NOT NULL,
+	token_0_wallet_account_id text NOT NULL,
+	token_1_wallet_account_id text NOT NULL,
+	lp_fee smallint NOT NULL,
+	protocol_fee smallint NOT NULL,
+	protocol_fee_account_id text,
+	collected_token0_protocol_fee numeric NOT NULL,
+	collected_token1_protocol_fee numeric NOT NULL,
+	amp numeric NOT NULL,
+	rate numeric NOT NULL,
+	w0 numeric NOT NULL,
+	rate_setter text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_type__stonfi_v2
+
+```sql
+create table getmethods.get_pool_type__stonfi_v2 (
+	account_id text NOT NULL,
+	pool_type text NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_vault_data__stonfi_v2
+
+```sql
+create table getmethods.get_vault_data__stonfi_v2 (
+	account_id text NOT NULL,
+	owner_account_id text NOT NULL,
+	token_account_id text NOT NULL,
+	router_account_id text NOT NULL,
+	deposited_amount numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_pool_info__bidask
+
+```sql
+create table getmethods.get_pool_info__bidask (
+	account_id text NOT NULL,
+	asset_x_native boolean NOT NULL,
+	asset_x_account_id text,
+	asset_y_native boolean NOT NULL,
+	asset_y_account_id text,
+	bin_step numeric NOT NULL,
+	lp_fee numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_active_range__bidask
+
+```sql
+create table getmethods.get_active_range__bidask (
+	account_id text NOT NULL,
+	range text,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_current_bin__bidask
+
+```sql
+create table getmethods.get_current_bin__bidask (
+	account_id text NOT NULL,
+	bin numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+### get_sqrt_p__bidask
+
+```sql
+create table getmethods.get_sqrt_p__bidask (
+	account_id text NOT NULL,
+	sqrt_price numeric NOT NULL,
+	indexer_last_update_lt bigint NOT NULL
+);
+```
+
+## Metadata
+
+Jetton master, NFT collection and NFT item metadata is **not** kept in per-type tables anymore.
+The old `jetton.masters_metadata` and `nft.collections_metadata` tables have been **removed** — all
+resolved metadata now lives in a single, somewhat unintuitively named table: **`nft.url_metadata`**,
+keyed by content `url` (it holds jetton metadata too, despite the `nft.` schema name).
+
+To read the metadata of a jetton master / NFT collection / NFT item, join its get-method table to
+`nft.url_metadata` on the `url` column:
+
+| Entity | Get-method table | Join |
+| --- | --- | --- |
+| Jetton master | `getmethods.get_jetton_data` | `get_jetton_data.url = nft.url_metadata.url` |
+| NFT collection | `getmethods.get_collection_data` | `get_collection_data.url = nft.url_metadata.url` |
+| NFT item | `getmethods.get_nft_data` | `get_nft_data.url = nft.url_metadata.url` |
+
+`url` is either the off-chain content URL, or a synthetic `onchain://<type>/<raw_address>` value
+(e.g. `onchain://jetton/0:b113a994…`) for on-chain / semi-chain content. The `metadata` jsonb column
+holds the merged TEP-64 fields: `name`, `symbol`, `decimals`, `image`, `description`, etc.
 
 ### nft.url_metadata
 
@@ -955,16 +1309,5 @@ create table nft.url_metadata (
 	metadata jsonb NOT NULL,
 	last_offchain_meta_refresh_try timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL,
 	last_offchain_meta_refresh_success timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL
-);
-```
-
-### nft.collections_metadata
-
-```sql
-create table nft.collections_metadata (
-	collection_id text NOT NULL,
-	metadata jsonb NOT NULL,
-	last_offchain_meta_refresh timestamp with time zone DEFAULT '1970-01-01 00:00:01+00'::timestamp with time zone NOT NULL,
-	indexer_last_update_lt bigint NOT NULL
 );
 ```
