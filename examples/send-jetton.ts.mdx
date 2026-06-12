@@ -49,7 +49,7 @@ const jettonTransferPayload = beginCell()
     .storeAddress(destination) // Recipient address
     .storeAddress(wallet.address) // Address to receive excess funds (usually address of sender)
     .storeBit(false) // No custom payload
-    .storeCoins(1n) // Forward fee in nanoTON (for send notify to wallet)
+    .storeCoins(1n) // Forward fee in nanoGRAM (for send notify to wallet)
     .storeMaybeRef(undefined)
     .endCell();
 

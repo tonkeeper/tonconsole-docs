@@ -249,7 +249,7 @@ export const getJettonSendTransactionRequest = (
     .storeAddress(recipient)
     .storeAddress(senderAddress)
     .storeUint(0, 1) // empty payload
-    .storeCoins(1n) // forward TON amount
+    .storeCoins(1n) // forward GRAM amount
     .endCell();
 
   return {

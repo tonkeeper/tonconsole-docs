@@ -11,13 +11,13 @@ export const getStaticProps = loadStatic;
 
 # Gasless<SwaggerLink tag={SWAGGER_TAGS.GASLESS} />
 
-**Gasless transactions** on the TON platform enable users to send transactions without paying gas fees directly from their wallets. This is achieved using **Signed Internal Messages** sent through a **gas proxy contract**, which covers the transaction fees on behalf of the user. This approach simplifies blockchain interactions, making it easier for users who may not have TON tokens in their wallets.
+**Gasless transactions** on the TON platform enable users to send transactions without paying gas fees directly from their wallets. This is achieved using **Signed Internal Messages** sent through a **gas proxy contract**, which covers the transaction fees on behalf of the user. This approach simplifies blockchain interactions, making it easier for users who may not have GRAM in their wallets.
 
 This service only works with <ExternalLink href={GITHUB_LINKS.W5_SPECIFICATION}>W5 wallets</ExternalLink>
 
 ### Architecture
 
-Gasless transactions leverage **Signed Internal Messages**. These messages are signed by the user but routed through a smart contract that pays the fees using a **gas proxy**. This eliminates the need for users to hold TON tokens for transaction fees.
+Gasless transactions leverage **Signed Internal Messages**. These messages are signed by the user but routed through a smart contract that pays the fees using a **gas proxy**. This eliminates the need for users to hold GRAM for transaction fees.
 
 **TONAPI** plays a critical role by simulating transaction execution to accurately estimate fees and sending the transaction to multiple validators to increase the chances of successful processing. Additionally, **TONAPI** ensures that the user’s wallet and gas proxy contract are in the same shard, minimizing latency and ensuring fast transaction processing.
 

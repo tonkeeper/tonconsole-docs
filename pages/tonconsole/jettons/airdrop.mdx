@@ -6,7 +6,7 @@ import { LINKS } from '@/constants';
 
 These T&C Terms shall be read in conjunction with the [Airdrop Terms of Use](./airdrop/terms)
 
-Service enables a mass token distribution model where the recipient (**Recipient**) pays a fixed fee in TONs and receives jettons (**Jettons**).
+Service enables a mass token distribution model where the recipient (**Recipient**) pays a fixed fee in GRAM and receives jettons (**Jettons**).
 The distribution is carried out to a fixed list of Recipients. In the following, we will refer to the Jetton distribution process as an **Airdrop**.
 
 ## How it works
@@ -51,7 +51,7 @@ The address of this wallet will be recorded as the Airdrop admin`s address for t
 </Callout>
 
 <Callout type="info" emoji="ℹ️">
-    To deploy the Airdrop smart contracts, you will need to have sufficient TON balance in the connected wallet to cover blockchain deployment fees.
+    To deploy the Airdrop smart contracts, you will need to have sufficient GRAM balance in the connected wallet to cover blockchain deployment fees.
     No funds will be deducted from your Ton Console balance. All deployment costs are paid directly from the connected wallet.
 </Callout>
 
@@ -71,14 +71,14 @@ Custom smart contract logic may disrupt the distribution process (e.g. the trans
 
 This is a key Airdrop setting. It determines how much the Recipient will pay for the request of Jettons via a claim message (**Claim**) in addition to any other fees paid by the Recipient.
 
-When a Recipient signs a Claim message via Ton Connect, they pay a `Claim fee` (**Claim fee**) in TON for the distribution contract to accept the message.
+When a Recipient signs a Claim message via Ton Connect, they pay a `Claim fee` (**Claim fee**) in GRAM for the distribution contract to accept the message.
 In addition to the Claim fee, the Recipient also pays a blockchain fee for sending this message.
 
 Example:
 ```
-claim_fee = 0.15 TON
-blockchain_fee(forward_fee + gas_fee + ...) = ~0.0076 TON
-recipient_pays = claim_fee + blockchain_fee = 0.15 + ~0.0076 = ~0,1576 TON
+claim_fee = 0.15 GRAM
+blockchain_fee(forward_fee + gas_fee + ...) = ~0.0076 GRAM
+recipient_pays = claim_fee + blockchain_fee = 0.15 + ~0.0076 = ~0,1576 GRAM
 ```
 
 ## Fee Sharing
@@ -87,11 +87,11 @@ The Claim fee is used to cover blockchain fees incurred during the claim process
 
 Example of a Claim operation in the testnet: [Tonviewer](https://testnet.tonviewer.com/transaction/7076abbeb1a4e614965ed5f97b8e400bb2227aca54a72b60f2e373d2d0a92207).
 
-In the given example, the distributor contract will receive `excess` (**Excess**) = 0.1147384 TON.
-`distributor_balance_change` is equal to +0.112809142 TON and is slightly less than the Excess due to blockchain fees for the payment of which the Airdrop admin is responsible.
+In the given example, the distributor contract will receive `excess` (**Excess**) = 0.1147384 GRAM.
+`distributor_balance_change` is equal to +0.112809142 GRAM and is slightly less than the Excess due to blockchain fees for the payment of which the Airdrop admin is responsible.
 The estimate amount could be seen in the `Value flow` tab of the given Claim operation example.
 
-The amount of TONs received by the distributor contract is divided in the following proportion:
+The amount of GRAM received by the distributor contract is divided in the following proportion:
 
 `royalty_receiver_share = royalty_coefficient * excess`
 
@@ -189,7 +189,7 @@ Where response parameters:
 2. `address` - destination address of the message in user-friendly format containing the bounce flag
 3. `state_init` - serialized state init cell in base64 format (it may be an empty string if claims have already been made within the vesting period)
 4. `payload` - serialized body cell in base64 format
-5. `amount` - amount of TONs attached to the message (`Claim Fee`)
+5. `amount` - amount of GRAM attached to the message (`Claim Fee`)
 
 `jetton` - address of the Jetton master contract
 `available_jetton_amount` - Jetton amount available for claim in minimal indivisible units (from the Airdrop file)
@@ -353,7 +353,7 @@ Before withdrawing profit and remaining Jettons, you need to properly complete t
 
 First, you need to click the `Disable claim` button to deactivate the API Claim endpoint through the dApp.
 Second, click the `Complete airdrop` button to send special messages that lock the distribution contracts.
-After this, you can safely withdraw the remaining Jettons and accumulated TONs from the distribution contracts to the Airdrop admin`s address.
+After this, you can safely withdraw the remaining Jettons and accumulated GRAM from the distribution contracts to the Airdrop admin`s address.
 
 ## If you still have questions
 If you have any questions or need assistance, please contact our <ExternalLink href={LINKS.SUPPORT}>support bot</ExternalLink>.

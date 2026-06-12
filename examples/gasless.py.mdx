@@ -30,7 +30,7 @@ JETTON_DECIMALS = 6
 JETTON_AMOUNT = 1
 
 # Amount for jetton transfer.
-# Usually 0.05 TON is enough for most jetton transfers without forward_payload.
+# Usually 0.05 GRAM is enough for most jetton transfers without forward_payload.
 BASE_JETTON_SEND_AMOUNT = 0.05
 
 
@@ -54,7 +54,7 @@ async def main() -> None:
         jetton_amount=to_nano(JETTON_AMOUNT, JETTON_DECIMALS),
         recipient_address=DESTINATION_ADDRESS,
         response_address=relayer_address,
-        # Excess, because some TONs will be sent back to the relay address, commission will be lowered.
+        # Excess, because some GRAM will be sent back to the relay address, commission will be lowered.
     )
     message_to_estimate = wallet.create_internal_msg(
         dest=jetton_wallet_address,

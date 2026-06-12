@@ -1,6 +1,6 @@
 # TonAPI Embed
 
-A service for indexing blockchain data related to the transfers of funds (TON and Jettons).
+A service for indexing blockchain data related to the transfers of funds (GRAM and Jettons).
 Designed for self-hosted use and integration into the infrastructure of CEX and services that process deposits and withdrawals on the TON blockchain.
 The service requires a connection to one or more nodes of the TON network.
 
@@ -12,7 +12,7 @@ https://demo-embed.tonapi.io/
 2. ***Jetton*** - fungible token on the TON blockchain.
 3. ***Wallet smart contract*** - specialized smart contract designed specifically for wallet apps and to be used by end users.
 4. ***Deposit address*** - address in TON blockchain to which funds can be received and from which funds can be withdrawn.
-5. ***Deposit smart contract*** - a smart contract on the TON blockchain that can hold the balance of some asset (TON or Jetton). It is usually (but not always) a ***Wallet smart contract.*** The address of the recipient is not always the same as the address of the smart contract where the asset is actually stored. For example, for Jettons, the recipient address is the smart contract address of the Jetton wallet owner.
+5. ***Deposit smart contract*** - a smart contract on the TON blockchain that can hold the balance of some asset (GRAM or Jetton). It is usually (but not always) a ***Wallet smart contract.*** The address of the recipient is not always the same as the address of the smart contract where the asset is actually stored. For example, for Jettons, the recipient address is the smart contract address of the Jetton wallet owner.
 6. ***Transaction*** - low-level entity in the TON network. A transaction is an operation that processes inbound and can create outbound messages related to a specific account, altering its state and potentially generating fees for validators. https://docs.ton.org/develop/data-formats/transaction-layout
 7. ***Transfer*** - abstract entity describing the movement of funds between ***Deposit smart contracts.*** Contains information about the sender, recipient, amount, etc. This information can be derived from several low-level entities in the TON blockchain, such as ***Messages*** and ***Transactions***.
 8. ***Centralized deposit address*** - a ***Deposit address*** to receive funds from many users. Usually requires the use of a memo to accept payments to this address.
@@ -25,13 +25,13 @@ https://demo-embed.tonapi.io/
 15. ***LT*** (logical time) - blockchain specific and account specific counter to organize messages and transactions monotonically increases (but contains gaps) for any given account ([https://docs.ton.org/develop/smart-contracts/guidelines/message-delivery-g](https://docs.ton.org/develop/smart-contracts/guidelines/message-delivery-guarantees#what-is-a-logical-time))
 16. ***Jetton address*** (Jetton master contract address) - for better scaling, the Jetton contract (master contract) in the TON blockchain does not store information about the users' balance, but only general information about the token itself. User balance information is stored by a separate smart wallet token contract. Which in our case is considered a deposit.
     When we talk about a particular ***Jetton*** in general, we identify it by the address of the master contract. https://docs.ton.org/develop/dapps/asset-processing/jettons#jetton-architecture
-17. ***Fee*** - fee charged in TON by the TON network when processing a transaction. It has a complex structure and depends on a large number of factors. In this regard, it is difficult to predict the exact size of the commission and to calculate the sum value. https://docs.ton.org/develop/smart-contracts/fees
-18. ***Minimum indivisible units*** - a measure of the quantity of TON or ***Jettons*** in which the quantity is always an integer. For a TON, it is nanoTON. The position of the decimal point when converting an amount of ***Minimum indivisible units*** is determined by the `decimals` Jetton parameter.
+17. ***Fee*** - fee charged in GRAM by the TON network when processing a transaction. It has a complex structure and depends on a large number of factors. In this regard, it is difficult to predict the exact size of the commission and to calculate the sum value. https://docs.ton.org/develop/smart-contracts/fees
+18. ***Minimum indivisible units*** - a measure of the quantity of GRAM or ***Jettons*** in which the quantity is always an integer. For GRAM, it is nanoGRAM. The position of the decimal point when converting an amount of ***Minimum indivisible units*** is determined by the `decimals` Jetton parameter.
 19. ***Masterchain block*** - Block of Masterchain. The Masterchain is the primary chain that stores the network configuration and the final state of all workchains. You can understand this as the masterchain being the core directory, a single source of truth for all the shards in the ecosystem. This block is selected as a synchronization point to refer to a specific smart contract state.
 
 ## Description of the current service functionality
 
-- The service is designed to track deposits and withdrawals at one or several ***Centralized deposit addresses*** for TON and Jettons.
+- The service is designed to track deposits and withdrawals at one or several ***Centralized deposit addresses*** for GRAM and Jettons.
 - The API structure, composition and format of returned data can be changed upon customer's request.
 - The service requires access to one or more ***Liteserver Nodes/Archive Nodes*** (not necessarily trusted ones, since the service has proof check).
 - The service provides a REST API with a set of methods to track the movement of funds on a given pool of ***Deposit addresses***.
@@ -55,7 +55,7 @@ Returns the following data:
 
 1. Address of sender and recipients
 2. ***Jetton address***
-3. Amount of transferred TON and Jettons in ***Minimum indivisible units*** of measurement
+3. Amount of transferred GRAM and Jettons in ***Minimum indivisible units*** of measurement
 4. Unix timestamp
 5. ***LT*** (logical time)
 6. Hash of ***Transaction*** (as a unique identifier for this transfer)
@@ -72,7 +72,7 @@ Methods for obtaining a specific ***Transfer*** by ***Transaction*** hash.
 `GET /account/{address}` <br />
 `GET /jetton/{jetton}/{address}`
 
-Methods for obtaining the ***Deposit smart contract*** balance (TON or Jetton) for the last ***Masterchain block*** known to the service.
+Methods for obtaining the ***Deposit smart contract*** balance (GRAM or Jetton) for the last ***Masterchain block*** known to the service.
 
 The last known ***Masterchain block*** depends on the synchronization of the node with the TON blockchain.
 
@@ -87,7 +87,7 @@ Returns the following data:
 `POST /account/{address}` <br />
 `POST /jetton/{jetton}/{address}`
 
-Methods to add a new ***Deposit address*** for tracking. Since a Jetton ***Wallet*** in the TON blockchain is a separate smart contract, when adding a Jetton ***Deposit smart contract*** to tracking, the owner of this wallet (also a smart contract) is added to the tracking as a TON ***Deposit smart contract***. The owner of the Jetton wallet pays fees for Jetton withdrawals.
+Methods to add a new ***Deposit address*** for tracking. Since a Jetton ***Wallet*** in the TON blockchain is a separate smart contract, when adding a Jetton ***Deposit smart contract*** to tracking, the owner of this wallet (also a smart contract) is added to the tracking as a GRAM ***Deposit smart contract***. The owner of the Jetton wallet pays fees for Jetton withdrawals.
 
 ### Resolve domain
 `GET /resolve/{domain}`

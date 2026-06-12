@@ -2,13 +2,13 @@ import { Card, Cards } from 'nextra-theme-docs';
 import { Steps } from 'nextra/components';
 import { LINKS } from '../../constants';
 
-# TON Payment tracker
+# GRAM Payment tracker
 
-The service provides tools for tracking specific transactions in the blockchain. It supports TON and USDT, allowing users to monitor the status of payments and receive updates about transaction changes through webhooks.
+The service provides tools for tracking specific transactions in the blockchain. It supports GRAM and USDT, allowing users to monitor the status of payments and receive updates about transaction changes through webhooks.
 
 ## Getting Started
 
-To start using the TON Invoicing Service, follow these steps:
+To start using the GRAM Invoicing Service, follow these steps:
 
 <Steps>
 
@@ -32,7 +32,7 @@ During registration, you need to specify the payment recipient's TON wallet addr
 
 > **Note:** The recipient wallet must have at least one outgoing transaction on the TON blockchain to be eligible.
 
-If the wallet is new, **activate it by sending a small amount (e.g., `0.01 TON`) *from this wallet to any other address***.
+If the wallet is new, **activate it by sending a small amount (e.g., `0.01 GRAM`) *from this wallet to any other address***.
 
 
 </Steps>
@@ -64,9 +64,9 @@ curl -X POST https://tonconsole.com/api/v1/services/invoices/invoice \
 ```
 
 **Parameters:**
-- `amount`: Amount in minimal indivisible units (1/1000000000 for TONs and 1/1000000 for USDT).
+- `amount`: Amount in minimal indivisible units (1/1000000000 for GRAM and 1/1000000 for USDT).
 - `life_time`: Invoice lifetime in seconds.
-- `currency`: Currency code (TON or USDT).
+- `currency`: Currency code (GRAM or USDT).
 - `description` (optional): Service-specific description visible only to you in the Tonconsole interface.
 
 ### Step 3: Handle API Response

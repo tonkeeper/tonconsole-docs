@@ -14,7 +14,7 @@ const tc = new TonClient({
 
 const JETTON_TRANSFER_OP_CODE = 0xf8a7ea5;
 
-// Amount for jetton transfer. Usually 0.05 TON is enough for most jetton transfers without forwardBody
+// Amount for jetton transfer. Usually 0.05 GRAM is enough for most jetton transfers without forwardBody
 const BASE_JETTON_SEND_AMOUNT = toNano(0.05);
 
 const main = async () => {
@@ -57,7 +57,7 @@ const main = async () => {
         .storeAddress(destination) // address for receiver
         .storeAddress(relayerAddress) // address for excesses
         .storeBit(false) // null custom_payload
-        .storeCoins(1n) // count of forward transfers in nanoton
+        .storeCoins(1n) // count of forward transfers in nanoGRAM
         .storeMaybeRef(undefined)
         .endCell();
 

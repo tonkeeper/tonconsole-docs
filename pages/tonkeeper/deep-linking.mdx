@@ -35,7 +35,7 @@ For each supported action, the structure of the URI is the same across all three
   ```
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
-  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `amount` (optional): The amount of GRAM to send, in nanocoins.
   - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
 
 **Examples:**
@@ -71,7 +71,7 @@ For each supported action, the structure of the URI is the same across all three
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
   - `bin` (optional): url-encoded base64 BoC which will be attached as a body to internal message.
-  - `amount` (requered if bin is presented): The amount of TON to send, in nanocoins.
+  - `amount` (requered if bin is presented): The amount of GRAM to send, in nanocoins.
 
 ---
 
@@ -86,7 +86,7 @@ For each supported action, the structure of the URI is the same across all three
   ```
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
-  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `amount` (optional): The amount of GRAM to send, in nanocoins.
   - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
   - `exp` (optional): Expiry timestamp in seconds since the Unix epoch. 
 
@@ -109,14 +109,14 @@ https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG
 - **Parameters:**
   - `{ADDRESS}` (required): The recipient's TON address.
   - `jetton` (required): The jetton master address.
-  - `amount` (optional): The amount of TON to send, in nanocoins.
+  - `amount` (optional): The amount of GRAM to send, in nanocoins.
   - `text` (optional): A URL-encoded UTF-8 text message to attach to the transfer.
 
 ---
 
-#### **Buy Ton**
+#### **Buy GRAM**
 
-**Description**: Directs the user to a screen where they can purchase TON tokens.
+**Description**: Directs the user to a screen where they can purchase GRAM tokens.
 
 **Format**:
 ```
@@ -126,7 +126,7 @@ https://app.tonkeeper.com/transfer/EQD2NmD_lH5f5u1Kj3KfGyTvhZSX0Eg6qp2a5IQUKXxOG
 ---
 #### **Staking**
 
-**Description**: Navigates to the staking screen, where users can stake/unstake their TON.
+**Description**: Navigates to the staking screen, where users can stake/unstake their GRAM.
 
 **Format**:
 ```

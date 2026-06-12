@@ -102,7 +102,7 @@ func main() {
 		Sender:              walletAddress,
 		JettonAmount:        big.NewInt(jettonAmount),
 		Destination:         destination,
-		ResponseDestination: &relay, // excess, because some TONs will be sent back to the relay address, commission will be lowered.
+		ResponseDestination: &relay, // excess, because some GRAM will be sent back to the relay address, commission will be lowered.
 		AttachedTon:         50_000_000,
 		ForwardTonAmount:    1,
 	}

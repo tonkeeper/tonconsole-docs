@@ -22,13 +22,13 @@ Want examples? Go check [tonviewer.com](https://tonviewer.com) – some are [sim
 
 <div class="text-xl font-bold">Simple Example</div>
 
-You send your buddy 5 TON using Tonkeeper.<br />
+You send your buddy 5 GRAM using Tonkeeper.<br />
 Behind the scenes, your wallet puts together an instruction for your account contract, which then runs something like this:
 
 - Make sure the instruction isn't too old (check the TTL).
 - Check that the sequence number (`seqno`) is one higher than the last one.
 - Verify the signature against the public key stored in the account.
-- Take the draft of the outgoing internal message (the 5 TON transfer) from the external message body, fill in the actual sender info, and send it out.
+- Take the draft of the outgoing internal message (the 5 GRAM transfer) from the external message body, fill in the actual sender info, and send it out.
 
 This whole thing – the instruction and signature – goes into the **body** of the external-in message. But here’s the weird part: the message **headers** (like the recipient address) aren’t signed at all. They just specify which account should receive the message, and off it goes to the blockchain.
 
