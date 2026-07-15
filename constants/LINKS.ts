@@ -1,12 +1,12 @@
 export const LINKS = {
   GITHUB: 'https://github.com/tonkeeper',
-  TELEGRAM_CHANNEL: 'https://telegram.me/tonconsole_com',
+  TELEGRAM_CHANNEL: 'https://t.me/tonconsole_com',
   TERMS: 'https://tonapi.io/terms',
   // PRIVACY: "#", // TODO: Add link
-  SUPPORT: 'https://telegram.me/ton_console_bot',
-  CONTACT: 'https://telegram.me/ton_console_bot',
+  SUPPORT: 'https://t.me/ton_console_bot',
+  CONTACT: 'https://t.me/ton_console_bot',
   CONSOLE: 'https://tonconsole.com',
-  TONAPI_TECH_CHAT: 'https://telegram.me/tonapitech'
+  TONAPI_TECH_CHAT: 'https://t.me/tonapitech'
 } as const;
 
 export const TONORG_LINKS = {
