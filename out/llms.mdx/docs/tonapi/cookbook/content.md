@@ -1,0 +1,21 @@
+# Cookbook (/tonapi/cookbook)
+
+A collection of practical examples and solutions for common tasks when working with TON API. Each recipe provides ready-to-use code snippets, implementation details, and best practices for building TON applications.
+
+### Available Recipes [#available-recipes]
+
+#### Basic Operations [#basic-operations]
+- [GRAM Transfer](/tonapi/cookbook/ton-transfer) - Send GRAM using mnemonic for signing, including wallet key derivation and transaction broadcasting
+- [Jetton Transfer](/tonapi/cookbook/jetton-transfer) - Send Jettons using mnemonic, with wallet key derivation and transaction construction
+
+#### Advanced Scenarios [#advanced-scenarios]
+- [Transaction Tracking](/tonapi/cookbook/transaction-tracking) - Track external messages using normalized hashes with examples in TypeScript and Go
+- [Emulation](/tonapi/cookbook/emulation) - Test transactions before sending them to the network using the Emulation API
+- [Gasless Transfer](/tonapi/cookbook/gasless-transfer) - Implement gasless transactions with examples in TypeScript, Go, and Python
+
+---
+
+**Each recipe includes:**
+- Step-by-step implementation guide
+- Code examples with detailed comments
+- Common pitfalls and their solutions

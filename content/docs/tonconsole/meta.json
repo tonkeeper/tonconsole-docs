@@ -1,0 +1,10 @@
+{
+  "title": "TON Console",
+  "pages": [
+    "invoices",
+    "tonkeeper-messages",
+    "analytics",
+    "nft",
+    "jettons"
+  ]
+}

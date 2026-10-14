@@ -1,0 +1,59 @@
+---
+title: "Rates"
+seoTitle: "TonAPI Token Rates API"
+seoDescription: "Explore TonAPI token exchange rates, market data and charts, including price calculation logic and troubleshooting guidance."
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { SWAGGER_TAGS, GITHUB_LINKS, LINKS } from '@/constants';
+
+[Open in Swagger UI](https://tonapi.io/api-v2#operations-tag-Rates)
+
+**Rates service** provides access to exchange rates for various tokens on the TON blockchain. This service calculates token prices using data from our indexer and liquidity pools such as Stonfi, Dedust, SwapCoffee, Tonco, Bidask and Mooncx, offering a comprehensive view of verified tokens, their reserves, and holder counts.
+
+<Callout type="warning">
+  The rates provided are for informational purposes only. Do not use this data for financial transactions.
+</Callout>
+
+## Logic of Token Price Calculation
+
+Our Rates service utilizes a systematic approach to gather and process data:
+
+
+#### Data Sources:
+   - By leveraging the [analytics service](/tonconsole/analytics) in tonconsole, we obtain data on pools from Stonfi, Dedust, SwapCoffee, Tonco, Bidask and Mooncx.
+   - The collected information includes token **_addresses_**, **_reserves_**, and the **_number of holders_** for verified tokens.
+
+#### Price Calculation:
+   - For standard pools: We apply the formula $xy = k$, where $x$ and $y$ are volumes of two assets in the pool, and $k$ is a constant.
+   - For Dedust stable pools: We use a modified formula $x^3y + y^3x = k$ to account for the specifics of these pools.
+   - For Stonfi weighted constant product pool: We use standart formula ($xy = k$) with weight value $w0$ from the pool settings $x^{w_0}y^{1 - w_0} = k$.
+   - For Stonfi stable pools: We work with the following formula $4A(x + y) + D = 4AD + \frac{D^3}{4xy}$, where $A$ is amplifier from pool's settings and $D$ is a constant, so it much more complicated to calculate $D$ value, so we use iteratively, calculating $D$ more accurate each step.
+   - For Stonfi weighted stable pools: We use a bit simplified formula for stable pools with rate $r$ and weight $w0$ parameters from pool's settings $(x + ry)A + x^{w0}y \cdot (ry)^{1 - w0} = k$.
+   - For Bidask pools: We get already calculated price from the pool data, butwe need to proccess this value using this formula ${(\frac{P}{2^{128}})}^2 = price$, where $P$ is the value of price that need to be proccessed.
+
+   You can view the implementation of these calculations <a target="_blank" rel="noopener noreferrer" href={GITHUB_LINKS.RATES_PRICE_CALCULATION_CODE}>here</a> .
+
+#### Data Analysis:
+   - We evaluate minimum holder counts to ensure token relevance.
+   - Pool reserves are analyzed and equated to GRAM for consistency.
+
+## Troubleshooting
+
+If your token has over 100 GRAM in liquidity but doesn't receive a price from the API, please contact us with the following information:
+
+1. Token address
+2. Liquidity amount
+3. Number of holders
+
+Send this information to <a target="_blank" rel="noopener noreferrer" href={LINKS.CONTACT}>our support</a> for assistance.
+
+## Operations
+
+
+- [`getRates`](https://tonapi.io/api-v2#operations-Rates-getRates) — Get the token price in the chosen currency for display only. Don’t use this for financial transactions.
+- [`getChartRates`](https://tonapi.io/api-v2#operations-Rates-getChartRates) — Get chart by token
+- [`getMarketsRates`](https://tonapi.io/api-v2#operations-Rates-getMarketsRates) — Get the Gram price from markets
+
+
+Remember, while this service provides valuable insights into token rates on the TON blockchain, it should not be used as the sole basis for financial decisions or transactions.

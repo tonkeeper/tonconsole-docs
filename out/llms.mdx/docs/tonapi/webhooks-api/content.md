@@ -1,0 +1,308 @@
+# Webhooks API (/tonapi/webhooks-api)
+
+Webhooks API provides a way to subscribe to events that happen in the TON blockchain.
+This allows you to build applications that react to events in the blockchain.
+
+
+# Authentication [#authentication]
+All methods of Webhooks API require a private API key.
+You can get a personal API key at https://tonconsole.com/.
+
+Webhooks API looks for an API key in two places in the following order:
+1. In the "token" parameter of the query string.
+For example:
+```
+https://rt.tonapi.io/webhooks?token=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
+```
+2. In the Authorization header with the "Bearer scheme".
+For example:
+```
+Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9
+```
+
+# Webhook delivery [#webhook-delivery]
+
+When an event happens, TONAPI sends a POST request to a webhook URL with the following headers:
+```
+Content-Type: application/json
+User-Agent: tonapi/webhooks
+Authorization: Bearer <webhook token>
+Idempotency-Key: <sha256 of the request body>
+```
+- `Authorization` carries the webhook's secret token, returned on creation and by the list method.
+Check it to make sure a request comes from TONAPI.
+- `Idempotency-Key` is the same for every delivery attempt of the same event, use it to deduplicate retries.
+
+A delivery is successful when the endpoint responds with a 2xx status code.
+Otherwise the webhook becomes `offline` and TONAPI keeps retrying with growing intervals:
+every minute for the first 10 attempts, every 5 minutes up to 20 attempts, every 10 minutes up to 30 attempts and every hour after that.
+Retries stop after a week of failures. Use [Mark a webhook back online](#mark-a-webhook-back-online) to resume deliveries immediately.
+
+## Account transaction event [#account-transaction-event]
+
+An example of a request body:
+```json
+{
+  "event_type": "account_tx",
+  "account_id": "0:8f2d840ec05d118f98459a057b1fcab535c57b9371222be15667fee932ceaf53",
+  "lt": 49739623000001,
+  "tx_hash": "653e593d581ad40d5d0868fe5d60008e1bfe9d2d4c4fa6b2ee5cd458741d7b59"
+}
+```
+
+If a webhook is created with `add_transaction_info` or `add_account_info`, the body additionally contains:
+- `transaction` - the transaction in the TONAPI [Transaction](https://tonapi.io/api-v2#model-Transaction) schema;
+- `account` - the account in the TONAPI [Account](https://tonapi.io/api-v2#model-Account) schema.
+`balance`, `status` and `last_activity` are as of right after the transaction,
+`extra_balance`, `interfaces` and `get_methods` are as of the delivery.
+
+The `Idempotency-Key` is computed over the short body (without `transaction` and `account`).
+
+## New contract and message opcode events [#new-contract-and-message-opcode-events]
+
+An example of a request body:
+```json
+{
+  "account_id": "0:8f2d840ec05d118f98459a057b1fcab535c57b9371222be15667fee932ceaf53",
+  "lt": 49739623000001,
+  "tx_hash": "653e593d581ad40d5d0868fe5d60008e1bfe9d2d4c4fa6b2ee5cd458741d7b59"
+}
+```
+
+## Mempool event [#mempool-event]
+
+An example of a request body:
+```json
+{
+  "event_type": "mempool_msg",
+  "boc": "<message BOC>"
+}
+```
+
+
+# API methods to manage webhooks [#api-methods-to-manage-webhooks]
+
+## Create webhook [#create-webhook]
+
+POST https://rt.tonapi.io/webhooks - the method creates a new webhook, configures its endpoint and returns a webhook ID and its secret token.
+A webhook ID is used to manage subscriptions.
+
+A request body:
+```json
+{
+  "endpoint": "https://your-server.com/webhook",
+  "add_transaction_info": false,
+  "add_account_info": false
+}
+```
+`add_transaction_info` and `add_account_info` are optional, see [Account transaction event](#account-transaction-event).
+
+The method is idempotent: if a webhook with the same endpoint already exists, its ID is returned.
+If the existing webhook has different `add_transaction_info` or `add_account_info`, the method returns 409 Conflict,
+use [Update a webhook](#update-a-webhook) to change them.
+
+A response example:
+```json
+{
+  "webhook_id": 5,
+  "token": "<webhook token>"
+}
+```
+
+## List webhooks [#list-webhooks]
+
+GET https://rt.tonapi.io/webhooks - the method returns all available webhooks.
+A response example:
+```json
+{
+  "webhooks": [
+    {
+      "id": 5,
+      "endpoint": "https://your-server.com/webhook",
+      "token": "<webhook token>",
+      "subscribed_accounts": 10,
+      "subscribed_msg_opcodes": 1,
+      "subscribed_to_mempool": false,
+      "subscribed_to_new_contracts": false,
+      "status": "online",
+      "status_updated_at": "2026-10-13T10:00:00Z",
+      "last_attempt_at": "2026-10-13T10:05:00Z",
+      "last_online_at": "2026-10-13T10:05:00Z",
+      "status_failed_attempts": 0,
+      "add_transaction_info": false,
+      "add_account_info": false
+    }
+  ]
+}
+```
+- `status` - `online`, `offline` (deliveries fail and are being retried) or `suspended` (deliveries are stopped, e.g. due to insufficient balance);
+- `status_updated_at` - when the status last changed, for an `offline` webhook this is when the endpoint broke;
+- `last_attempt_at` - when the last delivery was attempted, successful or not;
+- `status_failed_attempts` - the number of failed delivery attempts since the webhook went `offline`.
+
+## Update a webhook [#update-a-webhook]
+
+PATCH https://rt.tonapi.io/webhooks/{webhook_id} - the method changes a webhook's endpoint or options. At least one field is required.
+
+A request body:
+```json
+{
+  "endpoint": "https://your-server.com/new-webhook",
+  "add_transaction_info": true,
+  "add_account_info": true
+}
+```
+The method returns 409 Conflict if another webhook already uses the endpoint.
+
+## Delete a webhook [#delete-a-webhook]
+DELETE https://rt.tonapi.io/webhooks/{webhook_id} - the method deletes a webhook and all its subscriptions.
+
+## Generate a new webhook token [#generate-a-new-webhook-token]
+POST https://rt.tonapi.io/webhooks/{webhook_id}/generate-new-token - the method rotates the webhook's secret token.
+
+A response example:
+```json
+{
+  "token": "<webhook token>"
+}
+```
+
+## Mark a webhook back online [#mark-a-webhook-back-online]
+POST https://rt.tonapi.io/webhooks/{webhook_id}/back-online - the method marks a webhook as `online` and resumes deliveries without waiting for the next retry.
+For a `suspended` webhook it returns 402 Payment Required if the project balance is not positive.
+
+## Get webhook logs [#get-webhook-logs]
+GET https://rt.tonapi.io/webhooks/{webhook_id}/logs?offset=0 - the method returns failed delivery attempts and other webhook events.
+Pass `next_offset` from the response as `offset` to get the next page.
+
+A response example:
+```json
+{
+  "next_offset": 12345,
+  "logs": [
+    {
+      "message": "unexpected status code: 500",
+      "event_type": "account_tx",
+      "timestamp": "2026-10-13T10:05:00Z"
+    }
+  ]
+}
+```
+`event_type` is one of `account_tx`, `msg_opcode`, `new_contract`, `mempool_msg` or `suspended`.
+
+## Get usage statistics [#get-usage-statistics]
+GET https://rt.tonapi.io/usage-stats - the method returns usage statistics for the current billing period.
+
+A response example:
+```json
+{
+  "period_started_at": "2026-10-01T00:00:00Z",
+  "account_subscriptions": 10,
+  "webhooks_delivered": 1000,
+  "webhooks_failed": 5
+}
+```
+
+## Subscribe to account transactions [#subscribe-to-account-transactions]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/subscribe - the method takes in a list of account IDs to subscribe to. When a new transaction happens on any of the accounts,
+TONAPI sends a POST request to the webhook URL.
+
+A request body:
+```json
+  {"accounts": [{"account_id": "0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"}]}
+```
+
+## Bulk subscribe to account transactions [#bulk-subscribe-to-account-transactions]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/bulk-subscribe - the method takes in a file with account IDs, one per line,
+uploaded as the `accounts` field of a `multipart/form-data` request.
+
+For example:
+```
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  -F "accounts=@accounts.txt" \
+  https://rt.tonapi.io/webhooks/5/account-tx/bulk-subscribe
+```
+
+## Unsubscribe from account transactions [#unsubscribe-from-account-transactions]
+POST https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/unsubscribe - the method takes in a list of account IDs to unsubscribe from.
+
+A request body:
+```json
+  {"accounts": ["0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220"]}
+```
+
+## Get a webhook's subscriptions [#get-a-webhooks-subscriptions]
+GET https://rt.tonapi.io/webhooks/{webhook_id}/account-tx/subscriptions?offset=0&limit=10 - `limit` is from 2 to 1000, 1000 by default.
+
+A response example:
+```json
+{
+  "account_tx_subscriptions": [
+    {
+        "account_id": "0:6ccd325a858c379693fae2bcaab1c2906831a4e10a6c3bb44ee8b615bca1d220",
+        "last_delivered_lt": 2900000001,
+        "failed_at": "<time of failure>",
+        "failed_lt": 2900000000,
+        "failed_attempts": 4
+    }
+  ]
+}
+```
+
+## Subscribe to events about new contract deployments [#subscribe-to-events-about-new-contract-deployments]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-new-contracts - when a new contract is deployed to the blockchain,
+TONAPI sends a POST request to the webhook URL.
+
+## Unsubscribe from events about new contract deployments [#unsubscribe-from-events-about-new-contract-deployments]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-new-contracts - stop receiving a webhook notification when a new contract is deployed to the blockchain.
+
+## Subscribe to messages with a specific opcode in a message body [#subscribe-to-messages-with-a-specific-opcode-in-a-message-body]
+
+<Callout type="warning">
+  This subscription will trigger webhooks for **every** message on the blockchain that contains the specified opcode — even if it's unrelated to your accounts.
+</Callout>
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/subscribe-msg-opcode/0x{opcode} - when a new transaction is happening with a message that contains a specific opcode in its body,
+TONAPI sends a POST request to the webhook URL.
+
+The number of opcode subscriptions per project is limited, the method returns 422 Unprocessable Entity when the limit is reached.
+
+## Unsubscribe from messages with a specific opcode in a message body [#unsubscribe-from-messages-with-a-specific-opcode-in-a-message-body]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/unsubscribe-msg-opcode/0x{opcode} - stop receiving a webhook notification when a new transaction is happening with a message that contains a specific opcode in its body.
+
+## Get a webhook's opcode subscriptions [#get-a-webhooks-opcode-subscriptions]
+GET https://rt.tonapi.io/webhooks/{webhook_id}/msg-opcode/subscriptions?offset=0&limit=10 - `limit` is from 2 to 1000, 1000 by default.
+
+A response example:
+```json
+{
+  "subscriptions": [
+    {
+      "opcode": "0x0f8a7ea5",
+      "status": "disabled",
+      "disabled_at": "2026-10-13T10:00:00Z",
+      "disabled_reason": "failed to deliver events for two weeks"
+    }
+  ]
+}
+```
+A subscription is disabled if its events fail to be delivered for two weeks. Subscribe again to re-enable it.
+
+## Subscribe to mempool events [#subscribe-to-mempool-events]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/mempool/subscribe - when a new message appears in the mempool,
+TONAPI sends a POST request to the webhook URL.
+
+## Unsubscribe from mempool events [#unsubscribe-from-mempool-events]
+
+POST https://rt.tonapi.io/webhooks/{webhook_id}/mempool/unsubscribe - stop receiving a webhook notification when a new message appears in the mempool.
+
+
+# Testnet webhooks [#testnet-webhooks]
+
+Available by domain https://rt-testnet.tonapi.io/{ur_as_in_mainnet}

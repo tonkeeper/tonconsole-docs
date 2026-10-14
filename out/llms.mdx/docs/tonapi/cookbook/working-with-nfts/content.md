@@ -1,0 +1,159 @@
+# Working with NFTs (/tonapi/cookbook/working-with-nfts)
+
+This guide demonstrates various operations with NFTs and Jettons on the TON blockchain.
+
+## NFT Item [#nft-item]
+
+This example demonstrates how to get details about an NFT.
+
+<Tabs items={["TypeScript"]}>
+
+  <Tab>
+    
+```typescript
+import { TonApiClient, NftItem, TrustType } from '@ton-api/client';
+import { Address } from '@ton/core';
+
+// if you need to send lots of requests in parallel,
+// make sure you use a tonapi token.
+const ta = new TonApiClient({
+    baseUrl: 'https://tonapi.io'
+    // apiKey: 'YOUR_API_KEY',
+});
+
+const getNftItem = async (address: Address): Promise<NftItem | null> => {
+    const nftItem = await ta.nft.getNftItemByAddress(address);
+
+
+    // The preview field typically contains an array of image URLs, each representing the same image at a different resolution. For example, you might find resolutions like:
+    //
+    // 5x5 pixels (very small thumbnail)
+    // 100x100 pixels (small thumbnail)
+    // 500x500 pixels (medium resolution)
+    // 1500x1500 pixels (high resolution)
+    // These different sizes allow applications to load the most appropriate image based on the display context, optimizing performance and user experience.
+
+    const largePreviewUrl = nftItem.previews?.find(i => i.resolution === '1500x1500')?.url;
+
+    // The `verified` field indicates whether the NFT's ownership is genuinely associated with its stated collection. When `verified` is true, it means that the NFT's connection to its collection has been confirmed as legitimate.
+
+    const isVerified = nftItem.verified
+
+    const ownerAddress = nftItem.owner?.address;
+
+    const isScam = nftItem.trust === TrustType.Blacklist;
+
+    // https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md
+    const name = nftItem.metadata?.name || nftItem.address.toString();
+
+    return nftItem
+}
+
+getNftItem(Address.parse('EQA7h-jYk9RRcwSOjZnvAUcPe0VXhbSeSusMuwxzbxCacCZG'));
+```
+
+  </Tab>
+
+</Tabs>
+
+## NFT Collection [#nft-collection]
+
+This example demonstrates how to get details about an NFT Collection.
+
+<Tabs items={["TypeScript"]}>
+
+  <Tab>
+    
+```typescript
+import { TonApiClient, NftCollection } from '@ton-api/client';
+import { Address } from '@ton/core';
+
+// if you need to send lots of requests in parallel,
+// make sure you use a tonapi token.
+const ta = new TonApiClient({
+  baseUrl: 'https://tonapi.io',
+  // apiKey: 'YOUR_API_KEY',
+});
+
+const getNftCollection = async (address: Address): Promise<NftCollection | null> => {
+  const nftCollection = await ta.nft.getNftCollection(address);
+
+  // The preview field typically contains an array of image URLs, each representing the same image at a different resolution. For example, you might find resolutions like:
+  //
+  // 5x5 pixels (very small thumbnail)
+  // 100x100 pixels (small thumbnail)
+  // 500x500 pixels (medium resolution)
+  // 1500x1500 pixels (high resolution)
+  // These different sizes allow applications to load the most appropriate image based on the display context, optimizing performance and user experience.
+
+  const largePreview = nftCollection.previews?.find((i) => i.resolution === '1500x1500')?.url;
+
+  // https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md
+  const name = nftCollection.metadata?.name || nftItem.address.toString();;
+
+  return nftCollection;
+};
+
+getNftCollection(Address.parse('EQC3dNlesgVD8YbAazcauIrXBPfiVhMMr5YYk2in0Mtsz0Bz'));
+```
+
+  </Tab>
+
+</Tabs>
+
+## Account NFT's [#account-nfts]
+
+This example demonstrates how to get list of account NFT's.
+
+<Tabs items={["TypeScript"]}>
+
+  <Tab>
+    
+```typescript
+import { TonApiClient, NftItem, TrustType } from '@ton-api/client';
+import { Address } from '@ton/core';
+
+// if you need to send lots of requests in parallel,
+// make sure you use a tonapi token.
+const ta = new TonApiClient({
+    baseUrl: 'https://tonapi.io'
+    // apiKey: 'YOUR_API_KEY',
+});
+
+const getAccountNfts = async (address: Address): Promise<NftItem[]> => {
+    const accountNfts = await ta.accounts.getAccountNftItems(address, { limit: 25 });
+
+    const nftItems = accountNfts.nftItems
+
+    for (const nftItem of nftItems) {
+        // The preview field typically contains an array of image URLs, each representing the same image at a different resolution. For example, you might find resolutions like:
+        //
+        // 5x5 pixels (very small thumbnail)
+        // 100x100 pixels (small thumbnail)
+        // 500x500 pixels (medium resolution)
+        // 1500x1500 pixels (high resolution)
+        // These different sizes allow applications to load the most appropriate image based on the display context, optimizing performance and user experience.
+
+        const largePreviewUrl = nftItem.previews?.find(i => i.resolution === '1500x1500')?.url;
+
+        // The `verified` field indicates whether the NFT's ownership is genuinely associated with its stated collection. When `verified` is true, it means that the NFT's connection to its collection has been confirmed as legitimate.
+
+        const isVerified = nftItem.verified
+
+        const ownerAddress = nftItem.owner?.address;
+
+        const isScam = nftItem.trust === TrustType.Blacklist;
+
+        // https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md
+        const name = nftItem.metadata?.name || nftItem.address.toString();
+    }
+
+    return nftItems;
+}
+
+getAccountNfts(Address.parse('UQDNzlh0XSZdb5_Qrlx5QjyZHVAO74v5oMeVVrtF_5Vt1rIt'));
+```
+
+  </Tab>
+
+</Tabs>

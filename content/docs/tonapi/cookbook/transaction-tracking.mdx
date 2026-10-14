@@ -1,0 +1,161 @@
+---
+title: "Transaction Tracking"
+seoTitle: "TonAPI Transaction Tracking Examples"
+seoDescription: "Track TON transactions with normalized external-message hashes using TypeScript and Go examples, including message BoC workflows."
+---
+
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { SWAGGER_TAGS } from '@/constants';
+import { getLinkToSwaggerTag } from '@/utils/links';
+
+
+To reliably find a transaction from an external message (external-in) in the TON blockchain, use a normalized hash instead of a regular hash. External messages may slightly alter metadata when included in the blockchain, causing regular hashes to fail in locating the transaction.
+
+Swagger documentation for Blockchain operations can be found <a target="_blank" rel="noopener noreferrer" href={getLinkToSwaggerTag(SWAGGER_TAGS.BLOCKCHAIN)}>here</a>.
+
+<Tabs items={["TypeScript", "Go"]}>
+
+  <Tab>
+    
+```typescript
+import { TonApiClient } from '@ton-api/client';
+import { Message, beginCell } from '@ton/core';
+
+const ta = new TonApiClient({
+    baseUrl: 'https://tonapi.io',
+    apiKey: 'YOUR_API_KEY', // Optional, improves limits and access
+});
+
+function normalizeHash(message: Message): Buffer {
+    if (message.info.type !== 'external-in') {
+        return message.body.hash();
+    }
+
+    const cell = beginCell()
+        .storeUint(2, 2)    // external-in
+        .storeUint(0, 2)    // addr_none
+        .storeAddress(message.info.dest)
+        .storeUint(0, 4)    // import_fee = 0
+        .storeBit(false)    // no StateInit
+        .storeBit(true)     // store body as reference
+        .storeRef(message.body)
+        .endCell();
+
+    return cell.hash();
+}
+
+async function trackTransaction(message: Message) {
+    const msgHashHex = normalizeHash(message).toString('hex');
+    const transaction = await ta.blockchain.getBlockchainTransactionByMessageHash(msgHashHex);
+
+    console.log('Transaction:', transaction);
+}
+```
+
+  </Tab>
+  <Tab>
+    
+```go
+// Hash returns a hash of this Message.
+// it's strongly recommended to normalize hash
+func (m *Message) Hash(normalizeExternal bool) Bits256 {
+	if !normalizeExternal || m.Info.SumType != "ExtInMsgInfo" {
+		return m.hash
+	}
+	// normalize ExtIn message
+	c := boc.NewCell()
+	_ = c.WriteUint(2, 2) // message$_ -> info:CommonMsgInfo -> ext_in_msg_info$10
+	_ = c.WriteUint(0, 2) // message$_ -> info:CommonMsgInfo -> src:MsgAddressExt -> addr_none$00
+	m.Info.ExtInMsgInfo.Dest.AddrStd.Anycast.Exists = false
+	_ = m.Info.ExtInMsgInfo.Dest.MarshalTLB(c, nil) // message$_ -> info:CommonMsgInfo -> dest:MsgAddressInt
+	_ = c.WriteUint(0, 4)                           // message$_ -> info:CommonMsgInfo -> import_fee:Grams -> 0
+	_ = c.WriteBit(false)                           // message$_ -> init:(Maybe (Either StateInit ^StateInit)) -> nothing$0
+	_ = c.WriteBit(true)                            // message$_ -> body:(Either X ^X) -> right$1
+	body := boc.Cell(m.Body.Value)
+	_ = c.AddRef(body.CopyRemaining())
+	hash, _ := c.Hash256()
+	return hash
+}
+
+// original code in here - https://github.com/tonkeeper/tongo/blob/5c0ce694d72b7024bcb62b3d0dcd008940a75419/tlb/messages.go#L27
+```
+
+  </Tab>
+
+</Tabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.
+
+## Getting the `Message` object
+
+## From a BOC
+
+You may encounter BOC strings from various sources, for example, TonConnect (specifically after methods like `sendTransaction` or `send`), or from your own transaction logs. Here's how to parse a BOC string into a `Message` object:
+
+<Tabs items={["TypeScript"]}>
+
+  <Tab>
+    
+```typescript
+import { loadMessage, Cell } from '@ton/core';
+
+const boc = "te6cckECBgEAAPYAAeWIAW7m9GMNMJnjJLq86chyLJWpEZh3KHlgHyzaMJzYP4z8A5tLO3P////rPqB8UAAA..."; // truncated example
+const slice = Cell.fromBase64(boc).beginParse();
+const message = loadMessage(slice);
+```
+
+  </Tab>
+
+</Tabs>
+
+## Manual creation with ton/core
+
+To manually create a `Message`, follow these steps:
+
+<Tabs items={["TypeScript"]}>
+
+  <Tab>
+    
+```typescript
+import { WalletContractV5R1 } from '@ton/ton';
+import { Address, internal, SendMode, external, beginCell } from '@ton/core';
+import { mnemonicToPrivateKey } from '@ton/crypto';
+
+// Initialize wallet keys from mnemonic
+const mnemonics = 'word1 word2 ...'.split(' ');
+const keyPair = await mnemonicToPrivateKey(mnemonics);
+
+// Set up wallet
+const wallet = WalletContractV5R1.create({ workchain: 0, publicKey: keyPair.publicKey });
+const contract = adapter.open(wallet);
+
+// Create internal transfer
+const seqno = await contract.getSeqno();
+const destination = Address.parse('UQDNzlh0XSZdb5_Qrlx5QjyZHVAO74v5oMeVVrtF_5Vt1rIt');
+
+const transfer = contract.createTransfer({
+    seqno,
+    secretKey: keyPair.secretKey,
+    sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+    messages: [
+        internal({
+            to: destination,
+            value: 100_000n,
+        })
+    ]
+});
+
+await contract.send(transfer);
+
+// Wrap transfer in an external message
+const message = external({
+    to: contract.address,
+    body: transfer
+});
+```
+
+  </Tab>
+
+</Tabs>
+
+Use this method to reliably track, verify, or monitor transactions based on external messages.

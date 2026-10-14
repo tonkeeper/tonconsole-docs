@@ -1,0 +1,18 @@
+# REST API (/tonapi/rest-api)
+
+This section of the documentation covers the **TONAPI** REST API, which provides access to various services for interacting with the TON blockchain. These services allow you to perform operations on accounts, retrieve blockchain data, utilize advanced features like gasless transactions, and more.
+
+---
+
+TONAPI provides two base endpoints depending on the target network:
+
+- **Mainnet**: [`https://tonapi.io`](https://tonapi.io)
+- **Testnet**: [`https://testnet.tonapi.io`](https://testnet.tonapi.io)
+
+---
+
+To facilitate integration and testing of the REST API, the following resources are available:
+
+- **Swagger File**: The full Swagger specification is available on <a target="_blank" rel="noopener noreferrer" href={SWAGGER_SCHEMA_YAML_URL}>GitHub</a>, allowing you to explore the API structure and generate client code in various programming languages.
+- **Swagger UI**: For interactive testing and exploration of the API, use <a target="_blank" rel="noopener noreferrer" href={TONAPI_LANDING_PAGE_SWAGGER_URL}>Swagger UI</a>.
+- **SDKs**: To simplify integration, SDKs are provided in multiple programming languages. You can find them in the [SDK Documentation](/tonapi/sdk) section.

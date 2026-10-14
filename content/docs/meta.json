@@ -1,0 +1,11 @@
+{
+  "title": "Tonconsole",
+  "pages": [
+    "index",
+    "tonapi",
+    "tonconsole",
+    "tonkeeper",
+    "payment-processing",
+    "academy"
+  ]
+}

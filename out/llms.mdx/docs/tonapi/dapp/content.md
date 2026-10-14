@@ -1,0 +1,7 @@
+# dApp (/tonapi/dapp)
+
+This section provides resources for building dApps with **TONAPI**, enabling seamless interaction with the TON blockchain.  
+
+## Guides [#guides]  
+- [Building a TON dApp](/tonapi/dapp/building) – Learn how to develop a dApp using TONAPI.  
+- [Free TONAPI limits](/tonapi/dapp/free-limits) – Get higher API limits for free in your dApps.

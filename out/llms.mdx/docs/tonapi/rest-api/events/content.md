@@ -1,0 +1,16 @@
+# Events (/tonapi/rest-api/events)
+
+**Events** service provides access to high-level actions that occur on the TON blockchain. These actions are derived from traces, which represent a series of transactions caused by a single inbound message. Events are meaningful operations such as Jetton transfers, NFT purchases, and other user interactions. By using the **Events** service, you can retrieve detailed information about user activities on the TON blockchain.
+
+<Callout type="warning">
+  Can't be used for building logic, as the structure of events can change at any
+  time.
+</Callout>
+
+Use it only for displaying information to users.
+
+## Operations [#operations]
+
+
+- [`getEvent`](https://tonapi.io/api-v2#operations-Events-getEvent) — Get an event either by event ID or a hash of any transaction in a trace. An event is built on top of a trace which is a series of transactions caused by one inbound message. TonAPI looks for known patterns inside the trace and splits the trace into actions, where a single action represents a meaningful high-level operation like a Jetton Transfer or an NFT Purchase. Actions are expected to be shown to users. It is advised not to build any logic on top of actions because actions can be changed at any time.
+- [`emulateMessageToEvent`](https://tonapi.io/api-v2#operations-Events-emulateMessageToEvent) — Emulate sending message to retrieve general blockchain events

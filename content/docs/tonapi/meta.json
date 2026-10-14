@@ -1,0 +1,13 @@
+{
+  "title": "Ton API",
+  "pages": [
+    "index",
+    "rest-api",
+    "streaming-api",
+    "webhooks-api",
+    "sdk",
+    "cookbook",
+    "dapp",
+    "liteservers"
+  ]
+}

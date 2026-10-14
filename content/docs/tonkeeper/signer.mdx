@@ -1,0 +1,242 @@
+---
+title: "Signer"
+seoTitle: "Keeper Signer Integration"
+seoDescription: "Review the draft Signer integration guide for offline wallet keys, transaction signing, app deep links, pairing and animated QR codes."
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+<Callout type="warning">
+  This page is a draft.
+</Callout>
+
+Open source secure mobile app for cold managing [TON crypto](https://ton.org/) wallet keys and signing blockchain transactions, designed to operate completely offline.
+
+[Signer GitHub repo](https://github.com/tonkeeper/android/tree/main/apps/signer)
+
+## Features
+
+- Operates offline, compatible with [Keeper](https://keeperwallet.com/).
+- Supports multiple keys.
+- Enables transaction signing directly within safe area in SignerApp.
+- Encrypts keys using your personal password for maximum security.
+
+## Privacy-friendly
+
+- No internet access required, ensuring no data is upload.
+- Does not collect analytics or log user activity.
+- Encrypts all secure data with your password, making it accessible only to you.
+- Private keys never leave app, exported, copied, etc.
+- Our developers cannot access your data.
+
+## Secure
+
+The details of the security implementation are described [here](https://github.com/tonkeeper/android/tree/main/apps/signer#security). 
+
+## Decoded payload preview
+
+Allows you to decode and view the contents of a signed payload for the following cases:
+
+- GRAM transfer with comment
+- NFT transfer
+- Jetton transfer
+
+## Interfaces
+
+The app works offline and can be on the same device as other apps or on a separate device.
+
+Receiving and sending data can be done via:
+
+- **QR codes**
+- **Deeplinks**
+
+## Protocol
+
+Keeper uses `keeper://` for app deep links. The legacy `tonkeeper://` scheme remains supported for compatibility.
+
+### Sign the transaction (from Keeper → Signer)
+
+**Scheme**: `tonsign://v1/`
+
+Parameters marked with an asterisk (*) are required.
+
+| Parameter | Description                                                                                     | Default value                          |
+|-----------|-------------------------------------------------------------------------------------------------|----------------------------------------|
+| network   | Network (ton, btc, tron20)                                                                      | ton                                    | 
+| pk*       | Wallet public key in hex (to immediately select the one you need in Signer)                     |                                        | 
+| body*     | Signature data in hex format. Send only body payload.                                           |                                        | 
+| return    | URL for returning a signed transaction. more details below. Its default search/query url param. | Signer shows QR code if not specified. | 
+| v         | Wallet version TON (v3r1/v3r2/v4r2/v5r1). Using only for UI                                     | v4r2                                   |  
+| seqno     |                                                                                                 | 1                                      |
+| network   | Ton network version: Mainnet = -239 Testnet = -3                                                | -239                                   |
+
+Example link:
+
+```text
+tonsign://v1/?network=ton&pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&body=b5ee9c7241010101000a0000100000000000000000768999bf
+```
+
+This URL must be included in the QR code.
+
+#### Parameter `return` 
+
+Used to direct the user back to the requester with a signed transaction.
+
+Case: The user on the device opens wallet.keeperwallet.com and signs the transaction via Signer on the same device, he needs to be redirected back to the browser to the specified URL with an additional parameter boc. For example, return back to `https://wallet.keeperwallet.com/?boc=hex`.
+
+Example link:
+
+```text
+tonsign://v1/?network=ton&pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&body=b5ee9c7241010101000a0000100000000000000000768999bf&return=https://wallet.keeperwallet.com/
+```
+
+
+### Return signed transaction (Signer → Keeper)
+
+**Scheme**: `keeper://publish` or `https://app.keeperwallet.com/publish` if opening by click/direct redirect (mainly needed for iOS)
+
+Web wallet use `return` for interaction on one device. Doesn't need a special scheme.
+
+Parameters marked with an asterisk (*) are required.
+
+| Parameter | Description                                                                                     |
+|-----------|-------------------------------------------------------------------------------------------------|
+| sign*     | Signature of transaction hash in hex. (Result from: PrivateKey.sign(body.hash) )                |
+
+Example link:
+
+```text
+keeper://publish?sign=9dfab96f555563f48a641c628ae74168d37f7da1745bfd3cbf1b6013cce5533c03ae59e87c8ebe0146c1d832b797020ac29ff6a1797e7ae7d4b61df89c34540f
+```
+
+This URL must be included in the QR code.
+
+### Pairing (Signer → Keeper)
+
+**Scheme**: `keeper://signer/link` or `https://app.keeperwallet.com/signer/link` if opening by click/direct redirection (mainly needed for iOS). For web: `https://wallet.keeperwallet.com/signer/link`.
+
+Parameters marked with an asterisk (*) are required.
+
+| Parameter | Description                                                                                                           | Default value |
+|-----------|-----------------------------------------------------------------------------------------------------------------------|---------------|
+| network   | Network (ton, btc, tron20)                                                                                            | ton           | 
+| pk*       | Wallet public key in hex                                                                                              |               | 
+| name      | Key name as url safe string (substitute in the Keeper name input field)                                            |               | 
+| local     | We pass true only to open Keeper locally. This way we can determine that Keeper is opened directly from Signer. |               |
+
+Example link for app:
+
+```text
+keeper://signer/link?pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&name=MyKey
+```
+
+Example link for web:
+
+```text
+https://wallet.keeperwallet.com/signer/link?pk=5a13667c677535f94d8b365c7952e3b63e069babf8133d93470f8dad8055626d&name=MyKey
+```
+
+This URL must be included in the QR code.
+
+### QR code specification
+
+Everything in the QR code should always begin with a diagram (`tonsign://` or `keeper://`). This is necessary for proper processing of animation codes.
+
+QR codes for Android:
+
+- Correction level: **M**
+- Max size: **256 characters**
+- Duration: **100ms per QR-code**
+
+The camera in Android normally reads this size of each code at this speed.
+
+### Interaction diagram
+
+The follow diagrams shows the diagrams for connecting and signing a transaction via signer mobile application:
+
+#### Deeplink linking
+```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
+sequenceDiagram
+    actor User
+    participant Keeper
+    participant Signer
+    participant Blockchain
+    
+    User->>Keeper: press 'link wallet from signer' button
+    Keeper->>Keeper: generate linking deeplink
+    Keeper->>Signer: open deeplink
+    Signer->>User: open select wallet screen
+    User->>Signer: select wallet, press "link wallet" button
+    Signer->>Signer: generate link deeplink <br> with WalletLinkResponse
+    Signer->>Keeper: open deeplink <br> with WalletLinkResponse
+    Keeper->>User: open add wallet flow
+    User->>Keeper: confirm
+    Keeper->>Keeper: save wallet
+```
+
+#### QR Code linking
+
+```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
+sequenceDiagram
+    actor User
+    participant Keeper
+    participant Signer
+    participant Blockchain
+
+    User->>Signer: press 'link wallet' button
+    Signer->>Signer: generate QR code <br> with WalletLinkResponse
+    Signer->>User: show generated QR code
+    User->>Keeper: scan Signer generated QR code
+    Keeper->>Keeper: parse QR code
+    Keeper->>User: open add wallet flow
+    User->>Keeper: confirm
+    Keeper->>Keeper: save wallet
+```
+#### Deeplink signing
+
+```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
+sequenceDiagram
+    actor User
+    participant Keeper
+    participant Signer
+    participant Blockchain
+
+    User->>Keeper: press "confirm and send" button
+    Keeper->>Keeper: create transfer BoC
+    Keeper->>Keeper: generate sign transfer deeplink with SignTransferRequest
+    Keeper->>Signer: open sign transfer deeplink with SignTransferRequest
+    Signer->>User: open confirmation screen
+    User->>Signer: press "sign" button
+    Signer->>Signer: sign BoC
+    Signer->>Signer: generate deeplink with <br> SignTransferResponse
+    Signer->>Keeper: open deeplink with <br> SignTransferResponse
+    Keeper->>Blockchain: send transfer BoC
+```
+
+#### QR code signing
+
+```mermaid
+%%{init: { 'sequence': {'messageAlign': 'left'} }}%%
+sequenceDiagram
+    actor User
+    participant Keeper
+    participant Signer
+    participant Blockchain
+
+    User->>Keeper: press "confirm and send" button
+    Keeper->>Keeper: create transfer BoC
+    Keeper->>Keeper: generate sign transfer <br> QR code with <br> SignTransferRequest
+    Keeper->>User: show generated sign <br> transfer QR code with <br> SignTransferRequest
+    User->>Signer: scan generated sign transfer QR code <br> with SignTransferRequest
+    Signer->>Signer: parse QR code with <br>SignTransferRequest
+    Signer->>User: open confirmation screen
+    User->>Signer: press "sign" button
+    Signer->>Signer: sign BoC
+    Signer->>Signer: generate QR code with <br>SignTransferResponse
+    Signer->>User: show generated <br> QR code with <br> SignTransferResponse
+    User->>Keeper: scan generated QR code <br>with SignTransferResponse
+    Keeper->>Blockchain: send transfer BoC
+```

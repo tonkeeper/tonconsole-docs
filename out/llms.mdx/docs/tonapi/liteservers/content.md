@@ -1,0 +1,57 @@
+# Liteservers (/tonapi/liteservers)
+
+The service provides access to a `Lite API` for interaction with a [liteserver node](https://docs.ton.org/v3/guidelines/nodes/running-nodes/liteserver-node).
+
+This API is used in applications that require access to low-level blockchain data (transactions, account states, etc.) and 
+guarantees the reliability of this data ([proof verification](https://docs.ton.org/v3/documentation/data-formats/tlb/proofs)).
+For example: blockchain indexers, payment processors, [SDK](https://docs.ton.org/v3/guidelines/dapps/apis-sdks/sdk), etc.
+
+A more detailed description of this protocol can be found [here](https://docs.ton.org/v3/documentation/network/protocols/adnl/adnl-tcp).
+The set of methods provided by the API is described [here](https://github.com/ton-blockchain/ton/blob/master/tl/generate/scheme/lite_api.tl).
+
+## Advantages of this service over deploying your own node [#advantages-of-this-service-over-deploying-your-own-node]
+1. It eliminates the need for complex maintenance and updates of the node (especially demanding and costly in the case of an archival node)
+2. It reduces the risk of out of sync error
+3. It provides access to historical data
+4. It offers high availability
+
+## Connecting to the Liteserver [#connecting-to-the-liteserver]
+To connect to the Liteserver, you need to use an application or libraries with a Liteclient function.
+You need to specify the `Server` and `Public key` or download the `global.config.json` file with the ready-made configuration for connection.
+
+You can obtain this data in [Tonconsole](https://tonconsole.com/tonapi/liteservers) after selecting a plan.
+
+Access to two instances of Liteservers (`Server #1` and `Server #2`) is provided, 
+and it is better to specify both for higher fault tolerance (if your software supports it).
+
+## Rate limits [#rate-limits]
+Each plan has its rate limits, which operate on a sliding window algorithm. 
+The window size is 10 seconds. Therefore, with a rate limit of 1 RPS, the maximum number of requests is 10 requests per 10-second period.
+
+The maximum RPS for current plans is 50. Contact <a target="_blank" rel="noopener noreferrer" href={LINKS.SUPPORT}>support</a> for the custom plan.
+
+To obtain rate limit data, the service provides an API method:
+
+```text
+TL scheme for liteapi method:
+
+liteProxy.requestRateLimit#14cb3f0c limit:int per_time:int = liteProxy.RequestRateLimit;
+
+---functions---
+
+liteProxy.getRequestRateLimit#f0f83e86 = liteProxy.RequestRateLimit;
+```
+Where: `rate limit = limit / per_time[s]`
+
+## Error codes [#error-codes]
+
+In addition to the standard liteserver error codes (such as 651, -400, etc.), there are two additional error codes:
+* 228 - rate limit exceeded (there used to be code 5556, but it was replaced with 228 for unification)
+* 5555 - internal server error
+
+It is important to correctly handle these error codes to ensure stable operation of the client application.
+To avoid the rate limit error, a rate limiter can be used on the client side and set to a value slightly below the maximum value of the plan.
+For error 5555, it is usually enough to retry the request.
+
+## Archive node access [#archive-node-access]
+By default, the service provides access to an archival node for obtaining historical data (i.e., data from the first blocks of the blockchain).

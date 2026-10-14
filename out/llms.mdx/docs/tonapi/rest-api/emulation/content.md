@@ -1,0 +1,24 @@
+# Emulation (/tonapi/rest-api/emulation)
+
+[Open in Swagger UI](https://tonapi.io/api-v2#operations-tag-Emulation)
+
+The Emulation methods provide tools for predicting the outcomes of blockchain transactions before they are executed. These tools allow for simulating transactions, offering insights into their results, including an almost precise estimate of network fees (with a small margin of error due to limitations in fully emulating a contract’s internal state).
+
+### Possible use cases [#possible-use-cases]
+- Predicting transaction outcomes to verify correctness before execution.
+- Estimating network fees for accurate cost calculation.
+- Enabling services to display transaction results to end users in advance.
+
+
+### Implementation Example [#implementation-example]  
+
+A detailed example of gasless transaction implementation is available in the [Cookbook](/tonapi/cookbook/emulation).
+
+## Operations [#operations]
+
+
+- [`decodeMessage`](https://tonapi.io/api-v2#operations-Emulation-decodeMessage) — Decode a given message. Only external incoming messages can be decoded currently.
+- [`emulateMessageToAccountEvent`](https://tonapi.io/api-v2#operations-Emulation-emulateMessageToAccountEvent) — Emulate sending message to retrieve account-specific events
+- [`emulateMessageToEvent`](https://tonapi.io/api-v2#operations-Emulation-emulateMessageToEvent) — Emulate sending message to retrieve general blockchain events
+- [`emulateMessageToTrace`](https://tonapi.io/api-v2#operations-Emulation-emulateMessageToTrace) — Emulate sending message to retrieve with a detailed execution trace
+- [`emulateMessageToWallet`](https://tonapi.io/api-v2#operations-Emulation-emulateMessageToWallet) — Emulates a wallet message on the current blockchain state and derives its consequences for the signing wallet

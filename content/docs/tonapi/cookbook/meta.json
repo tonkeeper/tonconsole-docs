@@ -1,0 +1,13 @@
+{
+  "title": "Cookbook",
+  "pages": [
+    "index",
+    "ton-transfer",
+    "jetton-transfer",
+    "transaction-tracking",
+    "emulation",
+    "gasless-transfer",
+    "working-with-nfts",
+    "working-with-jettons"
+  ]
+}

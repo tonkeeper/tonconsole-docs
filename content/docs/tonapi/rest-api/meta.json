@@ -1,0 +1,25 @@
+{
+  "title": "REST API",
+  "pages": [
+    "index",
+    "accounts",
+    "nft",
+    "jettons",
+    "dns",
+    "wallet",
+    "rates",
+    "staking",
+    "traces",
+    "extra-currency",
+    "events",
+    "storage",
+    "connect",
+    "gasless",
+    "multisig",
+    "blockchain",
+    "lite-server",
+    "emulation",
+    "inscriptions",
+    "utilities"
+  ]
+}

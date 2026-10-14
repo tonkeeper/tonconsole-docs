@@ -1,0 +1,51 @@
+# Push Notifications for Decentralized Apps (/tonconsole/tonkeeper-messages)
+
+## About [#about]
+
+Keeper Messages is a powerful tool for communicating with the users who already connected their wallets to your app using TonConnect. It’s easy-to-use and flexible: you can significantly increase the user retention and conversion rate for your decentralized applications. Keeper Messages is designed like a convenient and trusted way to message the highly motivated audience of Keeper.
+
+It’s best for:
+
+- Marketing campaigns.
+- Announcements.
+- Event reminders.
+- App and account updates.
+
+## Connect Your Dapp [#connect-your-dapp]
+
+To connect a decentralized app to your project, you need to register and verify it. One project can have only one connected app to prevent scam. You will need to create a new project to connect another app.
+
+### Steps [#steps]
+
+1. Go to <a target="_blank" rel="noopener noreferrer" href={CONSOLE_LINKS.TONKEEPER_MESSAGES}>Keeper Messages</a>.
+2. Enter a TonConnect manifest URL or an app URL to register your app. <a target="_blank" rel="noopener noreferrer" href={TONORG_LINKS.TONCONNECT_ABOUT}>About TonConnect</a>. <a target="_blank" rel="noopener noreferrer" href={TONORG_LINKS.TONCONNECT_MANIFEST}>About TonConnect Manifest</a>.
+3. Click Register.
+4. Create a `tc-verify.json` file.
+5. Copy the payload key and paste it into the `tc-verify.json` file.
+6. Make the `tc-verify.json` file available at the link specified under the payload key in Keeper Messages.
+7. Click Verify.
+
+## Push Notifications [#push-notifications]
+
+To start messaging users, you need to refill the number of messages available to you. The Keeper Messages tab displays the number of available messages on the right side of the screen. Click Refill if you need more of them. If your TonConsole balance is low, you will be asked to refill it.
+
+Pass the token into the header every time you send a request to message users. **The token is secret, don’t reveal it to any third party. If your token was compromised, generate a new one.**
+
+### Example [#example]
+
+`-H ' Authorization: Bearer **YOUR TOKEN**'`
+
+You can message all the users, who connected to your app, or one certain wallet if you know the address:
+
+- To send a message to one wallet, pass the `"address": "UQ...ER”` into the request body. `“...”` is a wallet address.
+- To send a message to all the users, skip the `“address”` field.
+
+```json
+{
+  "message": "hello",
+  "address": "UQ...ER",
+  "link": "http://my_dapp.com/event"
+}
+```
+
+One message can have only 255 characters.
